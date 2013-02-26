@@ -1,4 +1,4 @@
 lb-quickfixj
 ============
 
-- netty transport
+- netty transport (http://www.quickfixj.org/jira/browse/QFJ-598)
