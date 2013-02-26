@@ -25,6 +25,7 @@ import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import quickfix.Message;
 import quickfix.Session;
 import quickfix.netty.FIXChannelAttachment;
 import quickfix.netty.FIXMessageEvent;
@@ -71,19 +72,21 @@ public class FIXChannelHandler extends SimpleChannelHandler implements Runnable{
      */
     @Override
     public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
-        m_running.set(true);
+        if(!m_running.get()) {
+            m_running.set(true);
 
-        m_eventThread = new Thread(this);
-        m_eventThread.start();
+            m_eventThread = new Thread(this);
+            m_eventThread.start();
 
-        ctx.getChannel().setAttachment(new FIXChannelAttachment(new HashMap<String,Object>() {{
-            put(FIXChannelAttachment.SESSION_TYPE,m_sessionType);
-            put(FIXChannelAttachment.SESSION     ,m_session);
-        }}));
+            ctx.getChannel().setAttachment(new FIXChannelAttachment(new HashMap<String,Object>() {{
+                put(FIXChannelAttachment.SESSION_TYPE,m_sessionType);
+                put(FIXChannelAttachment.SESSION     ,m_session);
+            }}));
 
-        if(m_session != null && m_sessionType == FIXSessionType.INITIATOR) {
-            m_session.logon();
-            m_session.next();
+            if(m_session != null && m_sessionType == FIXSessionType.INITIATOR) {
+                m_session.logon();
+                m_session.next();
+            }
         }
 
         ctx.sendUpstream(e);
@@ -96,7 +99,46 @@ public class FIXChannelHandler extends SimpleChannelHandler implements Runnable{
      * @throws Exception
      */
     @Override
+    public void channelDisconnected(
+        ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
+        m_running.set(false);
+        ctx.sendUpstream(e);
+    }
+
+    /**
+     *
+     * @param ctx
+     * @param e
+     * @throws Exception
+     */
+    @Override
+    public void channelClosed(
+        ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
+        m_session     = null;
+        m_eventThread = null;
+        m_running.set(false);
+
+        ctx.sendUpstream(e);
+    }
+
+    /**
+     *
+     * @param ctx
+     * @param e
+     * @throws Exception
+     */
+    @Override
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
+        if(e.getMessage() instanceof FIXMessageEvent) {
+            if(m_running.get()) {
+                m_eventQueue.put((FIXMessageEvent)e.getMessage());
+            }
+        } else if(e.getMessage() instanceof Message) {
+            if(m_running.get()) {
+                m_eventQueue.put((FIXMessageEvent)e.getMessage());
+            }
+        }
+
         ctx.sendUpstream(e);
     }
 

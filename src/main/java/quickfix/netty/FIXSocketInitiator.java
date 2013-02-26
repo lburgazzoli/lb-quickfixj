@@ -26,25 +26,20 @@ import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import quickfix.Responder;
 import quickfix.Session;
 
 import java.net.InetSocketAddress;
 import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  *
  */
-public class FIXSocketInitiator extends FIXTransportSupport implements Runnable,Responder {
+public class FIXSocketInitiator extends AbstractTransportSupport {
     private static Logger LOGGER =
         LoggerFactory.getLogger(FIXSocketInitiator.class);
 
-    private Session m_session;
-    private AtomicBoolean m_running;
     private String m_host;
     private int m_port;
-    private Channel m_channel;
 
     /**
      * c-tor
@@ -55,22 +50,17 @@ public class FIXSocketInitiator extends FIXTransportSupport implements Runnable,
      * @param port
      */
     public FIXSocketInitiator(FIXRuntime runtime,Session session,String host, int port) {
-        super(runtime);
-
-        m_running = new AtomicBoolean(true);
-        m_host    = host;
-        m_port    = port;
-        m_channel = null;
-
-        m_session = session;
-        m_session.setResponder(this);
+        super(runtime,session);
+        m_host = host;
+        m_port = port;
     }
 
     /**
      *
      */
     public void stop() {
-        m_running.set(false);
+        setRunning(false);
+        disconnect();
     }
 
     /**
@@ -84,60 +74,31 @@ public class FIXSocketInitiator extends FIXTransportSupport implements Runnable,
                 Executors.newCachedThreadPool());
 
         ClientBootstrap bootstrap = new ClientBootstrap(factory);
-        bootstrap.setPipelineFactory(new FIXProtocolPipelineFactory(getRuntime(),m_session,FIXSessionType.INITIATOR));
+        bootstrap.setPipelineFactory(new FIXProtocolPipelineFactory(getRuntime(),getSession(),FIXSessionType.INITIATOR));
         bootstrap.setOption("tcpNoDelay", true);
         bootstrap.setOption("keepAlive", true);
 
         ChannelFuture future  = bootstrap.connect(new InetSocketAddress(m_host,m_port));
-        m_channel = future.awaitUninterruptibly().getChannel();
+        Channel       channel = future.awaitUninterruptibly().getChannel();
+
+        setRunning(true);
 
         if (!future.isSuccess()) {
             LOGGER.warn("Error", future.getCause());
         } else {
             try {
-                while(m_running.get()) {
+                setChanngel(channel);
+                setRunning(true);
+                while(isRunning()) {
                     try{ Thread.sleep(5000); } catch(Exception e) {}
                 }
             } catch(Exception e) {
                 LOGGER.warn("Error", e);
             }
 
-            m_channel.close().awaitUninterruptibly();
+            disconnect();
         }
 
         bootstrap.releaseExternalResources();
-    }
-
-    /**
-     *
-     * @param data
-     * @return
-     */
-    @Override
-    public boolean send(String data) {
-        ChannelFuture future = m_channel.write(data);
-        if (!future.isSuccess()) {
-            LOGGER.warn("Error sending message");
-        }
-
-        return future.isSuccess();
-    }
-
-    /**
-     *
-     */
-    @Override
-    public void disconnect() {
-        m_channel.disconnect().awaitUninterruptibly(5000L);
-        m_channel.close().awaitUninterruptibly();
-    }
-
-    /**
-     *
-     * @return
-     */
-    @Override
-    public String getRemoteIPAddress() {
-        return m_channel.getRemoteAddress().toString();
     }
 }

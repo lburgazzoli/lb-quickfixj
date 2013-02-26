@@ -19,6 +19,8 @@
 
 package quickfix.netty;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import quickfix.FieldNotFound;
 import quickfix.LogUtil;
 import quickfix.Message;
@@ -30,6 +32,9 @@ import quickfix.field.MsgType;
  *
  */
 public class FIXMessageEvent {
+    private static final Logger LOGGER =
+        LoggerFactory.getLogger(FIXMessageEvent.class);
+
     private final Session m_session;
     private final Message m_message;
 
