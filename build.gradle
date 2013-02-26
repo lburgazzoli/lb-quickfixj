@@ -1,0 +1,31 @@
+apply plugin: 'java'
+
+repositories {
+    maven { url 'http://download.eclipse.org/rt/eclipselink/maven.repo' }
+    maven { url 'http://repo.springsource.org/release' }
+    maven { url 'http://repo2.maven.org/maven2' }
+    maven { url 'http://repo1.maven.org/maven2' }
+}
+
+dependencies {
+    compile 'org.apache.geronimo.specs:geronimo-jpa_2.0_spec:1.1'
+    compile 'org.apache.openjpa:openjpa:2.2.1'
+    compile 'org.apache.commons:commons-lang3:3.1'
+    compile 'commons-io:commons-io:2.4'
+    compile 'commons-net:commons-net:3.1'
+    compile 'commons-configuration:commons-configuration:1.6'
+
+    compile 'log4j:log4j:1.2.17'
+    compile 'org.slf4j:slf4j-api:1.7.2'
+    compile 'org.slf4j:slf4j-ext:1.7.2'
+    compile 'org.slf4j:slf4j-log4j12:1.7.2'
+    compile 'org.slf4j:jcl-over-slf4j:1.7.2'
+    compile 'org.slf4j:jul-to-slf4j:1.7.2'
+
+    compile 'com.google.guava:guava:13.0'
+    compile 'javolution:javolution:5.5.1'
+  
+    compile 'io.netty:netty:3.6.2.Final'
+
+    compile fileTree(dir:'lib', include: '*.jar')
+}
