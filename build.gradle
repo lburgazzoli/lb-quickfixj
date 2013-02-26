@@ -8,8 +8,8 @@ repositories {
 }
 
 dependencies {
-    compile 'org.apache.geronimo.specs:geronimo-jpa_2.0_spec:1.1'
-    compile 'org.apache.openjpa:openjpa:2.2.1'
+    compile 'org.apache.mina:mina-core:1.1.7'
+    compile 'org.apache.mina:mina-filter-ssl:1.1.7'
     compile 'org.apache.commons:commons-lang3:3.1'
     compile 'commons-io:commons-io:2.4'
     compile 'commons-net:commons-net:3.1'
@@ -29,3 +29,4 @@ dependencies {
 
     compile fileTree(dir:'lib', include: '*.jar')
 }
+

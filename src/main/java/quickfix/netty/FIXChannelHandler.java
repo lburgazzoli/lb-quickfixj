@@ -25,7 +25,9 @@ import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import quickfix.Session;
 
+import java.util.HashMap;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -40,6 +42,7 @@ public class FIXChannelHandler extends SimpleChannelHandler implements Runnable{
         LoggerFactory.getLogger(FIXChannelHandler.class);
 
     private FIXSessionType m_sessionType;
+    private Session m_session;
     private BlockingQueue<FIXMessageEvent> m_eventQueue;
     private AtomicBoolean m_running;
     private Thread m_eventThread;
@@ -49,7 +52,9 @@ public class FIXChannelHandler extends SimpleChannelHandler implements Runnable{
      * c-tor
      *
      */
-    public FIXChannelHandler() {
+    public FIXChannelHandler(Session session,FIXSessionType sessionType) {
+        m_session     = session;
+        m_sessionType = sessionType;
         m_eventQueue  = new LinkedBlockingQueue<FIXMessageEvent>();
         m_eventThread = null;
         m_running     = new AtomicBoolean(false);
@@ -68,17 +73,15 @@ public class FIXChannelHandler extends SimpleChannelHandler implements Runnable{
         m_eventThread = new Thread(this);
         m_eventThread.start();
 
-        /*
-        FIXChannelAttachment attach = (FIXChannelAttachment)ctx.getChannel().getAttachment();
-        if(attach != null) {
-            if(ObjectUtils.equals(attach.get(FIXChannelAttachment.SESSION_TYPE), FIXSessionType.INITIATOR)) {
-                Session session = (Session)attach.get(FIXChannelAttachment.SESSION);
-                if(session != null) {
-                    session.logon();
-                }
-            }
+        ctx.getChannel().setAttachment(new FIXChannelAttachment(new HashMap<String,Object>() {{
+            put(FIXChannelAttachment.SESSION_TYPE,m_sessionType);
+            put(FIXChannelAttachment.SESSION     ,m_session);
+        }}));
+
+        if(m_session != null && m_sessionType == FIXSessionType.INITIATOR) {
+            m_session.logon();
+            m_session.next();
         }
-        */
 
         ctx.sendUpstream(e);
     }

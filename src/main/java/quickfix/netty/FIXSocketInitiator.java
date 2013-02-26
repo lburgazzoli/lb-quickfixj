@@ -30,7 +30,6 @@ import quickfix.Responder;
 import quickfix.Session;
 
 import java.net.InetSocketAddress;
-import java.util.HashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -85,25 +84,18 @@ public class FIXSocketInitiator extends FIXTransportSupport implements Runnable,
                 Executors.newCachedThreadPool());
 
         ClientBootstrap bootstrap = new ClientBootstrap(factory);
-        bootstrap.setPipelineFactory(new FIXProtocolPipelineFactory(getRuntime()));
+        bootstrap.setPipelineFactory(new FIXProtocolPipelineFactory(getRuntime(),m_session,FIXSessionType.INITIATOR));
         bootstrap.setOption("tcpNoDelay", true);
         bootstrap.setOption("keepAlive", true);
 
         ChannelFuture future  = bootstrap.connect(new InetSocketAddress(m_host,m_port));
         m_channel = future.awaitUninterruptibly().getChannel();
-        m_channel.setAttachment(new FIXChannelAttachment(new HashMap<String, Object>() {{
-            put(FIXChannelAttachment.SESSION_TYPE,FIXSessionType.INITIATOR);
-            put(FIXChannelAttachment.SESSION     ,m_session);
-        }}));
 
         if (!future.isSuccess()) {
             LOGGER.warn("Error", future.getCause());
         } else {
-            m_session.logon();
             try {
-                m_session.next();
                 while(m_running.get()) {
-                    LOGGER.debug("Sleep");
                     try{ Thread.sleep(5000); } catch(Exception e) {}
                 }
             } catch(Exception e) {
@@ -116,9 +108,14 @@ public class FIXSocketInitiator extends FIXTransportSupport implements Runnable,
         bootstrap.releaseExternalResources();
     }
 
+    /**
+     *
+     * @param data
+     * @return
+     */
     @Override
-    public boolean send(String s) {
-        ChannelFuture future = m_channel.write(s);
+    public boolean send(String data) {
+        ChannelFuture future = m_channel.write(data);
         if (!future.isSuccess()) {
             LOGGER.warn("Error sending message");
         }
@@ -126,12 +123,19 @@ public class FIXSocketInitiator extends FIXTransportSupport implements Runnable,
         return future.isSuccess();
     }
 
+    /**
+     *
+     */
     @Override
     public void disconnect() {
         m_channel.disconnect().awaitUninterruptibly(5000L);
         m_channel.close().awaitUninterruptibly();
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public String getRemoteIPAddress() {
         return m_channel.getRemoteAddress().toString();

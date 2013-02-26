@@ -108,7 +108,7 @@ public class FIXMessageDecoder extends FrameDecoder {
      * @throws Exception
      */
     private Object processMessageString(Channel channel,ChannelBuffer buffer) throws Exception {
-        String    message   = buffer.toString();
+        String    message   = buffer.toString(m_charset);
         SessionID sessionid = MessageUtils.getReverseSessionID(message);
         Session   session   = m_runtime.find(sessionid);
 

@@ -22,6 +22,7 @@ package quickfix.netty;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.Channels;
+import quickfix.Session;
 
 /**
  *
@@ -29,14 +30,19 @@ import org.jboss.netty.channel.Channels;
 public class FIXProtocolPipelineFactory implements ChannelPipelineFactory {
 
     private final FIXRuntime m_runtime;
+    private final Session m_session;
+    private final FIXSessionType m_sessionType;
 
     /**
      * c-tor
      *
      * @param runtime
      */
-    public FIXProtocolPipelineFactory(FIXRuntime runtime) {
+    public FIXProtocolPipelineFactory(
+        FIXRuntime runtime,Session session,FIXSessionType sessionType) {
         m_runtime = runtime;
+        m_session = session;
+        m_sessionType = sessionType;
     }
 
     /**
@@ -49,7 +55,7 @@ public class FIXProtocolPipelineFactory implements ChannelPipelineFactory {
         ChannelPipeline pipeline = Channels.pipeline();
         pipeline.addLast("decoder",new FIXMessageDecoder(m_runtime));
         pipeline.addLast("encoder",new FIXMessageEncoder(m_runtime));
-        pipeline.addLast("handler",new FIXChannelHandler());
+        pipeline.addLast("handler",new FIXChannelHandler(m_session,m_sessionType));
 
         return pipeline;
     }
