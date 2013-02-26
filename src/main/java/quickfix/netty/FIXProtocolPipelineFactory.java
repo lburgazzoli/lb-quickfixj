@@ -23,6 +23,9 @@ import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.Channels;
 import quickfix.Session;
+import quickfix.netty.codec.FIXChannelHandler;
+import quickfix.netty.codec.FIXMessageDecoder;
+import quickfix.netty.codec.FIXMessageEncoder;
 
 /**
  *

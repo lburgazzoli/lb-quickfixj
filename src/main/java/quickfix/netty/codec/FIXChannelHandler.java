@@ -17,7 +17,7 @@
  * are not clear to you.
  ******************************************************************************/
 
-package quickfix.netty;
+package quickfix.netty.codec;
 
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelStateEvent;
@@ -26,6 +26,9 @@ import org.jboss.netty.channel.SimpleChannelHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import quickfix.Session;
+import quickfix.netty.FIXChannelAttachment;
+import quickfix.netty.FIXMessageEvent;
+import quickfix.netty.FIXSessionType;
 
 import java.util.HashMap;
 import java.util.concurrent.BlockingQueue;

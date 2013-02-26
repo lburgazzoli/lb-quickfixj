@@ -17,7 +17,7 @@
  * are not clear to you.
  ******************************************************************************/
 
-package quickfix.netty;
+package quickfix.netty.codec;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.Channel;
@@ -30,6 +30,8 @@ import quickfix.MessageUtils;
 import quickfix.Session;
 import quickfix.SessionID;
 import quickfix.field.MsgType;
+import quickfix.netty.FIXMessageEvent;
+import quickfix.netty.FIXRuntime;
 
 import java.nio.charset.Charset;
 
