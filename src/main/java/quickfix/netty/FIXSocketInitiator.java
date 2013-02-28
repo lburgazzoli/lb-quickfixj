@@ -26,7 +26,6 @@ import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import quickfix.Session;
 
 import java.net.InetSocketAddress;
 import java.util.concurrent.Executors;
@@ -49,7 +48,7 @@ public class FIXSocketInitiator extends AbstractTransportSupport {
      * @param host
      * @param port
      */
-    public FIXSocketInitiator(FIXRuntime runtime,Session session,String host, int port) {
+    public FIXSocketInitiator(FIXRuntime runtime,FIXSession session,String host, int port) {
         super(runtime,session);
         m_host = host;
         m_port = port;
@@ -74,7 +73,7 @@ public class FIXSocketInitiator extends AbstractTransportSupport {
                 Executors.newCachedThreadPool());
 
         ClientBootstrap bootstrap = new ClientBootstrap(factory);
-        bootstrap.setPipelineFactory(new FIXProtocolPipelineFactory(getRuntime(),getSession(),FIXSessionType.INITIATOR));
+        bootstrap.setPipelineFactory(new FIXProtocolPipelineFactory(getSession(),FIXSessionType.INITIATOR));
         bootstrap.setOption("tcpNoDelay", true);
         bootstrap.setOption("keepAlive", true);
 

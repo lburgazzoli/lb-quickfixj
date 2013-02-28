@@ -32,8 +32,7 @@ import quickfix.netty.codec.FIXMessageEncoder;
  */
 public class FIXProtocolPipelineFactory implements ChannelPipelineFactory {
 
-    private final FIXRuntime m_runtime;
-    private final Session m_session;
+    private final FIXSession m_session;
     private final FIXSessionType m_sessionType;
 
     /**
@@ -42,8 +41,7 @@ public class FIXProtocolPipelineFactory implements ChannelPipelineFactory {
      * @param runtime
      */
     public FIXProtocolPipelineFactory(
-        FIXRuntime runtime,Session session,FIXSessionType sessionType) {
-        m_runtime = runtime;
+        FIXSession session,FIXSessionType sessionType) {
         m_session = session;
         m_sessionType = sessionType;
     }
@@ -56,8 +54,8 @@ public class FIXProtocolPipelineFactory implements ChannelPipelineFactory {
     @Override
     public ChannelPipeline getPipeline() throws Exception {
         ChannelPipeline pipeline = Channels.pipeline();
-        pipeline.addLast("decoder",new FIXMessageDecoder(m_runtime));
-        pipeline.addLast("encoder",new FIXMessageEncoder(m_runtime));
+        pipeline.addLast("decoder",new FIXMessageDecoder(m_session.getRuntime()));
+        pipeline.addLast("encoder",new FIXMessageEncoder(m_session.getRuntime()));
         pipeline.addLast("handler",new FIXChannelHandler(m_session,m_sessionType));
 
         return pipeline;

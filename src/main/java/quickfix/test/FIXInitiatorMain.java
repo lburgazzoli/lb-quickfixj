@@ -29,10 +29,10 @@ import quickfix.MemoryStoreFactory;
 import quickfix.MessageFactory;
 import quickfix.MessageStoreFactory;
 import quickfix.SLF4JLogFactory;
-import quickfix.Session;
 import quickfix.SessionID;
 import quickfix.SessionSettings;
 import quickfix.netty.FIXRuntime;
+import quickfix.netty.FIXSession;
 import quickfix.netty.FIXSocketInitiator;
 
 /**
@@ -51,9 +51,9 @@ public class FIXInitiatorMain {
             MessageFactory        msgf = new DefaultMessageFactory();
             DefaultSessionFactory dsf  = new DefaultSessionFactory(app,msf,logf,msgf);
             SessionID             sid  = new SessionID("FIX.4.2","BANZAI","EXEC");
-            Session               sx   = dsf.create(sid,cfg);
 
             FIXRuntime         rt = new FIXRuntime();
+            FIXSession         sx = new FIXSession(rt,dsf.create(sid,cfg));
             FIXSocketInitiator si = new FIXSocketInitiator(rt,sx,"localhost",9878);
 
             si.run();

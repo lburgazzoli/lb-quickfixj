@@ -40,7 +40,7 @@ import java.nio.charset.Charset;
  */
 public class FIXMessageDecoder extends FrameDecoder {
 
-    private static final Logger LOGEGR =
+    private static final Logger LOGGER =
         LoggerFactory.getLogger(FIXMessageDecoder.class);
 
     private final Charset m_charset;
@@ -120,14 +120,14 @@ public class FIXMessageDecoder extends FrameDecoder {
                 return new FIXMessageEvent(session,MessageUtils.parse(session, message));
             } catch (InvalidMessage e) {
                 if (MsgType.LOGON.equals(MessageUtils.getMessageType(message))) {
-                    LOGEGR.error("Invalid LOGON message, disconnecting: " + e.getMessage());
+                    LOGGER.error("Invalid LOGON message, disconnecting: " + e.getMessage());
                     channel.close();
                 } else {
-                    LOGEGR.error("Invalid message: " + e.getMessage());
+                    LOGGER.error("Invalid message: " + e.getMessage());
                 }
             }
         } else {
-            LOGEGR.error("Disconnecting; received message for unknown session: " + message);
+            LOGGER.error("Disconnecting; received message for unknown session: " + message);
             channel.close();
         }
 

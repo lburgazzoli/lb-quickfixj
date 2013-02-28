@@ -17,42 +17,53 @@
  * are not clear to you.
  ******************************************************************************/
 
-package quickfix.netty;
+package quickfix.netty.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import quickfix.Session;
+
+import java.io.IOException;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 /**
  *
  */
-public class FIXSession {
+public class SessionTimerTask implements Runnable {
+    private static final Logger LOGGER = LoggerFactory.getLogger(SessionTimerTask.class);
 
-    private final FIXRuntime m_runtime;
     private final Session m_session;
 
     /**
      * c-tor
      *
-     * @param runtime
      * @param session
      */
-    public FIXSession(FIXRuntime runtime,Session session) {
-        m_runtime = runtime;
+    public SessionTimerTask(Session session) {
         m_session = session;
     }
 
     /**
      *
-     * @return
      */
-    public FIXRuntime getRuntime() {
-        return m_runtime;
+    @Override
+    public void run() {
+        try {
+            m_session.next();
+        } catch (IOException e) {
+            LOGGER.error("{} : Error in session timer processing ({})",m_session.getSessionID(),e.getMessage());
+        }
     }
 
     /**
      *
+     * @param scheduler
+     * @param session
      * @return
      */
-    public Session getSession() {
-        return m_session;
+    public static final ScheduledFuture<?> schedule(ScheduledExecutorService scheduler,Session session) {
+        return scheduler.scheduleAtFixedRate(new SessionTimerTask(session),0, 1000L, TimeUnit.MILLISECONDS);
     }
 }

@@ -5,7 +5,8 @@
 *.ear
 *.iml
 
-/classes
-/build
-/.idea
+classes/
+build/
+.idea/
+.gradle/
 

@@ -17,12 +17,43 @@
  * are not clear to you.
  ******************************************************************************/
 
-package quickfix.netty;
+package quickfix.netty.util;
 
-import quickfix.Responder;
+import java.util.concurrent.ThreadFactory;
 
 /**
  *
  */
-public interface ITransportSupport extends Runnable, Responder {
+public class NamedThreadFactory implements ThreadFactory{
+    private final String m_threadName;
+
+    /**
+     * c-tor
+     *
+     * @param threadName
+     */
+    public NamedThreadFactory(String threadName) {
+        m_threadName = threadName;
+    }
+
+    /**
+     *
+     * @param runnable
+     * @return
+     */
+    @Override
+    public Thread newThread(Runnable runnable) {
+        Thread thread = new Thread(runnable,m_threadName);
+        thread.setDaemon(true);
+        return thread;
+    }
+
+    /**
+     *
+     * @param threadName
+     * @return
+     */
+    public static final ThreadFactory newWithName(String threadName) {
+        return new NamedThreadFactory(threadName);
+    }
 }

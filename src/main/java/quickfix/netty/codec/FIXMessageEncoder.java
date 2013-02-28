@@ -70,10 +70,10 @@ public class FIXMessageEncoder extends OneToOneEncoder {
     protected Object encode(
         ChannelHandlerContext ctx, Channel channel, Object msg) throws Exception {
         String message = null;
-        if(msg instanceof Message) {
-            message = ((Message)msg).toString();
-        } else if(msg instanceof String) {
+        if(msg instanceof String) {
             message = (String)msg;
+        } else if(msg instanceof Message) {
+            message = ((Message)msg).toString();
         } else if(msg instanceof FIXMessageEvent) {
             message = ((FIXMessageEvent)msg).getMessage().toString();
         }

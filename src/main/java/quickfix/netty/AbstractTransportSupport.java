@@ -23,7 +23,6 @@ import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import quickfix.Session;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -36,7 +35,7 @@ public abstract class AbstractTransportSupport implements ITransportSupport {
         LoggerFactory.getLogger(AbstractTransportSupport.class);
 
     private final FIXRuntime m_runtime;
-    private final Session m_session;
+    private final FIXSession m_session;
     private final AtomicBoolean m_running;
 
     private Channel m_channel;
@@ -46,13 +45,13 @@ public abstract class AbstractTransportSupport implements ITransportSupport {
      *
      * @param runtime
      */
-    public AbstractTransportSupport(FIXRuntime runtime,Session session) {
+    public AbstractTransportSupport(FIXRuntime runtime,FIXSession session) {
         m_channel = null;
         m_runtime = runtime;
         m_running = new AtomicBoolean(false);
 
         m_session = session;
-        m_session.setResponder(this);
+        m_session.getSession().setResponder(this);
     }
 
     /**
@@ -67,7 +66,7 @@ public abstract class AbstractTransportSupport implements ITransportSupport {
      *
      * @return
      */
-    protected Session getSession() {
+    protected FIXSession getSession() {
         return m_session;
     }
 
@@ -112,6 +111,8 @@ public abstract class AbstractTransportSupport implements ITransportSupport {
     public boolean send(String data) {
         if(m_channel != null) {
             ChannelFuture future = m_channel.write(data);
+            future.awaitUninterruptibly();
+
             if (!future.isSuccess()) {
                 LOGGER.warn("Error sending message");
             }
