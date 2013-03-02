@@ -26,10 +26,12 @@ import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import quickfix.netty.FIXChannelAttachment;
+import quickfix.netty.util.AbstractEventQueue;
+import quickfix.netty.util.ChannelAttachment;
 import quickfix.netty.FIXMessageEvent;
 import quickfix.netty.FIXSession;
 import quickfix.netty.FIXSessionType;
+import quickfix.netty.util.IEventQueue;
 
 import java.util.HashMap;
 import java.util.concurrent.BlockingQueue;
@@ -40,16 +42,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  *
  */
-public class FIXChannelHandler extends SimpleChannelHandler implements Runnable{
+public class FIXChannelHandler extends SimpleChannelHandler {
 
     private static final Logger LOGGER =
         LoggerFactory.getLogger(FIXChannelHandler.class);
 
-    private FIXSessionType m_sessionType;
-    private FIXSession m_session;
-    private BlockingQueue<FIXMessageEvent> m_eventQueue;
-    private AtomicBoolean m_running;
-    private Thread m_eventThread;
+    private final FIXSessionType m_sessionType;
+    private final FIXSession m_session;
+    private final IEventQueue<FIXMessageEvent> m_eventQueue;
 
 
     /**
@@ -59,9 +59,14 @@ public class FIXChannelHandler extends SimpleChannelHandler implements Runnable{
     public FIXChannelHandler(FIXSession session,FIXSessionType sessionType) {
         m_session     = session;
         m_sessionType = sessionType;
-        m_eventQueue  = new LinkedBlockingQueue<FIXMessageEvent>();
-        m_eventThread = null;
-        m_running     = new AtomicBoolean(false);
+
+        m_eventQueue  = new AbstractEventQueue<FIXMessageEvent>() {
+            @Override
+            public boolean process(FIXMessageEvent data) {
+                data.processMessage();
+                return true;
+            }
+        };
     }
 
     /**
@@ -72,22 +77,20 @@ public class FIXChannelHandler extends SimpleChannelHandler implements Runnable{
      */
     @Override
     public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent event) throws Exception {
-        if(!m_running.get()) {
-            m_running.set(true);
+        if(!m_eventQueue.isRunning()) {
 
-            m_eventThread = new Thread(this);
-            m_eventThread.start();
+            m_eventQueue.start();
 
-            ctx.getChannel().setAttachment(new FIXChannelAttachment(new HashMap<String,Object>() {{
-                put(FIXChannelAttachment.SESSION_TYPE,m_sessionType);
-                put(FIXChannelAttachment.SESSION     ,m_session);
+            ctx.getChannel().setAttachment(new ChannelAttachment(new HashMap<String,Object>() {{
+                put(ChannelAttachment.SESSION_TYPE,m_sessionType);
+                put(ChannelAttachment.SESSION     ,m_session);
             }}));
 
-            if(m_session != null && m_sessionType == FIXSessionType.INITIATOR) {
+            if(m_sessionType == FIXSessionType.INITIATOR) {
                 m_session.getSession().logon();
                 m_session.getSession().next();
 
-                m_session.getRuntime().startSessionTimer(m_session.getSession());
+                m_session.startSessionTimer();
             }
         }
 
@@ -103,8 +106,8 @@ public class FIXChannelHandler extends SimpleChannelHandler implements Runnable{
     @Override
     public void channelDisconnected(
         ChannelHandlerContext ctx, ChannelStateEvent event) throws Exception {
-        m_session.getRuntime().startSessionTimer(m_session.getSession());
-        m_running.set(false);
+        m_session.stopSessionTimer();
+        m_eventQueue.stop();
         ctx.sendUpstream(event);
     }
 
@@ -117,9 +120,8 @@ public class FIXChannelHandler extends SimpleChannelHandler implements Runnable{
     @Override
     public void channelClosed(
         ChannelHandlerContext ctx, ChannelStateEvent event) throws Exception {
-        m_session     = null;
-        m_eventThread = null;
-        m_running.set(false);
+
+        m_eventQueue.stop();
 
         ctx.sendUpstream(event);
     }
@@ -133,7 +135,7 @@ public class FIXChannelHandler extends SimpleChannelHandler implements Runnable{
     @Override
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent event) throws Exception {
         if(event.getMessage() instanceof FIXMessageEvent) {
-            if(m_running.get()) {
+            if(m_eventQueue.isRunning()) {
                 FIXMessageEvent mevt = (FIXMessageEvent)event.getMessage();
                 if(ObjectUtils.equals(m_session.getSession().getSessionID(),mevt.getSession().getSessionID())) {
                     m_eventQueue.put((FIXMessageEvent)event.getMessage());
@@ -145,31 +147,5 @@ public class FIXChannelHandler extends SimpleChannelHandler implements Runnable{
         }
 
         ctx.sendUpstream(event);
-    }
-
-    /**
-     *
-     * @param ctx
-     * @param event
-     * @throws Exception
-     */
-    @Override
-    public void writeRequested(ChannelHandlerContext ctx, MessageEvent event) throws Exception {
-        ctx.sendDownstream(event);
-    }
-
-    /**
-     *
-     */
-    public void run() {
-        while(m_running.get()) {
-            try {
-                FIXMessageEvent em = m_eventQueue.poll(1000L,TimeUnit.MILLISECONDS);
-                if (em != null) {
-                    em.processMessage();
-                }
-            } catch(InterruptedException e) {
-            }
-        }
     }
 }

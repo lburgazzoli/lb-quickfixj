@@ -112,7 +112,7 @@ public class FIXMessageDecoder extends FrameDecoder {
     private Object processMessageString(Channel channel,ChannelBuffer buffer) throws Exception {
         String    message   = buffer.toString(m_charset);
         SessionID sessionid = MessageUtils.getReverseSessionID(message);
-        Session   session   = m_runtime.find(sessionid);
+        Session   session   = m_runtime.getSession(sessionid);
 
         if (session != null) {
             session.getLog().onIncoming(message);
@@ -127,7 +127,7 @@ public class FIXMessageDecoder extends FrameDecoder {
                 }
             }
         } else {
-            LOGGER.error("Disconnecting; received message for unknown session: " + message);
+            LOGGER.error("Disconnecting: received message for unknown session: " + message);
             channel.close();
         }
 

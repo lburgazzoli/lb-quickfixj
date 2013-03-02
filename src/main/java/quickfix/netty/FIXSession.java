@@ -19,15 +19,36 @@
 
 package quickfix.netty;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import quickfix.Session;
+
+import java.io.IOException;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 /**
  *
  */
 public class FIXSession {
+    private static final Logger LOGGER = LoggerFactory.getLogger(FIXSession.class);
+
+    private final Runnable m_task = new Runnable() {
+        public void run() {
+            try {
+                m_session.next();
+            } catch (IOException e) {
+                LOGGER.error("{} : Error in session timer processing ({})",
+                    m_session.getSessionID(),
+                    e.getMessage());
+            }
+        }
+    };
 
     private final FIXRuntime m_runtime;
     private final Session m_session;
+
+    private ScheduledFuture<?> m_taskFuture;
 
     /**
      * c-tor
@@ -36,8 +57,9 @@ public class FIXSession {
      * @param session
      */
     public FIXSession(FIXRuntime runtime,Session session) {
-        m_runtime = runtime;
-        m_session = session;
+        m_runtime    = runtime;
+        m_session    = session;
+        m_taskFuture = null;
     }
 
     /**
@@ -54,5 +76,30 @@ public class FIXSession {
      */
     public Session getSession() {
         return m_session;
+    }
+
+    /**
+     *
+     */
+    public void startSessionTimer() {
+        if(m_taskFuture == null) {
+            m_taskFuture = m_runtime.getScheduler().scheduleAtFixedRate(
+                m_task, 0, 1000L, TimeUnit.MILLISECONDS);
+
+            LOGGER.info("SessionTimer started");
+        }
+    }
+
+    /**
+     *
+     */
+    public void stopSessionTimer() {
+        if(m_taskFuture != null) {
+            if(m_taskFuture.cancel(false)) {
+                LOGGER.info("SessionTimer canceled");
+            }
+
+            m_taskFuture = null;
+        }
     }
 }

@@ -24,7 +24,7 @@ import java.util.concurrent.ThreadFactory;
 /**
  *
  */
-public class NamedThreadFactory implements ThreadFactory{
+public class NamedThreadFactory implements ThreadFactory {
     private final String m_threadName;
 
     /**
@@ -46,14 +46,5 @@ public class NamedThreadFactory implements ThreadFactory{
         Thread thread = new Thread(runnable,m_threadName);
         thread.setDaemon(true);
         return thread;
-    }
-
-    /**
-     *
-     * @param threadName
-     * @return
-     */
-    public static final ThreadFactory newWithName(String threadName) {
-        return new NamedThreadFactory(threadName);
     }
 }

@@ -17,7 +17,7 @@
  * are not clear to you.
  ******************************************************************************/
 
-package quickfix.netty;
+package quickfix.netty.util;
 
 import com.google.common.collect.Maps;
 
@@ -26,7 +26,7 @@ import java.util.Map;
 /**
  *
  */
-public class FIXChannelAttachment {
+public class ChannelAttachment {
 
     public static final String SESSION_TYPE = "session.type";
     public static final String SESSION      = "session";
@@ -36,7 +36,7 @@ public class FIXChannelAttachment {
     /**
      * c-tor
      */
-    public FIXChannelAttachment() {
+    public ChannelAttachment() {
         m_data = Maps.newConcurrentMap();
     }
 
@@ -45,7 +45,7 @@ public class FIXChannelAttachment {
      *
      * @param data
      */
-    public FIXChannelAttachment(Map<String,Object> data) {
+    public ChannelAttachment(Map<String, Object> data) {
         m_data = Maps.newConcurrentMap();
         m_data.putAll(data);
     }
