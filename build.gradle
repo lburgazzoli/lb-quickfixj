@@ -1,32 +1,168 @@
-apply plugin: 'java'
 
-repositories {
-    maven { url 'http://download.eclipse.org/rt/eclipselink/maven.repo' }
-    maven { url 'http://repo.springsource.org/release' }
-    maven { url 'http://repo2.maven.org/maven2' }
-    maven { url 'http://repo1.maven.org/maven2' }
+// *****************************************************************************
+//
+// *****************************************************************************
+
+ext {
+    generatorDecimal       = false
+    generatorOrderedFields = false
+
+    slf4jVersion       = '1.7.5'
+    log4jVersion       = '1.2.17'
+    nettyVersion       = '4.0.6.Final'
+    osgiVersion        = '4.3.1'
+    reactorVersion     = '1.0.0.M2'
+    
+    gradleVersion      = '1.7'
+    gradleScriptDir    = "${rootProject.projectDir}/gradle"
+    mainResourcesDir   = "${rootProject.projectDir}/etc/resources"
+    mainGeneratedDir   = "${rootProject.projectDir}/quickfixj-core/src/main/generated"
 }
 
-dependencies {
-    compile 'org.apache.mina:mina-core:1.1.7'
-    compile 'org.apache.mina:mina-filter-ssl:1.1.7'
-    compile 'org.apache.commons:commons-lang3:3.1'
-    compile 'commons-io:commons-io:2.4'
-    compile 'commons-net:commons-net:3.1'
-    compile 'commons-configuration:commons-configuration:1.6'
+// *****************************************************************************
+//
+// *****************************************************************************
 
-    compile 'log4j:log4j:1.2.17'
-    compile 'org.slf4j:slf4j-api:1.7.2'
-    compile 'org.slf4j:slf4j-ext:1.7.2'
-    compile 'org.slf4j:slf4j-log4j12:1.7.2'
-    compile 'org.slf4j:jcl-over-slf4j:1.7.2'
-    compile 'org.slf4j:jul-to-slf4j:1.7.2'
+subprojects {
 
-    compile 'com.google.guava:guava:13.0'
-    compile 'javolution:javolution:5.5.1'
-  
-    compile 'io.netty:netty:3.6.2.Final'
+    apply plugin: "java"
+    apply plugin: "maven"
+    apply plugin: "osgi"
 
-    compile fileTree(dir:'lib', include: '*.jar')
+    version      = '2.0.0.SNAPSHOT'
+    group        = 'org.quickfixj'
+
+    repositories {
+        maven { url "http://repo2.maven.org/maven2" }
+        maven { url "http://repo1.maven.org/maven2" }
+        maven { url "http://repo.springsource.org/release" }
+        maven { url "http://repo.springsource.org/libs-milestone" }
+        maven { url "http://repository.springsource.com/maven/bundles/release" }
+        maven { url "http://repository.springsource.com/maven/bundles/external" }
+        maven { url "http://oss.sonatype.org/content/groups/public" }
+
+        mavenLocal()
+    }
+
+    dependencies {
+        compile "org.apache.commons:commons-math3:3.2"
+        compile "org.apache.commons:commons-lang3:3.1"
+        compile "org.apache.commons:commons-compress:1.5"
+        compile "commons-io:commons-io:2.4"
+        compile "commons-codec:commons-codec:1.7"
+        compile "commons-collections:commons-collections:3.2.1"
+        compile "commons-dbcp:commons-dbcp:1.4"
+        compile "commons-dbutils:commons-dbutils:1.5"
+        compile "commons-lang:commons-lang:2.6"
+        compile "commons-logging:commons-logging:1.1.2"
+        compile "commons-pool:commons-pool:1.6"
+        compile "commons-net:commons-net:3.3"
+        compile "commons-cli:commons-cli:1.2"
+        compile "commons-configuration:commons-configuration:1.9"
+        compile "log4j:log4j:$log4jVersion"
+        compile "org.slf4j:slf4j-api:$slf4jVersion"
+        compile "org.slf4j:slf4j-ext:$slf4jVersion"
+        compile "org.slf4j:slf4j-log4j12:$slf4jVersion"
+        compile "org.slf4j:jcl-over-slf4j:$slf4jVersion"
+        compile "org.slf4j:jul-to-slf4j:$slf4jVersion"
+        compile "com.google.guava:guava:14.0.1"
+        compile "com.lmax:disruptor:3.2.0"
+        compile "org.javolution:javolution-core-java:6.0.0"   
+        compile "org.osgi:org.osgi.core:$osgiVersion"
+        compile "org.osgi:org.osgi.compendium:$osgiVersion"
+        compile "org.dom4j:com.springsource.org.dom4j:1.6.1"
+        compile "org.logicalcobwebs:com.springsource.org.logicalcobwebs.proxool:0.9.1"
+    }
+
+    jar {
+        baseName = "${group}-${project.name}"
+
+        manifest.attributes['Bundle-Description'     ] = "${group} :: ${project.name}"
+        manifest.attributes['Bundle-Name'            ] = "${group} :: ${project.name}"
+        manifest.attributes['Bundle-SymbolicName'    ] = "${group}-${project.name}"
+        manifest.attributes['Bundle-Version'         ] = project.version
+        manifest.attributes['Implementation-Title'   ] = "${group}-${project.name}-${project.version}"
+        manifest.attributes['Implementation-Version' ] = project.version
+        manifest.attributes['Implementation-Vendor'  ] = 'quickfixj'
+
+        manifest.classesDir = new File("$buildDir/classes/main")
+        manifest.classpath  = project.runtimeClasspath
+    }
 }
 
+// *****************************************************************************
+//
+// *****************************************************************************
+
+
+project('quickfixj-codegen') {
+    task generate(dependsOn: 'classes', type: JavaExec) {
+        main       = 'quickfix.codegen.MessageCodeGenerator'
+        classpath  = sourceSets.main.runtimeClasspath
+
+        jvmArgs    = [ 
+            "-Xms128m",
+            "-Xmx256m",
+            "-Dgenerator.decimal=$generatorDecimal",
+            "-Dgenerator.orderedFields=$generatorOrderedFields" 
+        ]
+
+        args       = [ 
+            "$mainResourcesDir",
+            "${projectDir}/src/main/java/quickfix/codegen",
+            "$mainGeneratedDir"
+        ]
+    }
+}
+
+
+project('quickfixj-core') {
+    dependencies {
+        compile "org.apache.mina:mina-core:1.1.7"
+        compile "org.apache.mina:mina-filter-ssl:1.1.7"
+        compile "com.sleepycat.je:com.springsource.com.sleepycat.je:2.1.30"
+    }
+
+    sourceSets.main.java.srcDirs "$mainGeneratedDir"
+}
+
+
+project('quickfixj-transport') {
+    dependencies {
+        compile project(':quickfixj-core')
+    }
+}
+
+
+project('quickfixj-transport-netty') {
+    dependencies {
+        compile project(':quickfixj-transport')
+
+        compile "io.netty:netty-common:$nettyVersion"
+        compile "io.netty:netty-buffer:$nettyVersion"
+        compile "io.netty:netty-transport:$nettyVersion"
+        compile "io.netty:netty-codec:$nettyVersion"
+        compile "io.netty:netty-codec-http:$nettyVersion"
+        compile "io.netty:netty-codec-socks:$nettyVersion"
+        compile "io.netty:netty-handler:$nettyVersion"
+    }
+}
+
+
+project('quickfixj-transport-reactor') {
+    dependencies {
+        compile project(':quickfixj-transport')
+
+        compile "org.projectreactor:reactor-core:$reactorVersion"
+        compile "org.projectreactor:reactor-tcp:$reactorVersion"
+    }
+}
+
+
+// *****************************************************************************
+//
+// *****************************************************************************
+
+task wrapper(type: Wrapper) {
+    gradleVersion = "$gradleVersion"
+}

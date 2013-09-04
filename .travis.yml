@@ -1,0 +1,10 @@
+anguage:
+  - java
+
+script:
+  - ./gradlew clean
+  - ./gradlew :quickfixj-codegen:generate
+  - ./gradlew build
+
+jdk:
+  - oraclejdk7

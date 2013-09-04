@@ -7,6 +7,7 @@
 
 classes/
 build/
+generated/
 .idea/
 .gradle/
 

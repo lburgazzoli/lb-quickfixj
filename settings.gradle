@@ -1,0 +1,7 @@
+
+include "quickfixj-codegen"
+include "quickfixj-core"
+include "quickfixj-transport"
+include "quickfixj-transport-netty"
+include "quickfixj-transport-reactor"
+
