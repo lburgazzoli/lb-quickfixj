@@ -181,7 +181,7 @@ public interface SessionAdminMBean {
     void logon();
     
     /**
-     * Send a test Request message
+     * Send a examples Request message
      */
     void sendTestRequest();
     /**

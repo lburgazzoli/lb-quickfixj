@@ -17,7 +17,7 @@
  * are not clear to you.
  ******************************************************************************/
 
-package quickfix.transport.netty.test;
+package quickfix.transport.netty.examples;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,7 +83,7 @@ public class NettyInitiatorMain {
             new NettySocketInitiator(sx).run();
 
         } catch(Exception e) {
-            LOGGEGR.warn("Exception",e);
+            LOGGEGR.warn("Exception", e);
         }
     }
 }

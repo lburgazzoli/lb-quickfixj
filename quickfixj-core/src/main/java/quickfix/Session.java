@@ -102,7 +102,7 @@ public class Session implements Closeable {
     public static final String SETTING_MAX_LATENCY = "MaxLatency";
 
     /**
-     * Session setting for the test delay multiplier (0-1, as fraction of Heartbeat interval)
+     * Session setting for the examples delay multiplier (0-1, as fraction of Heartbeat interval)
      */
     public static final String SETTING_TEST_REQUEST_DELAY_MULTIPLIER = "TestRequestDelayMultiplier";
 
@@ -1618,7 +1618,7 @@ public class Session implements Closeable {
             }
 
             // Handle poss dup where msgSeq is as expected
-            // FIX 4.4 Vol 2, test case 2f&g
+            // FIX 4.4 Vol 2, examples case 2f&g
             if (isPossibleDuplicate(msg) && !validatePossDup(msg)) {
                 return false;
             }
@@ -1794,7 +1794,7 @@ public class Session implements Closeable {
         } else {
             if (state.isTestRequestNeeded()) {
                 generateTestRequest("TEST");
-                getLog().onEvent("Sent test request TEST");
+                getLog().onEvent("Sent examples request TEST");
                 stateListener.onMissedHeartBeat();
             } else if (state.isHeartBeatNeeded()) {
                 generateHeartbeat();
@@ -1990,7 +1990,7 @@ public class Session implements Closeable {
         final int sequence = logon.getHeader().getInt(MsgSeqNum.FIELD);
 
         /*
-         * We test here that it's not too high (which would result in a resend) and that we are not 
+         * We examples here that it's not too high (which would result in a resend) and that we are not
          * resetting on logon 34=1
          */
         final boolean isLogonInNormalSequence = !(isTargetTooHigh(sequence) && !resetOnLogon);
@@ -2158,7 +2158,7 @@ public class Session implements Closeable {
                 generateSequenceReset(receivedMessage, begin, msgSeqNum + 1);
             } else
                 /*
-                 * I've added an else here as I managed to fail this without it in a unit test, however the unit test data
+                 * I've added an else here as I managed to fail this without it in a unit examples, however the unit examples data
                  * may not have been realistic to production on the other hand.
                  * Apart from the else
                  */
