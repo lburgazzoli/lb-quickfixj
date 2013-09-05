@@ -97,6 +97,7 @@ subprojects {
 
 
 project('quickfixj-codegen') {
+    /*
     task generate(dependsOn: 'classes', type: JavaExec) {
         main       = 'quickfix.codegen.MessageCodeGenerator'
         classpath  = sourceSets.main.runtimeClasspath
@@ -114,6 +115,7 @@ project('quickfixj-codegen') {
             "$mainGeneratedDir"
         ]
     }
+    */
 }
 
 
