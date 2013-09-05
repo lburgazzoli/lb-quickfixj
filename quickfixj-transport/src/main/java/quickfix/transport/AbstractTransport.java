@@ -101,6 +101,14 @@ public abstract class AbstractTransport implements ITransport {
 
     /**
      *
+     */
+    public void stop() {
+        setRunning(false);
+        disconnect();
+    }
+
+    /**
+     *
      * @param data
      * @return
      */

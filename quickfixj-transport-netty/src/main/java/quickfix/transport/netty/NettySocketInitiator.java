@@ -53,31 +53,23 @@ public class NettySocketInitiator extends AbstractTransport {
     /**
      *
      */
-    public void stop() {
-        setRunning(false);
-        disconnect();
-    }
-
-    /**
-     *
-     */
     @Override
     public void run() {
-        Bootstrap b = null;
+        Bootstrap boot = null;
 
         try {
-            b = new Bootstrap();
-            b.group(new NioEventLoopGroup());
-            b.channel(NioSocketChannel.class);
-            b.option(ChannelOption.SO_KEEPALIVE, true);
-            b.option(ChannelOption.TCP_NODELAY, true);
-            b.handler(new NettyChannelInitializer(getSession(), FIXSessionType.INITIATOR));
+            boot = new Bootstrap();
+            boot.group(new NioEventLoopGroup());
+            boot.channel(NioSocketChannel.class);
+            boot.option(ChannelOption.SO_KEEPALIVE, true);
+            boot.option(ChannelOption.TCP_NODELAY, true);
+            boot.handler(new NettyChannelInitializer(getSession(), FIXSessionType.INITIATOR));
 
             SessionID sid  = getSession().getSession().getSessionID();
-            String    host = getSession().getSettings().getString(sid,"SocketConnectHost");
+            String    host = getSession().getSettings().getString(sid, "SocketConnectHost");
             int       port = getSession().getSettings().getInt(sid, "SocketConnectPort");
 
-            ChannelFuture future = b.connect(new InetSocketAddress(host,port));
+            ChannelFuture future = boot.connect(new InetSocketAddress(host,port));
             Channel channel = future.awaitUninterruptibly().channel();
 
             setRunning(true);
@@ -100,7 +92,9 @@ public class NettySocketInitiator extends AbstractTransport {
         } catch(Exception e) {
             LOGGER.warn("Exception", e);
         } finally {
-            b.group().shutdownGracefully();
+            if(boot != null) {
+                boot.group().shutdownGracefully();
+            }
         }
     }
 }
