@@ -19,11 +19,11 @@
 
 package quickfix;
 
-import java.util.HashMap;
-
 import quickfix.field.SessionRejectReason;
 
-class SessionRejectReasonText extends SessionRejectReason {
+import java.util.HashMap;
+
+public class SessionRejectReasonText extends SessionRejectReason {
     private static HashMap<Integer, String> rejectReasonText = new HashMap<Integer, String>();
     
     static {

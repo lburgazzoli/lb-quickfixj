@@ -41,7 +41,7 @@ public class FIXMessageEncoder extends MessageToMessageEncoder<CharSequence> {
      * @param runtime
      */
     public FIXMessageEncoder(FIXRuntime runtime) {
-        this(runtime, CharsetUtil.UTF_8);
+        this(runtime, CharsetUtil.ISO_8859_1);
     }
 
     /**

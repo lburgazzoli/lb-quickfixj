@@ -645,11 +645,11 @@ public class Session implements Closeable {
         return session.send(message);
     }
 
-    static void registerSession(Session session) {
+    public static void registerSession(Session session) {
         sessions.put(session.getSessionID(), session);
     }
 
-    static void unregisterSessions(List<SessionID> sessionIds) {
+    public static void unregisterSessions(List<SessionID> sessionIds) {
         for (final SessionID sessionId : sessionIds) {
             final Session session = sessions.remove(sessionId);
             if (session != null) {

@@ -22,6 +22,7 @@ package quickfix.transport.netty.codec;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
+import io.netty.util.CharsetUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import quickfix.InvalidMessage;
@@ -52,7 +53,7 @@ public class FIXMessageDecoder extends ByteToMessageDecoder {
      * @param runtime
      */
     public FIXMessageDecoder(FIXRuntime runtime) {
-        this(runtime,"US-ASCII");
+        this(runtime, CharsetUtil.ISO_8859_1);
     }
 
     /**
@@ -62,8 +63,18 @@ public class FIXMessageDecoder extends ByteToMessageDecoder {
      * @param runtime
      */
     public FIXMessageDecoder(FIXRuntime runtime,String charset) {
+        this(runtime,Charset.forName(charset));
+    }
+
+    /**
+     * c-tor
+     *
+     * @param charset
+     * @param runtime
+     */
+    public FIXMessageDecoder(FIXRuntime runtime,Charset charset) {
         m_runtime = runtime;
-        m_charset = Charset.forName(charset);
+        m_charset = charset;
     }
 
     /**
