@@ -17,7 +17,7 @@
  * are not clear to you.
  ******************************************************************************/
 
-package quickfix.transport.netty.examples;
+package quickfix.examples;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
