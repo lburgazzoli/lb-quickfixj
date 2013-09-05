@@ -3,7 +3,6 @@ anguage:
 
 script:
   - ./gradlew clean
-  - ./gradlew :quickfixj-codegen:generate
   - ./gradlew build
 
 jdk:
