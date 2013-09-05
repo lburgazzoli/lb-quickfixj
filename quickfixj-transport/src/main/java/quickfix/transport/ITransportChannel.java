@@ -19,10 +19,26 @@
 
 package quickfix.transport;
 
-import quickfix.Responder;
-
 /**
  *
  */
-public interface ITransportSupport extends Runnable, Responder {
+public interface ITransportChannel {
+
+    /**
+     *
+     * @param data
+     * @return
+     */
+    public boolean send(String data);
+
+    /**
+     *
+     */
+    public boolean disconnect();
+
+    /**
+     *
+     * @return
+     */
+    public String getRemoteIPAddress();
 }

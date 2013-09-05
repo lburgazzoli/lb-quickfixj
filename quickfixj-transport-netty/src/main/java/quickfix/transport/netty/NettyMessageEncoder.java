@@ -17,7 +17,7 @@
  * are not clear to you.
  ******************************************************************************/
 
-package quickfix.transport.netty.codec;
+package quickfix.transport.netty;
 
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
@@ -31,7 +31,7 @@ import java.util.List;
 /**
  *
  */
-public class FIXMessageEncoder extends MessageToMessageEncoder<CharSequence> {
+public final class NettyMessageEncoder extends MessageToMessageEncoder<CharSequence> {
     private final Charset m_charset;
     private final FIXRuntime m_runtime;
 
@@ -40,7 +40,7 @@ public class FIXMessageEncoder extends MessageToMessageEncoder<CharSequence> {
      *
      * @param runtime
      */
-    public FIXMessageEncoder(FIXRuntime runtime) {
+    public NettyMessageEncoder(FIXRuntime runtime) {
         this(runtime, CharsetUtil.ISO_8859_1);
     }
 
@@ -50,10 +50,14 @@ public class FIXMessageEncoder extends MessageToMessageEncoder<CharSequence> {
      * @param charset
      * @param runtime
      */
-    public FIXMessageEncoder(FIXRuntime runtime,Charset charset) {
+    public NettyMessageEncoder(FIXRuntime runtime, Charset charset) {
         m_runtime = runtime;
         m_charset = charset;
     }
+
+    // *************************************************************************
+    //
+    // *************************************************************************
 
     /**
      *

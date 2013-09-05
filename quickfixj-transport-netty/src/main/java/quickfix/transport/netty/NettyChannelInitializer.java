@@ -21,18 +21,15 @@ package quickfix.transport.netty;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
-import quickfix.transport.FIXSession;
+import quickfix.transport.FIXSessionHelper;
 import quickfix.transport.FIXSessionType;
-import quickfix.transport.netty.codec.FIXChannelHandler;
-import quickfix.transport.netty.codec.FIXMessageDecoder;
-import quickfix.transport.netty.codec.FIXMessageEncoder;
 
 /**
  *
  */
-public class FIXChannelInitializer extends ChannelInitializer {
+public class NettyChannelInitializer extends ChannelInitializer {
 
-    private final FIXSession m_session;
+    private final FIXSessionHelper m_session;
     private final FIXSessionType m_sessionType;
 
     /**
@@ -41,15 +38,15 @@ public class FIXChannelInitializer extends ChannelInitializer {
      * @param session
      * @param sessionType
      */
-    public FIXChannelInitializer(FIXSession session, FIXSessionType sessionType) {
+    public NettyChannelInitializer(FIXSessionHelper session, FIXSessionType sessionType) {
         m_session = session;
         m_sessionType = sessionType;
     }
 
     @Override
     protected void initChannel(Channel ch) throws Exception {
-        ch.pipeline().addLast("decoder",new FIXMessageDecoder(m_session.getRuntime()));
-        ch.pipeline().addLast("encoder",new FIXMessageEncoder(m_session.getRuntime()));
-        ch.pipeline().addLast("handler",new FIXChannelHandler(m_session,m_sessionType));
+        ch.pipeline().addLast("decoder",new NettyMessageDecoder(m_session.getRuntime()));
+        ch.pipeline().addLast("encoder",new NettyMessageEncoder(m_session.getRuntime()));
+        ch.pipeline().addLast("handler",new NettyChannelHandler(m_session,m_sessionType));
     }
 }

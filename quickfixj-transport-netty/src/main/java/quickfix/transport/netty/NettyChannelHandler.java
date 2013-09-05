@@ -17,30 +17,33 @@
  * are not clear to you.
  ******************************************************************************/
 
-package quickfix.transport.netty.codec;
+package quickfix.transport.netty;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.util.AttributeKey;
 import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import quickfix.transport.FIXMessageEvent;
-import quickfix.transport.FIXSession;
+import quickfix.transport.FIXMessageEventQueue;
+import quickfix.transport.FIXSessionHelper;
 import quickfix.transport.FIXSessionType;
-import quickfix.transport.util.AbstractEventQueue;
-import quickfix.transport.util.IEventQueue;
 
 /**
  *
  */
-public class FIXChannelHandler extends SimpleChannelInboundHandler<FIXMessageEvent> {
+public final class NettyChannelHandler extends SimpleChannelInboundHandler<FIXMessageEvent> {
 
     private static final Logger LOGGER =
-        LoggerFactory.getLogger(FIXChannelHandler.class);
+        LoggerFactory.getLogger(NettyChannelHandler.class);
 
     private final FIXSessionType m_sessionType;
-    private final FIXSession m_session;
-    private final IEventQueue<FIXMessageEvent> m_eventQueue;
+    private final FIXSessionHelper m_session;
+    private final FIXMessageEventQueue m_eventQueue;
+
+    private static final AttributeKey<FIXSessionType> ATTR_SESSION_TYPE =
+        new AttributeKey<FIXSessionType>("Session.Type");
 
     /**
      * c-tor
@@ -48,17 +51,10 @@ public class FIXChannelHandler extends SimpleChannelInboundHandler<FIXMessageEve
      * @param session
      * @param sessionType
      */
-    public FIXChannelHandler(FIXSession session,FIXSessionType sessionType) {
+    public NettyChannelHandler(FIXSessionHelper session, FIXSessionType sessionType) {
         m_session     = session;
         m_sessionType = sessionType;
-
-        m_eventQueue  = new AbstractEventQueue<FIXMessageEvent>() {
-            @Override
-            public boolean process(FIXMessageEvent data) {
-                data.processMessage();
-                return true;
-            }
-        };
+        m_eventQueue  = new FIXMessageEventQueue();
     }
 
     // *************************************************************************
@@ -66,14 +62,18 @@ public class FIXChannelHandler extends SimpleChannelInboundHandler<FIXMessageEve
     // *************************************************************************
 
     @Override
+    public void channelRegistered(ChannelHandlerContext ctx) {
+        ctx.attr(ATTR_SESSION_TYPE).set(m_sessionType);
+        ctx.fireChannelRegistered();
+    }
+
+    @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         if(!m_eventQueue.isRunning()) {
-
             m_eventQueue.start();
 
             if(m_sessionType == FIXSessionType.INITIATOR) {
                 m_session.getSession().logon();
-                m_session.getSession().next();
                 m_session.startSessionTimer();
             }
         }

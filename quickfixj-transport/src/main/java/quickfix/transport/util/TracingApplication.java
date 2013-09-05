@@ -17,7 +17,7 @@
  * are not clear to you.
  ******************************************************************************/
 
-package quickfix.transport.netty.test;
+package quickfix.transport.util;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,9 +34,9 @@ import quickfix.UnsupportedMessageType;
 /**
  *
  */
-public class FIXApplication implements Application {
+public class TracingApplication implements Application {
     private static final Logger LOGEGR =
-        LoggerFactory.getLogger(FIXApplication.class);
+        LoggerFactory.getLogger(TracingApplication.class);
 
     @Override
     public void onCreate(SessionID sessionID) {

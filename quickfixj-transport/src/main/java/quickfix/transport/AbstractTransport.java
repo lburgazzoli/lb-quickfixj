@@ -17,38 +17,33 @@
  * are not clear to you.
  ******************************************************************************/
 
-package quickfix.transport.netty;
+package quickfix.transport;
 
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import quickfix.transport.FIXRuntime;
-import quickfix.transport.FIXSession;
-import quickfix.transport.ITransportSupport;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  *
  */
-public abstract class AbstractTransportSupport implements ITransportSupport {
+public abstract class AbstractTransport implements ITransport {
 
     private static Logger LOGGER =
-        LoggerFactory.getLogger(AbstractTransportSupport.class);
+        LoggerFactory.getLogger(AbstractTransport.class);
 
     private final FIXRuntime m_runtime;
-    private final FIXSession m_session;
+    private final FIXSessionHelper m_session;
     private final AtomicBoolean m_running;
 
-    private Channel m_channel;
+    private ITransportChannel m_channel;
 
     /**
      * c-tor
      *
      * @param runtime
      */
-    public AbstractTransportSupport(FIXRuntime runtime,FIXSession session) {
+    public AbstractTransport(FIXRuntime runtime, FIXSessionHelper session) {
         m_channel = null;
         m_runtime = runtime;
         m_running = new AtomicBoolean(false);
@@ -69,7 +64,7 @@ public abstract class AbstractTransportSupport implements ITransportSupport {
      *
      * @return
      */
-    protected FIXSession getSession() {
+    protected FIXSessionHelper getSession() {
         return m_session;
     }
 
@@ -93,7 +88,7 @@ public abstract class AbstractTransportSupport implements ITransportSupport {
      *
      * @return
      */
-    protected Channel getChanngel() {
+    protected ITransportChannel getChannel() {
         return m_channel;
     }
 
@@ -101,7 +96,7 @@ public abstract class AbstractTransportSupport implements ITransportSupport {
      *
      * @param channel
      */
-    protected void setChannel(Channel channel) {
+    protected void setChannel(ITransportChannel channel) {
         m_channel = channel;
     }
 
@@ -113,14 +108,7 @@ public abstract class AbstractTransportSupport implements ITransportSupport {
     @Override
     public boolean send(String data) {
         if(m_channel != null) {
-            ChannelFuture future = m_channel.write(data);
-            future.awaitUninterruptibly();
-
-            if (!future.isSuccess()) {
-                LOGGER.warn("Error sending message");
-            }
-
-            return future.isSuccess();
+            return m_channel.send(data);
         }
 
         return false;
@@ -134,8 +122,7 @@ public abstract class AbstractTransportSupport implements ITransportSupport {
         if(m_channel != null && isRunning()) {
             setRunning(false);
 
-            m_channel.disconnect().awaitUninterruptibly(5000L);
-            m_channel.close().awaitUninterruptibly();
+            m_channel.disconnect();
             m_channel = null;
         }
     }
@@ -146,6 +133,6 @@ public abstract class AbstractTransportSupport implements ITransportSupport {
      */
     @Override
     public String getRemoteIPAddress() {
-        return m_channel != null ? m_channel.remoteAddress().toString() : null;
+        return m_channel != null ? m_channel.getRemoteIPAddress() : null;
     }
 }

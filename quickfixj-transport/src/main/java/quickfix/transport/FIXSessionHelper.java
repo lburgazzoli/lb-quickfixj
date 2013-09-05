@@ -22,6 +22,7 @@ package quickfix.transport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import quickfix.Session;
+import quickfix.SessionSettings;
 
 import java.io.IOException;
 import java.util.concurrent.ScheduledFuture;
@@ -30,8 +31,8 @@ import java.util.concurrent.TimeUnit;
 /**
  *
  */
-public class FIXSession {
-    private static final Logger LOGGER = LoggerFactory.getLogger(FIXSession.class);
+public class FIXSessionHelper {
+    private static final Logger LOGGER = LoggerFactory.getLogger(FIXSessionHelper.class);
 
     /**
      *
@@ -50,6 +51,7 @@ public class FIXSession {
 
     private final FIXRuntime m_runtime;
     private final Session m_session;
+    private final SessionSettings m_settings;
 
     private ScheduledFuture<?> m_taskFuture;
 
@@ -58,10 +60,12 @@ public class FIXSession {
      *
      * @param runtime
      * @param session
+     * @param settings
      */
-    public FIXSession(FIXRuntime runtime,Session session) {
+    public FIXSessionHelper(FIXRuntime runtime, Session session, SessionSettings settings) {
         m_runtime    = runtime;
         m_session    = session;
+        m_settings   = settings;
         m_taskFuture = null;
     }
 
@@ -79,6 +83,14 @@ public class FIXSession {
      */
     public Session getSession() {
         return m_session;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public SessionSettings getSettings() {
+        return m_settings;
     }
 
     /**

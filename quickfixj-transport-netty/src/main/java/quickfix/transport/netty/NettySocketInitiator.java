@@ -27,8 +27,9 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import quickfix.transport.FIXRuntime;
-import quickfix.transport.FIXSession;
+import quickfix.SessionID;
+import quickfix.transport.AbstractTransport;
+import quickfix.transport.FIXSessionHelper;
 import quickfix.transport.FIXSessionType;
 
 import java.net.InetSocketAddress;
@@ -36,25 +37,17 @@ import java.net.InetSocketAddress;
 /**
  *
  */
-public class FIXSocketInitiator extends AbstractTransportSupport {
+public class NettySocketInitiator extends AbstractTransport {
     private static Logger LOGGER =
-        LoggerFactory.getLogger(FIXSocketInitiator.class);
-
-    private String m_host;
-    private int m_port;
+        LoggerFactory.getLogger(NettySocketInitiator.class);
 
     /**
      * c-tor
      *
-     * @param runtime
      * @param session
-     * @param host
-     * @param port
      */
-    public FIXSocketInitiator(FIXRuntime runtime, FIXSession session,String host, int port) {
-        super(runtime,session);
-        m_host = host;
-        m_port = port;
+    public NettySocketInitiator(FIXSessionHelper session) {
+        super(session.getRuntime(),session);
     }
 
     /**
@@ -78,9 +71,13 @@ public class FIXSocketInitiator extends AbstractTransportSupport {
             b.channel(NioSocketChannel.class);
             b.option(ChannelOption.SO_KEEPALIVE, true);
             b.option(ChannelOption.TCP_NODELAY, true);
-            b.handler(new FIXChannelInitializer(getSession(), FIXSessionType.INITIATOR));
+            b.handler(new NettyChannelInitializer(getSession(), FIXSessionType.INITIATOR));
 
-            ChannelFuture future = b.connect(new InetSocketAddress(m_host,m_port));
+            SessionID sid  = getSession().getSession().getSessionID();
+            String    host = getSession().getSettings().getString(sid,"SocketConnectHost");
+            int       port = getSession().getSettings().getInt(sid, "SocketConnectPort");
+
+            ChannelFuture future = b.connect(new InetSocketAddress(host,port));
             Channel channel = future.awaitUninterruptibly().channel();
 
             setRunning(true);
@@ -89,7 +86,7 @@ public class FIXSocketInitiator extends AbstractTransportSupport {
                 LOGGER.warn("Error", future.cause());
             } else {
                 try {
-                    setChannel(channel);
+                    setChannel(new NettyChannel(channel));
                     setRunning(true);
                     while(isRunning()) {
                         try{ Thread.sleep(5000); } catch(Exception e) {}
@@ -100,6 +97,8 @@ public class FIXSocketInitiator extends AbstractTransportSupport {
 
                 disconnect();
             }
+        } catch(Exception e) {
+            LOGGER.warn("Exception", e);
         } finally {
             b.group().shutdownGracefully();
         }

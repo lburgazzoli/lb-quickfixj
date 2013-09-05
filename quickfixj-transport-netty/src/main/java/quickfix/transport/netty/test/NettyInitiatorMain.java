@@ -32,26 +32,26 @@ import quickfix.SLF4JLogFactory;
 import quickfix.SessionID;
 import quickfix.SessionSettings;
 import quickfix.transport.FIXRuntime;
-import quickfix.transport.FIXSession;
-import quickfix.transport.netty.FIXSocketInitiator;
+import quickfix.transport.FIXSessionHelper;
+import quickfix.transport.netty.NettySocketInitiator;
+import quickfix.transport.util.TracingApplication;
 
 /**
  *
  */
-public class FIXInitiatorMain {
-    private static final Logger LOGGEGR = LoggerFactory.getLogger(FIXInitiatorMain.class);
+public class NettyInitiatorMain {
+    private static final Logger LOGGEGR = LoggerFactory.getLogger(NettyInitiatorMain.class);
 
     /**
-     *
      * @param sid
      * @return
      */
     public static SessionSettings getSettingsFor(SessionID sid) {
         SessionSettings cfg  = new SessionSettings();
         cfg.setString(sid,"ConnectionType","initiator");
-        cfg.setString(sid,"BeginString","FIX.4.2");
-        cfg.setString(sid,"SenderCompID","TEXT");
-        cfg.setString(sid,"TargetCompID","EXEC");
+        cfg.setString(sid,"BeginString",sid.getBeginString());
+        cfg.setString(sid,"SenderCompID",sid.getSenderCompID());
+        cfg.setString(sid,"TargetCompID",sid.getTargetCompID());
         cfg.setString(sid,"ReconnectInterval","30");
         cfg.setString(sid,"HeartBtInt","30");
         cfg.setString(sid,"SocketConnectPort","6543");
@@ -70,21 +70,17 @@ public class FIXInitiatorMain {
      */
     public static void main(String[] args) {
         try {
-
             SessionID             sid  = new SessionID("FIX.4.2","TEST","EXEC");
             SessionSettings       cfg  = getSettingsFor(sid);
-            Application           app  = new FIXApplication();
+            Application           app  = new TracingApplication();
             MessageStoreFactory   msf  = new MemoryStoreFactory();
             LogFactory            logf = new SLF4JLogFactory(cfg);
             MessageFactory        msgf = new DefaultMessageFactory();
             DefaultSessionFactory dsf  = new DefaultSessionFactory(app,msf,logf,msgf);
             FIXRuntime            rt   = new FIXRuntime();
+            FIXSessionHelper      sx   = new FIXSessionHelper(rt,dsf.create(sid,cfg),cfg);
 
-            new FIXSocketInitiator(
-                rt,
-                new FIXSession(rt,dsf.create(sid,cfg)),
-                cfg.getString(sid,"SocketConnectHost"),
-                cfg.getInt(sid,"SocketConnectPort")).run();
+            new NettySocketInitiator(sx).run();
 
         } catch(Exception e) {
             LOGGEGR.warn("Exception",e);
