@@ -17,7 +17,7 @@
  * are not clear to you.
  ******************************************************************************/
 
-package quickfix.transport.util;
+package quickfix.ext.util;
 
 import java.util.concurrent.ThreadFactory;
 

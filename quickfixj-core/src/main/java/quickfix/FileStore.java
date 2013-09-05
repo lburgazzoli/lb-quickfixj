@@ -19,6 +19,10 @@
 
 package quickfix;
 
+import org.quickfixj.CharsetSupport;
+import quickfix.ext.IFIXContext;
+import quickfix.field.converter.UtcTimestampConverter;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.Closeable;
@@ -37,10 +41,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeMap;
 
-import org.quickfixj.CharsetSupport;
-
-import quickfix.field.converter.UtcTimestampConverter;
-
 /**
  * File store implementation. THIS CLASS IS PUBLIC ONLY TO MAINTAIN
  * COMPATIBILITY WITH THE QUICKFIX JNI. IT SHOULD ONLY BE CREATED USING A
@@ -55,7 +55,8 @@ public class FileStore implements MessageStore, Closeable {
     private static final String NOSYNC_OPTION = "";
 
     private final TreeMap<Long, long[]> messageIndex;
-    private final MemoryStore cache = new MemoryStore();
+    private final MemoryStore cache;
+    private final IFIXContext context;
 
     private final String msgFileName;
     private final String headerFileName;
@@ -72,10 +73,12 @@ public class FileStore implements MessageStore, Closeable {
     private RandomAccessFile senderSequenceNumberFile;
     private RandomAccessFile targetSequenceNumberFile;
 
-    FileStore(String path, SessionID sessionID, boolean syncWrites, int maxCachedMsgs)
+    FileStore(IFIXContext context,String path, SessionID sessionID, boolean syncWrites, int maxCachedMsgs)
             throws IOException {
         this.syncWrites = syncWrites;
         this.maxCachedMsgs = maxCachedMsgs;
+        this.context = context;
+        this.cache = new MemoryStore(context);
 
         if (maxCachedMsgs > 0) {
             messageIndex = new TreeMap<Long, long[]>();

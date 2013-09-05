@@ -26,34 +26,34 @@ import quickfix.MessageFactory;
 import quickfix.MessageStoreFactory;
 import quickfix.RuntimeError;
 import quickfix.ScreenLogFactory;
-import quickfix.Session;
 import quickfix.SessionFactory;
 import quickfix.SessionSettings;
+import quickfix.ext.IFIXContext;
 import quickfix.transport.mina.initiator.AbstractSocketInitiator;
 
 /**
  * Initiates connections and uses a separate thread per session to process messages.
  */
 public class ThreadedSocketInitiator extends AbstractSocketInitiator {
-    private final ThreadPerSessionEventHandlingStrategy eventHandlingStrategy = new ThreadPerSessionEventHandlingStrategy(
-            this);
+    private final ThreadPerSessionEventHandlingStrategy eventHandlingStrategy =
+        new ThreadPerSessionEventHandlingStrategy(this);
 
-    public ThreadedSocketInitiator(Application application,
+    public ThreadedSocketInitiator(final IFIXContext context,Application application,
             MessageStoreFactory messageStoreFactory, SessionSettings settings,
             LogFactory logFactory, MessageFactory messageFactory) throws ConfigError {
-        super(application, messageStoreFactory, settings, logFactory, messageFactory);
+        super(context,application, messageStoreFactory, settings, logFactory, messageFactory);
     }
 
-    public ThreadedSocketInitiator(Application application,
+    public ThreadedSocketInitiator(final IFIXContext context,Application application,
             MessageStoreFactory messageStoreFactory, SessionSettings settings,
             MessageFactory messageFactory) throws ConfigError {
-        super(application, messageStoreFactory, settings, new ScreenLogFactory(settings),
+        super(context,application, messageStoreFactory, settings, new ScreenLogFactory(settings),
                 messageFactory);
     }
 
-    public ThreadedSocketInitiator(SessionFactory sessionFactory, SessionSettings settings)
+    public ThreadedSocketInitiator(final IFIXContext context,SessionFactory sessionFactory, SessionSettings settings)
             throws ConfigError {
-        super(settings, sessionFactory);
+        super(context,settings, sessionFactory);
     }
 
     public void start() throws ConfigError, RuntimeError {
@@ -72,7 +72,7 @@ public class ThreadedSocketInitiator extends AbstractSocketInitiator {
             waitForLogout();
         }
         eventHandlingStrategy.stopDispatcherThreads();
-        Session.unregisterSessions(getSessions());
+        getContext().removeSessions(getSessions());
     }
 
     public void block() throws ConfigError, RuntimeError {

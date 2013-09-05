@@ -25,8 +25,6 @@ package quickfix;
  * connection. This interface is used by Acceptor or Initiator implementations.
  * 
  * @see quickfix.Session
- * @see quickfix.Acceptor
- * @see quickfix.Initiator
  */
 public interface Responder {
     /**

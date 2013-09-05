@@ -19,16 +19,16 @@
 
 package quickfix.transport.mina;
 
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
-
 import quickfix.FieldNotFound;
 import quickfix.LogUtil;
 import quickfix.Message;
 import quickfix.Session;
 import quickfix.SystemTime;
 import quickfix.field.MsgType;
+
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Processes messages for all sessions in a single thread.
@@ -121,7 +121,7 @@ public class SingleThreadedEventHandlingStrategy implements EventHandlingStrateg
                     }
                 }
             } catch (Throwable e) {
-                LogUtil.logThrowable(quickfixSession.getSessionID(), e.getMessage(), e);
+                LogUtil.logThrowable(quickfixSession,e.getMessage(), e);
             }
         }
     }

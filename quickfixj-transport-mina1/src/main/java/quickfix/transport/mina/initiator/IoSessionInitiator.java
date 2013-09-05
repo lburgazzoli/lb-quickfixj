@@ -33,6 +33,7 @@ import quickfix.ConfigError;
 import quickfix.LogUtil;
 import quickfix.Session;
 import quickfix.SystemTime;
+import quickfix.ext.IFIXContext;
 import quickfix.transport.mina.CompositeIoFilterChainBuilder;
 import quickfix.transport.mina.EventHandlingStrategy;
 import quickfix.transport.mina.NetworkingOptions;

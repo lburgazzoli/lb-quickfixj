@@ -82,7 +82,7 @@ public class FIXMessageEvent {
                 }
             }
         } catch (Throwable e) {
-            LogUtil.logThrowable(m_session.getSessionID(), e.getMessage(), e);
+            LogUtil.logThrowable(m_session,e.getMessage(), e);
         }
     }
 }

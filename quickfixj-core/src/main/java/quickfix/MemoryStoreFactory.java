@@ -20,6 +20,8 @@
 
 package quickfix;
 
+import quickfix.ext.IFIXContext;
+
 import java.io.IOException;
 
 /**
@@ -28,10 +30,21 @@ import java.io.IOException;
  * @see MessageStore
  */
 public class MemoryStoreFactory implements MessageStoreFactory {
+    private final IFIXContext context;
 
+    /**
+     * c-tor
+     *
+     * @param context
+     */
+    public MemoryStoreFactory(IFIXContext context) {
+        this.context = context;
+    }
+
+    @Override
 	public MessageStore create(SessionID sessionID) {
 		try {
-            return new MemoryStore();
+            return new MemoryStore(context);
         } catch (IOException e) {
             throw new RuntimeError(e);
         }

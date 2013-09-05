@@ -19,6 +19,14 @@
 
 package quickfix;
 
+import org.logicalcobwebs.proxool.ProxoolDataSource;
+import org.quickfixj.QFJException;
+import org.slf4j.LoggerFactory;
+import quickfix.ext.IFIXContext;
+
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.sql.DataSource;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -27,14 +35,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.sql.DataSource;
-
-import org.logicalcobwebs.proxool.ProxoolDataSource;
-import org.quickfixj.QFJException;
-import org.slf4j.LoggerFactory;
 
 class JdbcUtil {
 
@@ -127,32 +127,32 @@ class JdbcUtil {
         }
     }
 
-    static void close(SessionID sessionID, Connection connection) {
+    static void close(IFIXContext context,SessionID sessionID, Connection connection) {
         if (connection != null) {
             try {
                 connection.close();
             } catch (SQLException e) {
-                LogUtil.logThrowable(sessionID, e.getMessage(), e);
+                LogUtil.logThrowable(context,sessionID, e.getMessage(), e);
             }
         }
     }
 
-    static void close(SessionID sessionID, PreparedStatement statement) {
+    static void close(IFIXContext context,SessionID sessionID, PreparedStatement statement) {
         if (statement != null) {
             try {
                 statement.close();
             } catch (SQLException e) {
-                LogUtil.logThrowable(sessionID, e.getMessage(), e);
+                LogUtil.logThrowable(context,sessionID, e.getMessage(), e);
             }
         }
     }
 
-    static void close(SessionID sessionID, ResultSet rs) {
+    static void close(IFIXContext context,SessionID sessionID, ResultSet rs) {
         if (rs != null) {
             try {
                 rs.close();
             } catch (SQLException e) {
-                LogUtil.logThrowable(sessionID, e.getMessage(), e);
+                LogUtil.logThrowable(context,sessionID, e.getMessage(), e);
             }
         }
     }

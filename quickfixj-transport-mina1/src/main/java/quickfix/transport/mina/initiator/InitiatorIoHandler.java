@@ -20,7 +20,6 @@
 package quickfix.transport.mina.initiator;
 
 import org.apache.mina.common.IoSession;
-
 import quickfix.Message;
 import quickfix.Session;
 import quickfix.transport.mina.AbstractIoHandler;
@@ -35,7 +34,7 @@ class InitiatorIoHandler extends AbstractIoHandler {
 
     public InitiatorIoHandler(Session quickfixSession, NetworkingOptions networkingOptions,
             EventHandlingStrategy eventHandlingStrategy) {
-        super(networkingOptions);
+        super(quickfixSession.getContext(),networkingOptions);
         this.quickfixSession = quickfixSession;
         this.eventHandlingStrategy = eventHandlingStrategy;
     }

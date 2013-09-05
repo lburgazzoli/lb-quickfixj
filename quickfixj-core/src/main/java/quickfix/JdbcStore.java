@@ -19,22 +19,30 @@
 
 package quickfix;
 
-import static quickfix.JdbcSetting.*;
+import quickfix.ext.IFIXContext;
 
+import javax.sql.DataSource;
 import java.io.IOException;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.TimeZone;
 
-import javax.sql.DataSource;
+import static quickfix.JdbcSetting.SETTING_JDBC_SESSION_ID_DEFAULT_PROPERTY_VALUE;
+import static quickfix.JdbcSetting.SETTING_JDBC_STORE_MESSAGES_TABLE_NAME;
+import static quickfix.JdbcSetting.SETTING_JDBC_STORE_SESSIONS_TABLE_NAME;
 
 class JdbcStore implements MessageStore {
     private final static String DEFAULT_SESSION_TABLE_NAME = "sessions";
     private final static String DEFAULT_MESSAGE_TABLE_NAME = "messages";
 
-    private final MemoryStore cache = new MemoryStore();
+    private final MemoryStore cache;
+    private final IFIXContext context;
     private final boolean extendedSessionIdSupported;
     private final DataSource dataSource;
     private final SessionID sessionID;
@@ -51,8 +59,11 @@ class JdbcStore implements MessageStore {
     private String SQL_UPDATE_SESSION;
     private String SQL_DELETE_MESSAGES;
 
-    public JdbcStore(SessionSettings settings, SessionID sessionID, DataSource ds) throws Exception {
+    public JdbcStore(IFIXContext context,SessionSettings settings, SessionID sessionID, DataSource ds) throws Exception {
         this.sessionID = sessionID;
+        this.context = context;
+        this.cache = new MemoryStore(context);
+
         if (settings.isSetting(sessionID, SETTING_JDBC_STORE_SESSIONS_TABLE_NAME)) {
             sessionTableName = settings
                     .getString(sessionID, SETTING_JDBC_STORE_SESSIONS_TABLE_NAME);
@@ -139,10 +150,10 @@ class JdbcStore implements MessageStore {
                 insert.execute();
             }
         } finally {
-            JdbcUtil.close(sessionID, rs);
-            JdbcUtil.close(sessionID, query);
-            JdbcUtil.close(sessionID, insert);
-            JdbcUtil.close(sessionID, connection);
+            JdbcUtil.close(context,sessionID, rs);
+            JdbcUtil.close(context,sessionID, query);
+            JdbcUtil.close(context,sessionID, insert);
+            JdbcUtil.close(context,sessionID, connection);
         }
     }
 
@@ -196,9 +207,9 @@ class JdbcStore implements MessageStore {
         } catch (IOException e) {
             throw e;
         } finally {
-            JdbcUtil.close(sessionID, deleteMessages);
-            JdbcUtil.close(sessionID, updateTime);
-            JdbcUtil.close(sessionID, connection);
+            JdbcUtil.close(context,sessionID, deleteMessages);
+            JdbcUtil.close(context,sessionID, updateTime);
+            JdbcUtil.close(context,sessionID, connection);
         }
     }
 
@@ -221,9 +232,9 @@ class JdbcStore implements MessageStore {
         } catch (SQLException e) {
             throw (IOException) new IOException(e.getMessage()).initCause(e);
         } finally {
-            JdbcUtil.close(sessionID, rs);
-            JdbcUtil.close(sessionID, query);
-            JdbcUtil.close(sessionID, connection);
+            JdbcUtil.close(context,sessionID, rs);
+            JdbcUtil.close(context,sessionID, query);
+            JdbcUtil.close(context,sessionID, connection);
         }
     }
 
@@ -251,13 +262,13 @@ class JdbcStore implements MessageStore {
                 } catch (SQLException e) {
                     throw (IOException) new IOException(e.getMessage()).initCause(e);
                 } finally {
-                    JdbcUtil.close(sessionID, update);
+                    JdbcUtil.close(context,sessionID, update);
                 }
             }
         } finally {
-            JdbcUtil.close(sessionID, rs);
-            JdbcUtil.close(sessionID, insert);
-            JdbcUtil.close(sessionID, connection);
+            JdbcUtil.close(context,sessionID, rs);
+            JdbcUtil.close(context,sessionID, insert);
+            JdbcUtil.close(context,sessionID, connection);
         }
         return true;
     }
@@ -285,8 +296,8 @@ class JdbcStore implements MessageStore {
         } catch (SQLException e) {
             throw (IOException) new IOException(e.getMessage()).initCause(e);
         } finally {
-            JdbcUtil.close(sessionID, update);
-            JdbcUtil.close(sessionID, connection);
+            JdbcUtil.close(context,sessionID, update);
+            JdbcUtil.close(context,sessionID, connection);
         }
     }
 

@@ -19,11 +19,12 @@
 
 package quickfix;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import quickfix.ext.IFIXContext;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 /**
  * Utilities for logging session-related events.
@@ -49,13 +50,11 @@ public class LogUtil {
 
     /**
      * Logs a throwable as a session event, including the stack trace.
-     * 
-     * @param sessionID the session ID
+     *
      * @param message the error message
      * @param t the exception to log
      */
-    public static void logThrowable(SessionID sessionID, String message, Throwable t) {
-        final Session session = Session.lookupSession(sessionID);
+    public static void logThrowable(Session session, String message, Throwable t) {
         if (session != null) {
             logThrowable(session.getLog(), message, t);
         } else {
@@ -64,6 +63,17 @@ public class LogUtil {
             // we log the message, so this is the fallback logging.
             log.error(message, t);
         }
+    }
+
+    /**
+     * Logs a throwable as a session event, including the stack trace.
+     * 
+     * @param sessionID the session ID
+     * @param message the error message
+     * @param t the exception to log
+     */
+    public static void logThrowable(IFIXContext context,SessionID sessionID, String message, Throwable t) {
+        logThrowable(context.getSession(sessionID),message,t);
     }
     
 }

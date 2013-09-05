@@ -47,7 +47,7 @@ public class NettySocketInitiator extends AbstractTransport {
      * @param session
      */
     public NettySocketInitiator(FIXSessionHelper session) {
-        super(session.getRuntime(),session);
+        super(session);
     }
 
     /**

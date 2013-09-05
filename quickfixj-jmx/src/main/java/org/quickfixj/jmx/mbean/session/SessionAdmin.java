@@ -196,7 +196,7 @@ public class SessionAdmin extends NotificationBroadcasterSupport implements Sess
 
     /** Helper method to be overridden by tests  that handles sending out the message */
     protected void doSend(Message message, SessionID sessionID) throws SessionNotFound {
-        Session.sendToTarget(message, sessionID);
+        session.getContext().sendToTarget(message, sessionID);
     }
 
     /* (non-Javadoc)

@@ -29,6 +29,7 @@ import quickfix.ScreenLogFactory;
 import quickfix.Session;
 import quickfix.SessionFactory;
 import quickfix.SessionSettings;
+import quickfix.ext.IFIXContext;
 import quickfix.transport.mina.initiator.AbstractSocketInitiator;
 
 /**
@@ -41,26 +42,26 @@ public class SocketInitiator extends AbstractSocketInitiator {
     private SingleThreadedEventHandlingStrategy eventHandlingStrategy =
     	new SingleThreadedEventHandlingStrategy(this);
 
-    public SocketInitiator(Application application, MessageStoreFactory messageStoreFactory,
+    public SocketInitiator(final IFIXContext context,Application application, MessageStoreFactory messageStoreFactory,
             SessionSettings settings, MessageFactory messageFactory) throws ConfigError {
-        super(application, messageStoreFactory, settings, new ScreenLogFactory(settings),
+        super(context,application, messageStoreFactory, settings, new ScreenLogFactory(settings),
                 messageFactory);
         if (settings == null) {
             throw new ConfigError("no settings");
         }
     }
 
-    public SocketInitiator(Application application, MessageStoreFactory messageStoreFactory,
+    public SocketInitiator(final IFIXContext context,Application application, MessageStoreFactory messageStoreFactory,
             SessionSettings settings, LogFactory logFactory, MessageFactory messageFactory)
             throws ConfigError {
-        super(application, messageStoreFactory, settings, logFactory, messageFactory);
+        super(context,application, messageStoreFactory, settings, logFactory, messageFactory);
         if (settings == null) {
             throw new ConfigError("no settings");
         }
     }
 
-    public SocketInitiator(SessionFactory sessionFactory, SessionSettings settings) throws ConfigError {
-        super(settings, sessionFactory);
+    public SocketInitiator(final IFIXContext context,SessionFactory sessionFactory, SessionSettings settings) throws ConfigError {
+        super(context,settings, sessionFactory);
     }
 
     public void block() throws ConfigError, RuntimeError {
@@ -83,7 +84,7 @@ public class SocketInitiator extends AbstractSocketInitiator {
             logoutAllSessions(forceDisconnect);
             stopInitiators();
         } finally {
-            Session.unregisterSessions(getSessions());
+            getContext().removeSessions(getSessions());
             isStarted = Boolean.FALSE;
         }
     }
@@ -93,7 +94,7 @@ public class SocketInitiator extends AbstractSocketInitiator {
             if (isStarted.equals(Boolean.FALSE)) {
                 createSessionInitiators();
                 for (Session session : getSessionMap().values()) {
-                    Session.registerSession(session);
+                    getContext().addSession(session);
                 }
                 startInitiators();
                 isStarted = Boolean.TRUE;

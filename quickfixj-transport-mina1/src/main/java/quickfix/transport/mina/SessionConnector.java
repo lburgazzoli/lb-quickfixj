@@ -19,6 +19,20 @@
 
 package quickfix.transport.mina;
 
+import org.apache.mina.common.IoFilterChainBuilder;
+import org.apache.mina.common.IoSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import quickfix.ConfigError;
+import quickfix.Connector;
+import quickfix.FieldConvertError;
+import quickfix.Session;
+import quickfix.SessionFactory;
+import quickfix.SessionID;
+import quickfix.SessionSettings;
+import quickfix.ext.IFIXContext;
+import quickfix.field.converter.IntConverter;
+
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.IOException;
@@ -35,20 +49,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.mina.common.IoFilterChainBuilder;
-import org.apache.mina.common.IoSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import quickfix.ConfigError;
-import quickfix.Connector;
-import quickfix.FieldConvertError;
-import quickfix.Session;
-import quickfix.SessionFactory;
-import quickfix.SessionID;
-import quickfix.SessionSettings;
-import quickfix.field.converter.IntConverter;
-
 /**
  * An abstract base class for acceptors and initiators. Provides support for common functionality and also serves as an
  * abstraction where the code doesn't need to make the acceptor/initator distinction.
@@ -64,14 +64,23 @@ public abstract class SessionConnector implements Connector {
     private Map<SessionID, Session> sessions = Collections.emptyMap();
     private final SessionSettings settings;
     private final SessionFactory sessionFactory;
+    private final IFIXContext context;
     private final static ScheduledExecutorService scheduledExecutorService = Executors
             .newSingleThreadScheduledExecutor(new QFTimerThreadFactory());
     private ScheduledFuture<?> sessionTimerFuture;
     private IoFilterChainBuilder ioFilterChainBuilder;
-    
-    public SessionConnector(SessionSettings settings, SessionFactory sessionFactory) throws ConfigError {
+
+    /**
+     *
+     * @param context
+     * @param settings
+     * @param sessionFactory
+     * @throws ConfigError
+     */
+    public SessionConnector(IFIXContext context,SessionSettings settings, SessionFactory sessionFactory) throws ConfigError {
         this.settings = settings;
         this.sessionFactory = sessionFactory;
+        this.context = context;
         if (settings == null) {
             throw new ConfigError("no settings");
         }
@@ -271,6 +280,10 @@ public abstract class SessionConnector implements Connector {
 
     protected ScheduledExecutorService getScheduledExecutorService() {
         return scheduledExecutorService;
+    }
+
+    protected IFIXContext getContext() {
+        return context;
     }
 
     private class SessionTimerTask implements Runnable {

@@ -29,12 +29,14 @@ import quickfix.MemoryStoreFactory;
 import quickfix.MessageFactory;
 import quickfix.MessageStoreFactory;
 import quickfix.SLF4JLogFactory;
+import quickfix.SessionFactory;
 import quickfix.SessionID;
 import quickfix.SessionSettings;
-import quickfix.transport.FIXRuntime;
+import quickfix.ext.FIXContext;
+import quickfix.ext.IFIXContext;
+import quickfix.ext.util.TracingApplication;
 import quickfix.transport.FIXSessionHelper;
 import quickfix.transport.netty.NettySocketInitiator;
-import quickfix.transport.util.TracingApplication;
 
 /**
  *
@@ -70,15 +72,15 @@ public class NettyInitiatorMain {
      */
     public static void main(String[] args) {
         try {
+            IFIXContext           ctx  = new FIXContext();
             SessionID             sid  = new SessionID("FIX.4.2","TEST","EXEC");
             SessionSettings       cfg  = getSettingsFor(sid);
             Application           app  = new TracingApplication();
-            MessageStoreFactory   msf  = new MemoryStoreFactory();
+            MessageStoreFactory   msf  = new MemoryStoreFactory(ctx);
             LogFactory            logf = new SLF4JLogFactory(cfg);
             MessageFactory        msgf = new DefaultMessageFactory();
-            DefaultSessionFactory dsf  = new DefaultSessionFactory(app,msf,logf,msgf);
-            FIXRuntime            rt   = new FIXRuntime();
-            FIXSessionHelper      sx   = new FIXSessionHelper(rt,dsf.create(sid,cfg),cfg);
+            SessionFactory        sf   = new DefaultSessionFactory(ctx,app,msf,logf,msgf);
+            FIXSessionHelper      sx   = new FIXSessionHelper(sf.create(sid,cfg),cfg);
 
             new NettySocketInitiator(sx).run();
 

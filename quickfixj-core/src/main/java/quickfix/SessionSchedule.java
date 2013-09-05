@@ -19,14 +19,14 @@
 
 package quickfix;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Corresponds to SessionTime in C++ code
@@ -42,15 +42,15 @@ class SessionSchedule {
     SessionSchedule(SessionSettings settings, SessionID sessionID) throws ConfigError,
             FieldConvertError {
             
-        if (settings.isSetting(sessionID, Session.SETTING_NON_STOP_SESSION)) {
+        if (settings.isSetting(sessionID, SessionConstants.SETTING_NON_STOP_SESSION)) {
             nonStopSession = settings
-                    .getBool(sessionID, Session.SETTING_NON_STOP_SESSION);
+                    .getBool(sessionID, SessionConstants.SETTING_NON_STOP_SESSION);
         } else {
             nonStopSession = false;
         }
             
-        boolean startDayPresent = settings.isSetting(sessionID, Session.SETTING_START_DAY);
-        boolean endDayPresent = settings.isSetting(sessionID, Session.SETTING_END_DAY);
+        boolean startDayPresent = settings.isSetting(sessionID, SessionConstants.SETTING_START_DAY);
+        boolean endDayPresent = settings.isSetting(sessionID, SessionConstants.SETTING_END_DAY);
 
         if (startDayPresent && !endDayPresent) {
             throw new ConfigError("Session " + sessionID + ": StartDay used without EndDay");
@@ -62,8 +62,8 @@ class SessionSchedule {
 
         TimeZone defaultTimeZone = getDefaultTimeZone(settings, sessionID);
 
-        startTime = getTimeEndPoint(settings, sessionID, defaultTimeZone, Session.SETTING_START_TIME, Session.SETTING_START_DAY);
-        endTime = getTimeEndPoint(settings, sessionID, defaultTimeZone, Session.SETTING_END_TIME, Session.SETTING_END_DAY);
+        startTime = getTimeEndPoint(settings, sessionID, defaultTimeZone, SessionConstants.SETTING_START_TIME, SessionConstants.SETTING_START_DAY);
+        endTime = getTimeEndPoint(settings, sessionID, defaultTimeZone, SessionConstants.SETTING_END_TIME, SessionConstants.SETTING_END_DAY);
         if (!nonStopSession) log.info("["+sessionID+"] "+toString());
     }
 
@@ -100,8 +100,8 @@ class SessionSchedule {
     private TimeZone getDefaultTimeZone(SessionSettings settings, SessionID sessionID)
             throws ConfigError, FieldConvertError {
         TimeZone sessionTimeZone;
-        if (settings.isSetting(sessionID, Session.SETTING_TIMEZONE)) {
-            String sessionTimeZoneID = settings.getString(sessionID, Session.SETTING_TIMEZONE);
+        if (settings.isSetting(sessionID, SessionConstants.SETTING_TIMEZONE)) {
+            String sessionTimeZoneID = settings.getString(sessionID, SessionConstants.SETTING_TIMEZONE);
             sessionTimeZone = TimeZone.getTimeZone(sessionTimeZoneID);
             if ("GMT".equals(sessionTimeZone.getID()) && !"GMT".equals(sessionTimeZoneID)) {
                 throw new ConfigError("Unrecognized time zone '" + sessionTimeZoneID

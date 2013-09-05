@@ -19,6 +19,8 @@
 
 package quickfix;
 
+import quickfix.ext.IFIXContext;
+
 /**
  * Creates a message store that stores messages in a file. 
  * 
@@ -48,13 +50,15 @@ public class FileStoreFactory implements MessageStoreFactory {
     public static final String SETTING_FILE_STORE_MAX_CACHED_MSGS = "FileStoreMaxCachedMsgs";
 
     protected final SessionSettings settings;
+    protected final IFIXContext context;
         
     /**
      * Create the factory with configuration in session settings.
      * @param settings
      */
-    public FileStoreFactory(SessionSettings settings) {
+    public FileStoreFactory(IFIXContext context,SessionSettings settings) {
         this.settings = settings;
+        this.context = context;
     }
     
     /**
@@ -75,7 +79,7 @@ public class FileStoreFactory implements MessageStoreFactory {
                     maxCachedMsgs = (int) maxCachedMsgsSetting;
                 }
             }
-            return new FileStore(settings.getString(sessionID, FileStoreFactory.SETTING_FILE_STORE_PATH), sessionID, syncWrites, maxCachedMsgs);
+            return new FileStore(context,settings.getString(sessionID, FileStoreFactory.SETTING_FILE_STORE_PATH), sessionID, syncWrites, maxCachedMsgs);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

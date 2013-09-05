@@ -33,7 +33,7 @@ import quickfix.Session;
 import quickfix.SessionID;
 import quickfix.field.MsgType;
 import quickfix.transport.FIXMessageEvent;
-import quickfix.transport.FIXRuntime;
+import quickfix.ext.IFIXContext;
 
 import java.nio.charset.Charset;
 import java.util.List;
@@ -54,14 +54,14 @@ public final class NettyMessageDecoder extends ByteToMessageDecoder {
     private static final char   CHAR_SOH      = 0x01;
 
     private final Charset m_charset;
-    private final FIXRuntime m_runtime;
+    private final IFIXContext m_runtime;
 
     /**
      * c-tor
      *
      * @param runtime
      */
-    public NettyMessageDecoder(FIXRuntime runtime) {
+    public NettyMessageDecoder(IFIXContext runtime) {
         this(runtime, CharsetUtil.ISO_8859_1);
     }
 
@@ -71,7 +71,7 @@ public final class NettyMessageDecoder extends ByteToMessageDecoder {
      * @param charset
      * @param runtime
      */
-    public NettyMessageDecoder(FIXRuntime runtime, String charset) {
+    public NettyMessageDecoder(IFIXContext runtime, String charset) {
         this(runtime,Charset.forName(charset));
     }
 
@@ -81,7 +81,7 @@ public final class NettyMessageDecoder extends ByteToMessageDecoder {
      * @param charset
      * @param runtime
      */
-    public NettyMessageDecoder(FIXRuntime runtime, Charset charset) {
+    public NettyMessageDecoder(IFIXContext runtime, Charset charset) {
         m_runtime = runtime;
         m_charset = charset;
     }

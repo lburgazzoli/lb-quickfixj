@@ -19,16 +19,7 @@
 
 package quickfix.transport.mina.acceptor;
 
-import static quickfix.SessionSettings.*;
-
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-
 import org.quickfixj.QFJException;
-
 import quickfix.ConfigError;
 import quickfix.DefaultSessionFactory;
 import quickfix.LogFactory;
@@ -38,7 +29,22 @@ import quickfix.Session;
 import quickfix.SessionFactory;
 import quickfix.SessionID;
 import quickfix.SessionSettings;
+import quickfix.ext.IFIXContext;
 import quickfix.transport.mina.SessionConnector;
+
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+
+import static quickfix.SessionSettings.BEGINSTRING;
+import static quickfix.SessionSettings.SENDERCOMPID;
+import static quickfix.SessionSettings.SENDERLOCID;
+import static quickfix.SessionSettings.SENDERSUBID;
+import static quickfix.SessionSettings.TARGETCOMPID;
+import static quickfix.SessionSettings.TARGETLOCID;
+import static quickfix.SessionSettings.TARGETSUBID;
 
 /**
  * Dynamically defines sessions for an acceptor. This can be useful for
@@ -56,6 +62,7 @@ public class DynamicAcceptorSessionProvider implements AcceptorSessionProvider {
     private final List<TemplateMapping> templateMappings;
     protected final SessionSettings settings;
     protected final SessionFactory sessionFactory;
+    private final IFIXContext context;
 
     /**
      * Mapping from a sessionID pattern to a session template ID.
@@ -96,11 +103,11 @@ public class DynamicAcceptorSessionProvider implements AcceptorSessionProvider {
      * @param logFactory log factory for the dynamic sessions
      * @param messageFactory message factory for the dynamic sessions
      */
-    public DynamicAcceptorSessionProvider(final SessionSettings settings,
+    public DynamicAcceptorSessionProvider(final IFIXContext context,final SessionSettings settings,
             final SessionID templateID, quickfix.Application application,
             MessageStoreFactory messageStoreFactory, LogFactory logFactory,
             MessageFactory messageFactory) {
-        this(settings, Collections.singletonList(new TemplateMapping(ANY_SESSION, templateID)),
+        this(context,settings, Collections.singletonList(new TemplateMapping(ANY_SESSION, templateID)),
                 application, messageStoreFactory, logFactory, messageFactory);
     }
 
@@ -119,18 +126,19 @@ public class DynamicAcceptorSessionProvider implements AcceptorSessionProvider {
      * @param messageFactory message factory for the dynamic sessions
      * @see TemplateMapping
      */
-    public DynamicAcceptorSessionProvider(final SessionSettings settings,
+    public DynamicAcceptorSessionProvider(final IFIXContext context,final SessionSettings settings,
             List<TemplateMapping> templateMappings, quickfix.Application application,
             MessageStoreFactory messageStoreFactory, LogFactory logFactory,
             MessageFactory messageFactory) {
         this.settings = settings;
         this.templateMappings = templateMappings;
-        sessionFactory = new DefaultSessionFactory(application, messageStoreFactory, logFactory,
+        this.context = context;
+        sessionFactory = new DefaultSessionFactory(context,application, messageStoreFactory, logFactory,
                 messageFactory);
     }
 
     public synchronized Session getSession(SessionID sessionID, SessionConnector sessionConnector) {
-        Session s = Session.lookupSession(sessionID);
+        Session s = context.getSession(sessionID);
         if (s == null) {
             try {
                 SessionID templateID = lookupTemplateID(sessionID);

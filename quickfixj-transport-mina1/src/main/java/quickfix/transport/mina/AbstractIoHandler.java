@@ -19,23 +19,23 @@
 
 package quickfix.transport.mina;
 
-import static quickfix.MessageUtils.parse;
-
-import java.io.IOException;
-
 import org.apache.mina.common.IoHandlerAdapter;
 import org.apache.mina.common.IoSession;
 import org.apache.mina.filter.codec.ProtocolCodecException;
 import org.apache.mina.filter.codec.ProtocolDecoderException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import quickfix.InvalidMessage;
 import quickfix.Message;
 import quickfix.MessageUtils;
 import quickfix.Session;
 import quickfix.SessionID;
+import quickfix.ext.IFIXContext;
 import quickfix.field.MsgType;
+
+import java.io.IOException;
+
+import static quickfix.MessageUtils.parse;
 
 /**
  * Abstract class used for acceptor and initiator IO handlers.
@@ -43,9 +43,11 @@ import quickfix.field.MsgType;
 public abstract class AbstractIoHandler extends IoHandlerAdapter {
     protected final Logger log = LoggerFactory.getLogger(getClass());
     private final NetworkingOptions networkingOptions;
+    private final IFIXContext context;
 
-    public AbstractIoHandler(NetworkingOptions options) {
-        networkingOptions = options;
+    public AbstractIoHandler(IFIXContext context,NetworkingOptions options) {
+        this.networkingOptions = options;
+        this.context = context;
     }
 
     public void exceptionCaught(IoSession ioSession, Throwable cause) throws Exception {
@@ -124,7 +126,7 @@ public abstract class AbstractIoHandler extends IoHandlerAdapter {
     protected Session findQFSession(IoSession ioSession, SessionID sessionID) {
         Session quickfixSession = findQFSession(ioSession);
         if (quickfixSession == null) {
-            quickfixSession = Session.lookupSession(sessionID);
+            quickfixSession = context.getSession(sessionID);
         }
         return quickfixSession;
     }

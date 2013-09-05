@@ -19,6 +19,12 @@
 
 package quickfix;
 
+import org.quickfixj.CharsetSupport;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import quickfix.ext.IFIXContext;
+import quickfix.field.converter.UtcTimestampConverter;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
@@ -39,12 +45,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-import org.quickfixj.CharsetSupport;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import quickfix.field.converter.UtcTimestampConverter;
-
 /**
  * File store implementation. THIS CLASS IS PUBLIC ONLY TO MAINTAIN COMPATIBILITY WITH THE QUICKFIX JNI. IT SHOULD ONLY
  * BE CREATED USING A FACTORY.
@@ -63,7 +63,7 @@ public class CachedFileStore implements MessageStore {
 
     private static final String NOSYNC_OPTION = "";
 
-    private final MemoryStore cache = new MemoryStore();
+    private final MemoryStore cache;
 
     private final String msgFileName;
 
@@ -88,9 +88,12 @@ public class CachedFileStore implements MessageStore {
     private FileOutputStream headerFileOutputStream;
 
     private final String charsetEncoding = CharsetSupport.getCharset();
+    private final IFIXContext context;
 
-    CachedFileStore(String path, SessionID sessionID, boolean syncWrites) throws IOException {
+    CachedFileStore(IFIXContext context,String path, SessionID sessionID, boolean syncWrites) throws IOException {
         this.syncWrites = syncWrites;
+        this.context = context;
+        this.cache = new MemoryStore(context);
 
         final String fullPath = new File(path == null ? "." : path).getAbsolutePath();
         final String sessionName = FileUtil.sessionIdFileName(sessionID);

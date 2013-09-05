@@ -24,13 +24,14 @@ import org.quickfixj.jmx.mbean.session.SessionJmxExporter;
 import org.quickfixj.jmx.openmbean.TabularDataAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import quickfix.Acceptor;
 import quickfix.Connector;
-import quickfix.Initiator;
 import quickfix.Responder;
 import quickfix.Session;
 import quickfix.SessionID;
 import quickfix.SessionSettings;
+import quickfix.ext.IFIXContext;
+import quickfix.transport.mina.Acceptor;
+import quickfix.transport.mina.Initiator;
 import quickfix.transport.mina.SessionConnector;
 
 import javax.management.MBeanRegistration;
@@ -67,17 +68,19 @@ abstract class ConnectorAdmin implements ConnectorAdminMBean, MBeanRegistration 
     private final List<ObjectName> sessionNames = new ArrayList<ObjectName>();
 
     private final SessionSettings settings;
+    private final IFIXContext context;
     
     private String role = "N/A";
 
     private MBeanServer mbeanServer;
 
-    public ConnectorAdmin(JmxExporter jmxExporter, Connector connector, ObjectName connectorName, 
+    public ConnectorAdmin(IFIXContext context,JmxExporter jmxExporter, Connector connector, ObjectName connectorName,
             SessionSettings settings, SessionJmxExporter sessionExporter) {
         this.jmxExporter = jmxExporter;
         this.connectorName = connectorName;
         this.settings = settings;
         this.sessionExporter = sessionExporter;
+        this.context = context;
         if (connector instanceof Acceptor) {
             role = ACCEPTOR_ROLE;
         } else if (connector instanceof Initiator) {
@@ -122,7 +125,7 @@ abstract class ConnectorAdmin implements ConnectorAdminMBean, MBeanRegistration 
         Iterator<SessionID> sessionItr = connector.getSessions().iterator();
         while (sessionItr.hasNext()) {
             SessionID sessionID = (SessionID) sessionItr.next();
-            Session session = Session.lookupSession(sessionID);
+            Session session = context.getSession(sessionID);
             sessions.add(new ConnectorSession(session, sessionExporter.getSessionName(sessionID)));
         }
         try {
@@ -137,7 +140,7 @@ abstract class ConnectorAdmin implements ConnectorAdminMBean, MBeanRegistration 
         Iterator<SessionID> sessionItr = connector.getSessions().iterator();
         while (sessionItr.hasNext()) {
             SessionID sessionID = (SessionID) sessionItr.next();
-            Session session = Session.lookupSession(sessionID);
+            Session session = context.getSession(sessionID);
             if (session.isLoggedOn()) {
                 names.add(sessionExporter.getSessionName(sessionID));
             }
@@ -191,7 +194,7 @@ abstract class ConnectorAdmin implements ConnectorAdminMBean, MBeanRegistration 
             if (sessionExporter.getSessionName(sessionID) == null) {
                 try {
                     final ObjectName name = sessionExporter.register(
-                        jmxExporter, Session.lookupSession(sessionID),
+                        jmxExporter, context.getSession(sessionID),
                         connectorName, settings);
                     sessionNames.add(name);
                 } catch (RuntimeException e) {

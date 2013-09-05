@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import quickfix.Session;
 import quickfix.SessionSettings;
+import quickfix.ext.IFIXContext;
 
 import java.io.IOException;
 import java.util.concurrent.ScheduledFuture;
@@ -49,7 +50,6 @@ public class FIXSessionHelper {
         }
     };
 
-    private final FIXRuntime m_runtime;
     private final Session m_session;
     private final SessionSettings m_settings;
 
@@ -58,12 +58,10 @@ public class FIXSessionHelper {
     /**
      * c-tor
      *
-     * @param runtime
      * @param session
      * @param settings
      */
-    public FIXSessionHelper(FIXRuntime runtime, Session session, SessionSettings settings) {
-        m_runtime    = runtime;
+    public FIXSessionHelper(Session session, SessionSettings settings) {
         m_session    = session;
         m_settings   = settings;
         m_taskFuture = null;
@@ -73,8 +71,8 @@ public class FIXSessionHelper {
      *
      * @return
      */
-    public FIXRuntime getRuntime() {
-        return m_runtime;
+    public IFIXContext getContext() {
+        return m_session.getContext();
     }
 
     /**
@@ -98,7 +96,7 @@ public class FIXSessionHelper {
      */
     public void startSessionTimer() {
         if(m_taskFuture == null) {
-            m_taskFuture = m_runtime.getScheduler().scheduleAtFixedRate(
+            m_taskFuture = getContext().getScheduler().scheduleAtFixedRate(
                 m_task, 0, 1000L, TimeUnit.MILLISECONDS);
 
             LOGGER.info("SessionTimer started");

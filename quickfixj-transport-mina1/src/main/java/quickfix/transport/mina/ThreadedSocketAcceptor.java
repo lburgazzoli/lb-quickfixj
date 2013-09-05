@@ -25,9 +25,9 @@ import quickfix.LogFactory;
 import quickfix.MessageFactory;
 import quickfix.MessageStoreFactory;
 import quickfix.RuntimeError;
-import quickfix.Session;
 import quickfix.SessionFactory;
 import quickfix.SessionSettings;
+import quickfix.ext.IFIXContext;
 import quickfix.transport.mina.acceptor.AbstractSocketAcceptor;
 
 /**
@@ -37,20 +37,20 @@ public class ThreadedSocketAcceptor extends AbstractSocketAcceptor {
     private final ThreadPerSessionEventHandlingStrategy eventHandlingStrategy = new ThreadPerSessionEventHandlingStrategy(
             this);
 
-    public ThreadedSocketAcceptor(Application application, MessageStoreFactory messageStoreFactory,
+    public ThreadedSocketAcceptor(final IFIXContext context,Application application, MessageStoreFactory messageStoreFactory,
             SessionSettings settings, LogFactory logFactory, MessageFactory messageFactory)
             throws ConfigError {
-        super(application, messageStoreFactory, settings, logFactory, messageFactory);
+        super(context,application, messageStoreFactory, settings, logFactory, messageFactory);
     }
 
-    public ThreadedSocketAcceptor(Application application, MessageStoreFactory messageStoreFactory,
+    public ThreadedSocketAcceptor(final IFIXContext context,Application application, MessageStoreFactory messageStoreFactory,
             SessionSettings settings, MessageFactory messageFactory) throws ConfigError {
-        super(application, messageStoreFactory, settings, messageFactory);
+        super(context,application, messageStoreFactory, settings, messageFactory);
     }
 
-    public ThreadedSocketAcceptor(SessionFactory sessionFactory, SessionSettings settings)
+    public ThreadedSocketAcceptor(final IFIXContext context,SessionFactory sessionFactory, SessionSettings settings)
             throws ConfigError {
-        super(settings, sessionFactory);
+        super(context,settings, sessionFactory);
     }
 
     public void start() throws ConfigError, RuntimeError {
@@ -66,7 +66,7 @@ public class ThreadedSocketAcceptor extends AbstractSocketAcceptor {
         logoutAllSessions(forceDisconnect);
         stopSessionTimer();
         eventHandlingStrategy.stopDispatcherThreads();
-        Session.unregisterSessions(getSessions());
+        getContext().removeSessions(getSessions());
     }
 
     public void block() throws ConfigError, RuntimeError {

@@ -17,7 +17,9 @@
  * are not clear to you.
  ******************************************************************************/
 
-package quickfix;
+package quickfix.transport.mina;
+
+import quickfix.Connector;
 
 /**
  * Establishes sessions with FIX servers and manages the associated sessions.
@@ -30,7 +32,7 @@ public interface Initiator extends Connector {
      * @see quickfix.SessionFactory#SETTING_CONNECTION_TYPE
      */
     public static final String SETTING_RECONNECT_INTERVAL = "ReconnectInterval";
-    
+
     /**
      * Initiator setting for connection protocol (defaults to "tcp").
      */

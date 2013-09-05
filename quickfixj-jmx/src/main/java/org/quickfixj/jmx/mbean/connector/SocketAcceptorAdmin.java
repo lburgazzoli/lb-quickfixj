@@ -22,6 +22,7 @@ import org.quickfixj.jmx.mbean.JmxSupport;
 import org.quickfixj.jmx.mbean.session.SessionJmxExporter;
 import org.quickfixj.jmx.openmbean.TabularDataAdapter;
 import quickfix.SessionID;
+import quickfix.ext.IFIXContext;
 import quickfix.transport.mina.acceptor.AbstractSocketAcceptor;
 
 import javax.management.ObjectName;
@@ -46,9 +47,9 @@ public class SocketAcceptorAdmin extends ConnectorAdmin implements SocketAccepto
 
     private final SessionJmxExporter sessionExporter;
 
-    public SocketAcceptorAdmin(JmxExporter jmxExporter, AbstractSocketAcceptor connector, 
+    public SocketAcceptorAdmin(final IFIXContext context,JmxExporter jmxExporter, AbstractSocketAcceptor connector,
             ObjectName connectorName, SessionJmxExporter sessionExporter) {
-        super(jmxExporter, connector, connectorName, connector.getSettings(), sessionExporter);
+        super(context,jmxExporter, connector, connectorName, connector.getSettings(), sessionExporter);
         this.sessionExporter = sessionExporter;
         acceptor = connector;
     }

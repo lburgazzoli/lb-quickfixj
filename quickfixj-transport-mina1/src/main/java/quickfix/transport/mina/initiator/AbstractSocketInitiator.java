@@ -28,7 +28,8 @@ import quickfix.Application;
 import quickfix.ConfigError;
 import quickfix.DefaultSessionFactory;
 import quickfix.FieldConvertError;
-import quickfix.Initiator;
+import quickfix.ext.IFIXContext;
+import quickfix.transport.mina.Initiator;
 import quickfix.LogFactory;
 import quickfix.MessageFactory;
 import quickfix.MessageStoreFactory;
@@ -60,16 +61,17 @@ public abstract class AbstractSocketInitiator extends SessionConnector implement
     protected final Logger log = LoggerFactory.getLogger(getClass());
     private final Set<IoSessionInitiator> initiators = new HashSet<IoSessionInitiator>();
 
-    protected AbstractSocketInitiator(Application application,
+    protected AbstractSocketInitiator(IFIXContext context,Application application,
             MessageStoreFactory messageStoreFactory, SessionSettings settings,
             LogFactory logFactory, MessageFactory messageFactory) throws ConfigError {
-        this(settings, new DefaultSessionFactory(application, messageStoreFactory, logFactory,
-                messageFactory));
+        this(context,
+            settings,
+            new DefaultSessionFactory(context,application, messageStoreFactory, logFactory,messageFactory));
     }
 
-    protected AbstractSocketInitiator(SessionSettings settings, SessionFactory sessionFactory)
+    protected AbstractSocketInitiator(IFIXContext context,SessionSettings settings, SessionFactory sessionFactory)
             throws ConfigError {
-        super(settings, sessionFactory);
+        super(context,settings, sessionFactory);
             ByteBuffer.setAllocator(new SimpleByteBufferAllocator());
             ByteBuffer.setUseDirectBuffers(false);
     }

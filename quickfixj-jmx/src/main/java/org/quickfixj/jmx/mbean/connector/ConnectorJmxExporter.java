@@ -21,7 +21,8 @@ import org.quickfixj.QFJException;
 import org.quickfixj.jmx.JmxExporter;
 import org.quickfixj.jmx.mbean.ObjectNameFactory;
 import org.quickfixj.jmx.mbean.session.SessionJmxExporter;
-import quickfix.Acceptor;
+import quickfix.ext.IFIXContext;
+import quickfix.transport.mina.Acceptor;
 import quickfix.SessionID;
 import quickfix.transport.mina.SessionConnector;
 import quickfix.transport.mina.acceptor.AbstractSocketAcceptor;
@@ -34,6 +35,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ConnectorJmxExporter {
     private final SessionJmxExporter sessionExporter = new SessionJmxExporter();
     private final static AtomicInteger connectorIdCounter = new AtomicInteger();
+    private final IFIXContext context;
+
+    public ConnectorJmxExporter(final IFIXContext context) {
+        this.context = context;
+    }
 
     public ObjectName register(JmxExporter jmxExporter, SessionConnector connector) {
         return register(jmxExporter, connector, Integer.toString(connectorIdCounter.incrementAndGet()));
@@ -45,10 +51,10 @@ public class ConnectorJmxExporter {
 
             ConnectorAdmin connectorAdmin;
             if (connector instanceof AbstractSocketAcceptor) {
-                connectorAdmin = new SocketAcceptorAdmin(jmxExporter, (AbstractSocketAcceptor) connector,
+                connectorAdmin = new SocketAcceptorAdmin(context,jmxExporter, (AbstractSocketAcceptor) connector,
                         connectorName, sessionExporter);
             } else if (connector instanceof AbstractSocketInitiator) {
-                connectorAdmin = new SocketInitiatorAdmin(jmxExporter, (AbstractSocketInitiator) connector,
+                connectorAdmin = new SocketInitiatorAdmin(context,jmxExporter, (AbstractSocketInitiator) connector,
                         connectorName, sessionExporter);
             } else {
                 throw new QFJException("Unknown connector type: " + connector.getClass().getName());

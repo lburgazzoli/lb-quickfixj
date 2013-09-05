@@ -19,33 +19,38 @@
 
 package quickfix;
 
+import quickfix.ext.IFIXContext;
+
 import javax.sql.DataSource;
 
 /**
  * Creates a generic JDBC logger.
  */
 public class JdbcLogFactory implements LogFactory {
-    private SessionSettings settings;
-    private DataSource dataSource;
+    private final SessionSettings settings;
+    private final IFIXContext context;
 
-    /**
-     * Create a JDBC logger.
-     * 
-     * @param sessionID the sessionID for the message store.
-     */
-    public Log create(SessionID sessionID) {
-        try {
-            return new JdbcLog(settings, sessionID, dataSource);
-        } catch (Exception e) {
-            throw new RuntimeError(e);
-        }
-    }
+    private DataSource dataSource;
 
     /**
      * Create a factory using session settings.
      */
-    public JdbcLogFactory(SessionSettings settings) {
+    public JdbcLogFactory(IFIXContext context,SessionSettings settings) {
         this.settings = settings;
+        this.context = context;
+    }
+
+    /**
+     * Create a JDBC logger.
+     *
+     * @param sessionID the sessionID for the message store.
+     */
+    public Log create(SessionID sessionID) {
+        try {
+            return new JdbcLog(context,settings, sessionID, dataSource);
+        } catch (Exception e) {
+            throw new RuntimeError(e);
+        }
     }
 
     /**

@@ -19,6 +19,10 @@
 
 package quickfix;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import quickfix.field.converter.BooleanConverter;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,11 +46,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import quickfix.field.converter.BooleanConverter;
-
 /**
  * Settings for sessions. Settings are grouped by FIX version and target company
  * ID. There is also a default settings section that is inherited by the
@@ -57,8 +56,6 @@ import quickfix.field.converter.BooleanConverter;
  * link for the setting and then and select the "Constant Field Values" link in
  * the detailed field description.
  *
- * @see quickfix.Acceptor
- * @see quickfix.Initiator
  * @see quickfix.FileLogFactory
  * @see quickfix.ScreenLogFactory
  * @see quickfix.FileStoreFactory
@@ -80,6 +77,8 @@ public class SessionSettings {
     public static final String TARGETSUBID = "TargetSubID";
     public static final String TARGETLOCID = "TargetLocationID";
     public static final String SESSION_QUALIFIER = "SessionQualifier";
+    public static final String SETTING_RECONNECT_INTERVAL = "ReconnectInterval";
+
 
     // This was using the line.separator system property but that caused
     // problems with moving configuration files between *nix and Windows.

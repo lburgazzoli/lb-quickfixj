@@ -19,6 +19,8 @@
 
 package quickfix;
 
+import quickfix.ext.IFIXContext;
+
 import javax.sql.DataSource;
 
 /**
@@ -26,13 +28,16 @@ import javax.sql.DataSource;
  */
 public class JdbcStoreFactory implements MessageStoreFactory {
     private final SessionSettings settings;
+    private final IFIXContext context;
+
     private DataSource dataSource;
     
     /**
      * Create a factory using session settings.
      */
-    public JdbcStoreFactory(SessionSettings settings) {
+    public JdbcStoreFactory(IFIXContext context,SessionSettings settings) {
         this.settings = settings;
+        this.context = context;
     }
 
     /**
@@ -42,7 +47,7 @@ public class JdbcStoreFactory implements MessageStoreFactory {
      */
     public MessageStore create(SessionID sessionID) {
         try {
-            return new JdbcStore(settings, sessionID, dataSource);
+            return new JdbcStore(context,settings, sessionID, dataSource);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

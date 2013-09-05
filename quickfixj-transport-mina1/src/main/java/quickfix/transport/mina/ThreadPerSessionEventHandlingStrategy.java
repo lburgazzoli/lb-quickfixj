@@ -19,6 +19,11 @@
 
 package quickfix.transport.mina;
 
+import quickfix.LogUtil;
+import quickfix.Message;
+import quickfix.Session;
+import quickfix.SessionID;
+
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.concurrent.BlockingQueue;
@@ -26,11 +31,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
-
-import quickfix.LogUtil;
-import quickfix.Message;
-import quickfix.Session;
-import quickfix.SessionID;
 
 /**
  * Processes messages in a session-specific thread.
@@ -45,7 +45,7 @@ public class ThreadPerSessionEventHandlingStrategy implements EventHandlingStrat
     private final SessionConnector sessionConnector;
 
     public ThreadPerSessionEventHandlingStrategy(SessionConnector connector) {
-        sessionConnector = connector;
+        this.sessionConnector = connector;
     }
 
     public void onMessage(Session quickfixSession, Message message) {
@@ -135,12 +135,10 @@ public class ThreadPerSessionEventHandlingStrategy implements EventHandlingStrat
                         stopping = true;
                     }
                 } catch (final InterruptedException e) {
-                    LogUtil.logThrowable(quickfixSession.getSessionID(),
-                            "Message dispatcher interrupted", e);
+                    LogUtil.logThrowable(quickfixSession,"Message dispatcher interrupted", e);
                     stopping = true;
                 } catch (final Throwable e) {
-                    LogUtil.logThrowable(quickfixSession.getSessionID(),
-                            "Error during message processing", e);
+                    LogUtil.logThrowable(quickfixSession,"Error during message processing", e);
                 }
             }
             dispatchers.remove(quickfixSession.getSessionID());

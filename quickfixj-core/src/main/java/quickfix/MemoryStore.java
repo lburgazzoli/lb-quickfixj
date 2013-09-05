@@ -19,13 +19,14 @@
 
 package quickfix;
 
+import org.slf4j.LoggerFactory;
+import quickfix.ext.IFIXContext;
+
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-
-import org.slf4j.LoggerFactory;
 
 /**
  * In-memory message store implementation.
@@ -38,12 +39,15 @@ public class MemoryStore implements MessageStore {
     private int nextTargetMsgSeqNum;
     private SessionID sessionID;
     private Calendar creationTime = SystemTime.getUtcCalendar();
+    private final IFIXContext context;
 
-    public MemoryStore() throws IOException {
+    public MemoryStore(IFIXContext context) throws IOException {
+        this.context = context;
         reset();
     }
 
-    public MemoryStore(SessionID sessionID) {
+    public MemoryStore(IFIXContext context,SessionID sessionID) {
+        this.context = context;
         this.sessionID = sessionID;
     }
 
@@ -113,7 +117,7 @@ public class MemoryStore implements MessageStore {
         // IOException is declared to maintain strict compatibility with QF JNI
         final String text = "memory store does not support refresh!";
         if (sessionID != null) {
-            Session session = Session.lookupSession(sessionID);
+            Session session = context.getSession(sessionID);
             session.getLog().onErrorEvent("ERROR: " + text);
         } else {
             LoggerFactory.getLogger(MemoryStore.class).error(text);

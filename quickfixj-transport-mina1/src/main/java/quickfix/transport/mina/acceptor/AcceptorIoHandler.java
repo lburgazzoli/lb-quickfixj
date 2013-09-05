@@ -19,17 +19,13 @@
 
 package quickfix.transport.mina.acceptor;
 
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.SocketAddress;
-
 import org.apache.mina.common.IoSession;
-
 import quickfix.Log;
 import quickfix.Message;
 import quickfix.MessageUtils;
 import quickfix.Session;
 import quickfix.SessionID;
+import quickfix.ext.IFIXContext;
 import quickfix.field.ApplVerID;
 import quickfix.field.DefaultApplVerID;
 import quickfix.field.HeartBtInt;
@@ -40,14 +36,18 @@ import quickfix.transport.mina.IoSessionResponder;
 import quickfix.transport.mina.NetworkingOptions;
 import quickfix.transport.mina.SessionConnector;
 
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
+
 class AcceptorIoHandler extends AbstractIoHandler {
     private final EventHandlingStrategy eventHandlingStrategy;
 
     private final AcceptorSessionProvider sessionProvider;
 
-    public AcceptorIoHandler(AcceptorSessionProvider sessionProvider,
+    public AcceptorIoHandler(IFIXContext context,AcceptorSessionProvider sessionProvider,
             NetworkingOptions networkingOptions, EventHandlingStrategy eventHandlingStrategy) {
-        super(networkingOptions);
+        super(context,networkingOptions);
         this.sessionProvider = sessionProvider;
         this.eventHandlingStrategy = eventHandlingStrategy;
     }

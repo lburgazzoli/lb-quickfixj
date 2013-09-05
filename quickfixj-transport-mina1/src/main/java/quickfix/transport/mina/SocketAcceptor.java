@@ -26,9 +26,9 @@ import quickfix.LogFactory;
 import quickfix.MessageFactory;
 import quickfix.MessageStoreFactory;
 import quickfix.RuntimeError;
-import quickfix.Session;
 import quickfix.SessionFactory;
 import quickfix.SessionSettings;
+import quickfix.ext.IFIXContext;
 import quickfix.transport.mina.acceptor.AbstractSocketAcceptor;
 
 /**
@@ -39,19 +39,19 @@ public class SocketAcceptor extends AbstractSocketAcceptor {
     private Boolean isStarted = Boolean.FALSE;
     private final Object lock = new Object();
 
-    public SocketAcceptor(Application application, MessageStoreFactory messageStoreFactory,
+    public SocketAcceptor(final IFIXContext context,Application application, MessageStoreFactory messageStoreFactory,
             SessionSettings settings, LogFactory logFactory, MessageFactory messageFactory)
             throws ConfigError {
-        super(application, messageStoreFactory, settings, logFactory, messageFactory);
+        super(context,application, messageStoreFactory, settings, logFactory, messageFactory);
     }
 
-    public SocketAcceptor(Application application, MessageStoreFactory messageStoreFactory,
+    public SocketAcceptor(final IFIXContext context,Application application, MessageStoreFactory messageStoreFactory,
             SessionSettings settings, MessageFactory messageFactory) throws ConfigError {
-        super(application, messageStoreFactory, settings, messageFactory);
+        super(context,application, messageStoreFactory, settings, messageFactory);
     }
 
-    public SocketAcceptor(SessionFactory sessionFactory, SessionSettings settings) throws ConfigError {
-        super(settings, sessionFactory);
+    public SocketAcceptor(final IFIXContext context,SessionFactory sessionFactory, SessionSettings settings) throws ConfigError {
+        super(context,settings, sessionFactory);
     }
 
     private SingleThreadedEventHandlingStrategy eventHandlingStrategy =
@@ -87,7 +87,7 @@ public class SocketAcceptor extends AbstractSocketAcceptor {
             logoutAllSessions(forceDisconnect);
             stopSessionTimer();
         } finally {
-            Session.unregisterSessions(getSessions());
+            getContext().removeSessions(getSessions());
             isStarted = Boolean.FALSE;
         }
     }

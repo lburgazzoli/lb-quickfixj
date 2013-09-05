@@ -17,7 +17,7 @@
  * are not clear to you.
  ******************************************************************************/
 
-package quickfix.transport.util;
+package quickfix.ext.util;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -28,7 +28,6 @@ import org.apache.mina.common.TransportType;
 import org.apache.mina.filter.SSLFilter;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.transport.socket.nio.SocketAcceptorConfig;
-import quickfix.Acceptor;
 import quickfix.Application;
 import quickfix.ConfigError;
 import quickfix.DefaultSessionFactory;
@@ -42,6 +41,8 @@ import quickfix.Session;
 import quickfix.SessionFactory;
 import quickfix.SessionID;
 import quickfix.SessionSettings;
+import quickfix.ext.IFIXContext;
+import quickfix.transport.mina.Acceptor;
 import quickfix.transport.mina.CompositeIoFilterChainBuilder;
 import quickfix.transport.mina.EventHandlingStrategy;
 import quickfix.transport.mina.NetworkingOptions;
@@ -69,26 +70,26 @@ public abstract class AbstractSocketAcceptor extends SessionConnector implements
     private final Map<SocketAddress, AcceptorSocketDescriptor> socketDescriptorForAddress = new HashMap<SocketAddress, AcceptorSocketDescriptor>();
     private final Map<TransportTypeAndSSL, IoAcceptor> ioAcceptorForTransport = new HashMap<TransportTypeAndSSL, IoAcceptor>();
 
-    protected AbstractSocketAcceptor(SessionSettings settings, SessionFactory sessionFactory)
+    protected AbstractSocketAcceptor(IFIXContext context,SessionSettings settings, SessionFactory sessionFactory)
             throws ConfigError {
-        super(settings, sessionFactory);
+        super(context,settings, sessionFactory);
         ByteBuffer.setAllocator(new SimpleByteBufferAllocator());
         ByteBuffer.setUseDirectBuffers(false);
         this.sessionFactory = sessionFactory;
     }
 
-    protected AbstractSocketAcceptor(Application application,
+    protected AbstractSocketAcceptor(IFIXContext context,Application application,
             MessageStoreFactory messageStoreFactory, SessionSettings settings,
             MessageFactory messageFactory) throws ConfigError {
-        this(application, messageStoreFactory, settings, new ScreenLogFactory(settings),
+        this(context,application, messageStoreFactory, settings, new ScreenLogFactory(settings),
                 messageFactory);
     }
 
-    protected AbstractSocketAcceptor(Application application,
+    protected AbstractSocketAcceptor(IFIXContext context,Application application,
             MessageStoreFactory messageStoreFactory, SessionSettings settings,
             LogFactory logFactory, MessageFactory messageFactory) throws ConfigError {
-        this(settings, new DefaultSessionFactory(application, messageStoreFactory, logFactory,
-                messageFactory));
+        this(context,settings,
+            new DefaultSessionFactory(context,application, messageStoreFactory, logFactory,messageFactory));
     }
 
     // TODO SYNC Does this method really need synchronization?
@@ -131,8 +132,11 @@ public abstract class AbstractSocketAcceptor extends SessionConnector implements
                 }
 
                 ioAcceptor.bind(address, new AcceptorIoHandler(
-                        sessionProvider, new NetworkingOptions(settings.getDefaultProperties()),
+                        getContext(),
+                        sessionProvider,
+                        new NetworkingOptions(settings.getDefaultProperties()),
                         getEventHandlingStrategy()));
+
                 log.info("Listening for connections at " + address + " for session(s) "
                         + socketDescriptor.getAcceptedSessions().keySet());
             }

@@ -19,6 +19,8 @@
 
 package quickfix;
 
+import quickfix.ext.IFIXContext;
+
 /**
  * Creates a message store that stores messages in a file. Compatibility note: The file formats are not compatible with
  * QF C++/JNI. If you upgrading from the QuickFIX JNI, you must delete your old session state files.)
@@ -30,8 +32,8 @@ public class CachedFileStoreFactory extends FileStoreFactory {
      * 
      * @param settings
      */
-    public CachedFileStoreFactory(SessionSettings settings) {
-        super(settings);
+    public CachedFileStoreFactory(IFIXContext context,SessionSettings settings) {
+        super(context,settings);
     }
 
     /**
@@ -46,7 +48,7 @@ public class CachedFileStoreFactory extends FileStoreFactory {
             if (settings.isSetting(sessionID, SETTING_FILE_STORE_SYNC)) {
                 syncWrites = settings.getBool(sessionID, SETTING_FILE_STORE_SYNC);
             }
-            return new CachedFileStore(settings.getString(sessionID, SETTING_FILE_STORE_PATH), sessionID, syncWrites);
+            return new CachedFileStore(context,settings.getString(sessionID, SETTING_FILE_STORE_PATH), sessionID, syncWrites);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

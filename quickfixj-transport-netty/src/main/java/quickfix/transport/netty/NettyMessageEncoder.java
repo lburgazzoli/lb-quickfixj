@@ -23,7 +23,7 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageEncoder;
 import io.netty.util.CharsetUtil;
-import quickfix.transport.FIXRuntime;
+import quickfix.ext.IFIXContext;
 
 import java.nio.charset.Charset;
 import java.util.List;
@@ -33,14 +33,14 @@ import java.util.List;
  */
 public final class NettyMessageEncoder extends MessageToMessageEncoder<CharSequence> {
     private final Charset m_charset;
-    private final FIXRuntime m_runtime;
+    private final IFIXContext m_runtime;
 
     /**
      * c-tor
      *
      * @param runtime
      */
-    public NettyMessageEncoder(FIXRuntime runtime) {
+    public NettyMessageEncoder(IFIXContext runtime) {
         this(runtime, CharsetUtil.ISO_8859_1);
     }
 
@@ -50,7 +50,7 @@ public final class NettyMessageEncoder extends MessageToMessageEncoder<CharSeque
      * @param charset
      * @param runtime
      */
-    public NettyMessageEncoder(FIXRuntime runtime, Charset charset) {
+    public NettyMessageEncoder(IFIXContext runtime, Charset charset) {
         m_runtime = runtime;
         m_charset = charset;
     }

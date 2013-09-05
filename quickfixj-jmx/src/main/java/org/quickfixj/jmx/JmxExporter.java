@@ -21,6 +21,7 @@ import org.quickfixj.jmx.mbean.connector.ConnectorJmxExporter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import quickfix.Connector;
+import quickfix.ext.IFIXContext;
 import quickfix.transport.mina.SessionConnector;
 
 import javax.management.InstanceAlreadyExistsException;
@@ -55,19 +56,20 @@ public class JmxExporter {
 
     private final MBeanServer mbeanServer;
 
-    private final ConnectorJmxExporter connectorExporter = new ConnectorJmxExporter();
+    private final ConnectorJmxExporter connectorExporter;
 
-    public JmxExporter(MBeanServer mbeanServer, int registrationBehaviour) {
+    public JmxExporter(final IFIXContext context,MBeanServer mbeanServer, int registrationBehaviour) {
         this.mbeanServer = mbeanServer;
         this.registrationBehaviour = registrationBehaviour;
+        this.connectorExporter = new ConnectorJmxExporter(context);
     }
 
-    public JmxExporter(MBeanServer mbeanServer) {
-        this(mbeanServer, REGISTRATION_FAIL_ON_EXISTING);
+    public JmxExporter(final IFIXContext context,MBeanServer mbeanServer) {
+        this(context,mbeanServer, REGISTRATION_FAIL_ON_EXISTING);
     }
 
-    public JmxExporter() throws JMException {
-        this(createMBeanServer());
+    public JmxExporter(final IFIXContext context) throws JMException {
+        this(context,createMBeanServer());
     }
 
     /**
