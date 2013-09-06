@@ -70,11 +70,10 @@ subprojects {
         compile "org.slf4j:jul-to-slf4j:$slf4jVersion"
         compile "com.google.guava:guava:14.0.1"
         compile "com.lmax:disruptor:3.2.0"
-        compile "org.javolution:javolution-core-java:6.0.0"   
-        compile "org.osgi:org.osgi.core:$osgiVersion"
-        compile "org.osgi:org.osgi.compendium:$osgiVersion"
+        compile "org.javolution:javolution-core-java:6.0.0"
         compile "org.dom4j:com.springsource.org.dom4j:1.6.1"
         compile "org.logicalcobwebs:com.springsource.org.logicalcobwebs.proxool:0.9.1"
+
     }
 
     jar {
@@ -90,100 +89,6 @@ subprojects {
 
         manifest.classesDir = new File("$buildDir/classes/main")
         manifest.classpath  = project.runtimeClasspath
-    }
-}
-
-// *****************************************************************************
-//
-// *****************************************************************************
-
-
-project('quickfixj-codegen') {
-    /*
-    task generate(dependsOn: 'classes', type: JavaExec) {
-        main       = 'quickfix.codegen.MessageCodeGenerator'
-        classpath  = sourceSets.main.runtimeClasspath
-
-        jvmArgs    = [ 
-            "-Xms128m",
-            "-Xmx256m",
-            "-Dgenerator.decimal=$generatorDecimal",
-            "-Dgenerator.orderedFields=$generatorOrderedFields" 
-        ]
-
-        args       = [ 
-            "$mainResourcesDir",
-            "${projectDir}/src/main/java/quickfix/codegen",
-            "$mainGeneratedDir"
-        ]
-    }
-    */
-}
-
-
-project('quickfixj-core') {
-    dependencies {
-        compile "com.sleepycat.je:com.springsource.com.sleepycat.je:2.1.30"
-    }
-}
-
-
-project('quickfixj-transport') {
-    dependencies {
-        compile project(':quickfixj-core')
-    }
-}
-
-project('quickfixj-transport-mina1') {
-    dependencies {
-        compile project(':quickfixj-transport')
-
-        compile "org.apache.mina:mina-core:$mina1Version"
-        compile "org.apache.mina:mina-filter-ssl:$mina1Version"
-    }
-}
-
-project('quickfixj-transport-netty') {
-    dependencies {
-        compile project(':quickfixj-transport')
-
-        compile "io.netty:netty-common:$nettyVersion"
-        compile "io.netty:netty-buffer:$nettyVersion"
-        compile "io.netty:netty-transport:$nettyVersion"
-        compile "io.netty:netty-codec:$nettyVersion"
-        compile "io.netty:netty-codec-http:$nettyVersion"
-        compile "io.netty:netty-codec-socks:$nettyVersion"
-        compile "io.netty:netty-handler:$nettyVersion"
-        compile "org.javassist:javassist:$javassistVersion";
-    }
-}
-
-project('quickfixj-transport-reactor') {
-    dependencies {
-        compile project(':quickfixj-transport')
-
-        compile "org.projectreactor:reactor-core:$reactorVersion"
-        compile "org.projectreactor:reactor-tcp:$reactorVersion"
-    }
-}
-
-project('quickfixj-jmx') {
-    dependencies {
-        compile project(':quickfixj-core')
-        compile project(':quickfixj-transport')
-        compile project(':quickfixj-transport-mina1')
-        compile project(':quickfixj-transport-netty')
-        compile project(':quickfixj-transport-reactor')
-    }
-}
-
-project('quickfixj-examples') {
-    dependencies {
-        compile project(':quickfixj-core')
-        compile project(':quickfixj-transport')
-        compile project(':quickfixj-transport-mina1')
-        compile project(':quickfixj-transport-netty')
-        compile project(':quickfixj-transport-reactor')
     }
 }
 

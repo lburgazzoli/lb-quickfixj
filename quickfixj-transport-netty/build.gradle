@@ -1,0 +1,30 @@
+
+project.ext {
+    bundleImportPackages = [
+        '*'
+    ]
+
+    bundleExportPackages = [
+        "*"
+    ]
+}
+
+dependencies {
+    compile project(':quickfixj-transport')
+
+    compile "io.netty:netty-common:$nettyVersion"
+    compile "io.netty:netty-buffer:$nettyVersion"
+    compile "io.netty:netty-transport:$nettyVersion"
+    compile "io.netty:netty-codec:$nettyVersion"
+    compile "io.netty:netty-codec-http:$nettyVersion"
+    compile "io.netty:netty-codec-socks:$nettyVersion"
+    compile "io.netty:netty-handler:$nettyVersion"
+    compile "org.javassist:javassist:$javassistVersion";
+}
+
+jar {
+    manifest {
+        instruction 'Import-Package' , bundleImportPackages.join(',')
+        instruction 'Export-Package' , bundleExportPackages.join(',')
+    }
+}

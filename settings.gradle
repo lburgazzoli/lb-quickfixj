@@ -6,5 +6,6 @@ include "quickfixj-transport-mina1"
 include "quickfixj-transport-netty"
 include "quickfixj-transport-reactor"
 include "quickfixj-jmx"
+include "quickfixj-osgi"
 include "quickfixj-examples"
 

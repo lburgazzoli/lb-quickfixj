@@ -1,0 +1,29 @@
+
+project.ext {
+    bundleImportPackages = [
+        '*'
+    ]
+
+    bundleExportPackages = [
+        "*"
+    ]
+}
+
+dependencies {
+    compile project(':quickfixj-core')
+    compile project(':quickfixj-transport')
+    compile project(':quickfixj-transport-netty')
+    compile project(':quickfixj-transport-reactor')
+
+    compile "org.osgi:org.osgi.core:$osgiVersion"
+    compile "org.osgi:org.osgi.compendium:$osgiVersion"
+    compile 'org.apache.felix:org.apache.felix.configadmin:1.6.0'
+    compile 'org.apache.karaf.shell:org.apache.karaf.shell.console:2.3.2'
+}
+
+jar {
+    manifest {
+        instruction 'Import-Package' , bundleImportPackages.join(',')
+        instruction 'Export-Package' , bundleExportPackages.join(',')
+    }
+}

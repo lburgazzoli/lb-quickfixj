@@ -1,0 +1,25 @@
+
+project.ext {
+    bundleImportPackages = [
+        '*'
+    ]
+
+    bundleExportPackages = [
+        "*"
+    ]
+}
+
+dependencies {
+    compile project(':quickfixj-core')
+    compile project(':quickfixj-transport')
+    compile project(':quickfixj-transport-mina1')
+    compile project(':quickfixj-transport-netty')
+    compile project(':quickfixj-transport-reactor')
+}
+
+jar {
+    manifest {
+        instruction 'Import-Package' , bundleImportPackages.join(',')
+        instruction 'Export-Package' , bundleExportPackages.join(',')
+    }
+}

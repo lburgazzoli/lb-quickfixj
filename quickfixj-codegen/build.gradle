@@ -1,0 +1,18 @@
+
+task generate(dependsOn: 'classes', type: JavaExec) {
+    main       = 'quickfix.codegen.MessageCodeGenerator'
+    classpath  = sourceSets.main.runtimeClasspath
+
+    jvmArgs    = [
+            "-Xms128m",
+            "-Xmx256m",
+            "-Dgenerator.decimal=$generatorDecimal",
+            "-Dgenerator.orderedFields=$generatorOrderedFields"
+    ]
+
+    args       = [
+            "$mainResourcesDir",
+            "${projectDir}/src/main/java/quickfix/codegen",
+            "$mainGeneratedDir"
+    ]
+}
