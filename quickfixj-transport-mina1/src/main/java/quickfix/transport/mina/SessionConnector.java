@@ -24,7 +24,6 @@ import org.apache.mina.common.IoSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import quickfix.ConfigError;
-import quickfix.Connector;
 import quickfix.FieldConvertError;
 import quickfix.Session;
 import quickfix.SessionFactory;

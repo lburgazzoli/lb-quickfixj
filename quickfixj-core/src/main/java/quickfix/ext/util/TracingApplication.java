@@ -30,6 +30,7 @@ import quickfix.Message;
 import quickfix.RejectLogon;
 import quickfix.SessionID;
 import quickfix.UnsupportedMessageType;
+import quickfix.ext.IFIXContext;
 
 /**
  *
@@ -39,39 +40,39 @@ public class TracingApplication implements Application {
         LoggerFactory.getLogger(TracingApplication.class);
 
     @Override
-    public void onCreate(SessionID sessionID) {
+    public void onCreate(IFIXContext context,SessionID sessionID) {
         LOGEGR.debug("onCreate {}",sessionID);
     }
 
     @Override
-    public void onLogon(SessionID sessionID) {
+    public void onLogon(IFIXContext context,SessionID sessionID) {
         LOGEGR.debug("onLogon {}",sessionID);
     }
 
     @Override
-    public void onLogout(SessionID sessionID) {
+    public void onLogout(IFIXContext context,SessionID sessionID) {
         LOGEGR.debug("onLogout {}",sessionID);
     }
 
     @Override
-    public void toAdmin(Message message, SessionID sessionID) {
+    public void toAdmin(IFIXContext context,Message message, SessionID sessionID) {
         LOGEGR.debug("toAdmin {} => {}",sessionID,message);
     }
 
     @Override
-    public void fromAdmin(Message message, SessionID sessionID)
+    public void fromAdmin(IFIXContext context,Message message, SessionID sessionID)
         throws FieldNotFound, IncorrectDataFormat, IncorrectTagValue, RejectLogon {
         LOGEGR.debug("fromAdmin {} => {}",sessionID,message);
     }
 
     @Override
-    public void toApp(Message message, SessionID sessionID)
+    public void toApp(IFIXContext context,Message message, SessionID sessionID)
         throws DoNotSend {
         LOGEGR.debug("toApp {} => {}",sessionID,message);
     }
 
     @Override
-    public void fromApp(Message message, SessionID sessionID)
+    public void fromApp(IFIXContext context,Message message, SessionID sessionID)
         throws FieldNotFound, IncorrectDataFormat, IncorrectTagValue, UnsupportedMessageType {
         LOGEGR.debug("fromApp {} => {}",sessionID,message);
     }

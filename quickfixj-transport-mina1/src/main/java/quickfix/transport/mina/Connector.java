@@ -17,7 +17,11 @@
  * are not clear to you.
  ******************************************************************************/
 
-package quickfix;
+package quickfix.transport.mina;
+
+import quickfix.ConfigError;
+import quickfix.RuntimeError;
+import quickfix.SessionID;
 
 import java.util.ArrayList;
 
@@ -29,9 +33,9 @@ public interface Connector {
      * Start accepting connections. Returns immediately. See implementations of
      * this interface potential threading issues.
      * 
-     * @throws ConfigError
+     * @throws quickfix.ConfigError
      *             Problem with acceptor configuration.
-     * @throws RuntimeError
+     * @throws quickfix.RuntimeError
      *             Other unspecified error
      */
     void start() throws ConfigError, RuntimeError;

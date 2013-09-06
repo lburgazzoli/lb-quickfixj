@@ -203,7 +203,7 @@ public class DefaultSessionFactory implements SessionFactory {
             // accessing the session before it's fully constructed.
             //
 
-            application.onCreate(sessionID);
+            application.onCreate(session.getContext(),sessionID);
 
             return session;
         } catch (final FieldConvertError e) {

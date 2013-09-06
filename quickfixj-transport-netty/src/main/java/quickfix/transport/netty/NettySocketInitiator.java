@@ -63,11 +63,11 @@ public class NettySocketInitiator extends AbstractTransport {
             boot.channel(NioSocketChannel.class);
             boot.option(ChannelOption.SO_KEEPALIVE, true);
             boot.option(ChannelOption.TCP_NODELAY, true);
-            boot.handler(new NettyChannelInitializer(getSession(), FIXSessionType.INITIATOR));
+            boot.handler(new NettyChannelInitializer(getHelper(), FIXSessionType.INITIATOR));
 
-            SessionID sid  = getSession().getSession().getSessionID();
-            String    host = getSession().getSettings().getString(sid, "SocketConnectHost");
-            int       port = getSession().getSettings().getInt(sid, "SocketConnectPort");
+            SessionID sid  = getHelper().getSession().getSessionID();
+            String    host = getHelper().getSettings().getString(sid, "SocketConnectHost");
+            int       port = getHelper().getSettings().getInt(sid, "SocketConnectPort");
 
             ChannelFuture future = boot.connect(new InetSocketAddress(host,port));
             Channel channel = future.awaitUninterruptibly().channel();

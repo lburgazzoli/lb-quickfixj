@@ -24,7 +24,7 @@ import org.quickfixj.jmx.mbean.session.SessionJmxExporter;
 import org.quickfixj.jmx.openmbean.TabularDataAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import quickfix.Connector;
+import quickfix.transport.mina.Connector;
 import quickfix.Responder;
 import quickfix.Session;
 import quickfix.SessionID;

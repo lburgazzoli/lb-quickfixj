@@ -875,7 +875,7 @@ public class Session implements Closeable {
 
     private boolean resendApproved(Message message) throws FieldNotFound {
         try {
-            application.toApp(message, sessionID);
+            application.toApp(context,message, sessionID);
         } catch (final DoNotSend e) {
             return false;
         } catch (final Throwable t) {
@@ -1324,9 +1324,9 @@ public class Session implements Closeable {
         // can be fixed and then reprocess previously sent messages.
         // QFJ-572: Behaviour depends on the setting of flag rejectMessageOnUnhandledException.
         if (MessageUtils.isAdminMessage(msgType)) {
-            application.fromAdmin(msg, sessionID);
+            application.fromAdmin(context,msg, sessionID);
         } else {
-            application.fromApp(msg, sessionID);
+            application.fromApp(context,msg, sessionID);
         }
     }
 
@@ -1539,7 +1539,7 @@ public class Session implements Closeable {
             final boolean logonSent = state.isLogonSent();
             if (logonReceived || logonSent) {
                 try {
-                    application.onLogout(sessionID);
+                    application.onLogout(context,sessionID);
                 } catch (final Throwable t) {
                     logApplicationException("onLogout()", t);
                 }
@@ -1717,7 +1717,7 @@ public class Session implements Closeable {
         }
         if (isLoggedOn()) {
             try {
-                application.onLogon(sessionID);
+                application.onLogon(context,sessionID);
             } catch (final Throwable t) {
                 logApplicationException("onLogon()", t);
             }
@@ -2019,7 +2019,7 @@ public class Session implements Closeable {
 
             if (message.isAdmin()) {
                 try {
-                    application.toAdmin(message, sessionID);
+                    application.toAdmin(context,message, sessionID);
                 } catch (final Throwable t) {
                     logApplicationException("toAdmin()", t);
                 }
@@ -2046,7 +2046,7 @@ public class Session implements Closeable {
                 }
             } else {
                 try {
-                    application.toApp(message, sessionID);
+                    application.toApp(context, message, sessionID);
                 } catch (final DoNotSend e) {
                     return false;
                 } catch (final Throwable t) {

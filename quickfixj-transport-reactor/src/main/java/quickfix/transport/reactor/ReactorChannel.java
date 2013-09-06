@@ -23,7 +23,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import quickfix.transport.ITransportChannel;
 import reactor.core.Environment;
+import reactor.core.Reactor;
 import reactor.core.composable.Promise;
+import reactor.core.spec.Reactors;
+import reactor.event.Event;
+import reactor.event.registry.Registration;
+import reactor.event.selector.Selectors;
 import reactor.function.Consumer;
 import reactor.tcp.Reconnect;
 import reactor.tcp.TcpClient;
@@ -38,7 +43,7 @@ import java.net.InetSocketAddress;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-class ReactorChannel implements ITransportChannel {
+public class ReactorChannel implements ITransportChannel {
     private static final Logger LOGGER = LoggerFactory.getLogger(ReactorChannel.class);
 
     private final Reconnect m_tcpRecx;
@@ -48,6 +53,7 @@ class ReactorChannel implements ITransportChannel {
     private final ExceptionConsumer m_consumerEx;
     private final DataConsumer m_consumerData;
     private final CloseHandler m_closeHandler;
+    private final Reactor m_reactor;
 
     private TcpClient<byte[],byte[]> m_tcpClient;
     private TcpConnection<byte[],byte[]> m_tcpCnx;
@@ -66,14 +72,20 @@ class ReactorChannel implements ITransportChannel {
         m_consumerEx       = new ExceptionConsumer();
         m_consumerData     = new DataConsumer();
         m_closeHandler     = new CloseHandler();
+        m_reactor          = Reactors.reactor().env(env).dispatcher(Environment.RING_BUFFER).get();
     }
 
     // *************************************************************************
     //
     // *************************************************************************
 
-    public void connect() {
-        if(m_tcpClient != null) {
+    /**
+     *
+     * @param host
+     * @param port
+     */
+    public ReactorChannel connect(String host,int port) {
+        if(m_tcpClient == null) {
             m_tcpClient = new TcpClientSpec<byte[],byte[]>(NettyTcpClient.class)
                 .env(m_tcpEnv)
                 .codec(new ReactorFrameCodec())
@@ -82,13 +94,29 @@ class ReactorChannel implements ITransportChannel {
                     new ClientSocketOptions()
                         .keepAlive(true)
                         .tcpNoDelay(true))
-                .connect("",10)
+                .connect(host,port)
                 .get();
 
             m_tcpClient.open(m_tcpRecx)
                 .consume(m_consumerCnx)
                 .when(Exception.class,m_consumerEx);
         }
+
+        return this;
+    }
+
+    /**
+     *
+     * @param type
+     * @param consumer
+     * @return
+     */
+    public <T> Registration<Consumer<Event<T>>> on(
+        Class<T> type,
+        Consumer<Event<T>> consumer)
+    {
+        LOGGER.debug("Subscribe to {} with consumer {}",type,consumer);
+        return m_reactor.on(Selectors.type(type),consumer);
     }
 
     // *************************************************************************
@@ -107,6 +135,9 @@ class ReactorChannel implements ITransportChannel {
             Promise<Void> p = m_tcpClient.close().onSuccess(new Consumer<Void>() {
                 @Override
                 public void accept(Void v) {
+                    m_reactor.notify(
+                        ReactorChannelEvents.ConnectionDown.class,
+                        ReactorChannelEvents.ConnectionDown.wrap(m_tcpCnx));
                 }
             });
 
@@ -150,7 +181,6 @@ class ReactorChannel implements ITransportChannel {
     private final class ConnectionConsumer implements Consumer<TcpConnection<byte[],byte[]>> {
         @Override
         public void accept(TcpConnection<byte[],byte[]> cnx) {
-            /*
             m_tcpCnx = cnx;
             m_tcpCnx.in()
                 .consume(m_consumerData);
@@ -158,24 +188,20 @@ class ReactorChannel implements ITransportChannel {
                 .close(m_closeHandler)
                 .readIdle(ReadIdleHandler.IDLE_TIME,new ReadIdleHandler())
                 .writeIdle(WriteIdleHandler.IDLE_TIME,new WriteIdleHandler());
+            m_reactor.notify(
+                ReactorChannelEvents.ConnectionUp.class,
+                ReactorChannelEvents.ConnectionUp.wrap(m_tcpCnx));
 
             m_running.set(true);
-
-            m_reactor.notify(
-                TCPEvents.ConnectionUp.class,
-                TCPEvents.ConnectionUp.wrap(m_tcpCnx));
-                */
         }
     }
 
     private final class DataConsumer implements Consumer<byte[]> {
         @Override
         public void accept(byte[] buffer) {
-            /*
-            m_reactor.notify(
-                TCPEvents.Data.class,
-                TCPEvents.Data.wrap(buffer));
-            */
+             m_reactor.notify(
+                 ReactorChannelEvents.Data.class,
+                 ReactorChannelEvents.Data.wrap(buffer));
         }
     }
 
@@ -199,6 +225,10 @@ class ReactorChannel implements ITransportChannel {
     private final class CloseHandler implements Runnable {
         @Override
         public void run() {
+            m_reactor.notify(
+                ReactorChannelEvents.ConnectionDown.class,
+                ReactorChannelEvents.ConnectionDown.wrap(m_tcpCnx));
+
             m_running.set(false);
         }
     }
@@ -207,7 +237,7 @@ class ReactorChannel implements ITransportChannel {
      *
      */
     private final class ReadIdleHandler implements Runnable {
-        public static final long IDLE_TIME = 500;
+        public static final long IDLE_TIME = 1000 * 10;
 
         @Override
         public void run() {
@@ -219,12 +249,11 @@ class ReactorChannel implements ITransportChannel {
      *
      */
     private final class WriteIdleHandler implements Runnable {
-        public static final long IDLE_TIME = 500;
+        public static final long IDLE_TIME =  1000 * 10;
 
         @Override
         public void run() {
             LOGGER.debug("WriteIdle ({})",IDLE_TIME);
         }
     }
-
 }

@@ -19,8 +19,6 @@
 
 package quickfix.transport.mina;
 
-import quickfix.Connector;
-
 /**
  * Accepts connections from FIX clients and manages the associated sessions.
  */

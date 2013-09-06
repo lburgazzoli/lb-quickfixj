@@ -19,6 +19,7 @@ ext {
     gradleScriptDir    = "${rootProject.projectDir}/gradle"
     mainResourcesDir   = "${rootProject.projectDir}/etc/resources"
     mainGeneratedDir   = "${rootProject.projectDir}/quickfixj-core/src/main/generated"
+    prefix             = "lb"
 }
 
 // *****************************************************************************
@@ -32,7 +33,7 @@ subprojects {
     apply plugin: "osgi"
 
     version      = '2.0.0.SNAPSHOT'
-    group        = 'org.quickfixj'
+    group        = 'com.github.lburgazzoli'
 
     repositories {
         maven { url "http://repo2.maven.org/maven2" }
@@ -77,15 +78,15 @@ subprojects {
     }
 
     jar {
-        baseName = "${group}-${project.name}"
+        baseName = "${group}-${project.prefix}-${project.name}"
 
-        manifest.attributes['Bundle-Description'     ] = "${group} :: ${project.name}"
-        manifest.attributes['Bundle-Name'            ] = "${group} :: ${project.name}"
-        manifest.attributes['Bundle-SymbolicName'    ] = "${group}-${project.name}"
+        manifest.attributes['Bundle-Description'     ] = "${group} :: ${project.prefix}-${project.name}"
+        manifest.attributes['Bundle-Name'            ] = "${group} :: ${project.prefix}-${project.name}"
+        manifest.attributes['Bundle-SymbolicName'    ] = "${group}-${project.prefix}-${project.name}"
         manifest.attributes['Bundle-Version'         ] = project.version
-        manifest.attributes['Implementation-Title'   ] = "${group}-${project.name}-${project.version}"
+        manifest.attributes['Implementation-Title'   ] = "${group}-${project.prefix}-${project.name}-${project.version}"
         manifest.attributes['Implementation-Version' ] = project.version
-        manifest.attributes['Implementation-Vendor'  ] = 'quickfixj'
+        manifest.attributes['Implementation-Vendor'  ] = 'lb'
 
         manifest.classesDir = new File("$buildDir/classes/main")
         manifest.classpath  = project.runtimeClasspath

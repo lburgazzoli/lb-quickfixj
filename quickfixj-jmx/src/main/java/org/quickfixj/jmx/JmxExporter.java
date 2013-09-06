@@ -20,7 +20,7 @@ package org.quickfixj.jmx;
 import org.quickfixj.jmx.mbean.connector.ConnectorJmxExporter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import quickfix.Connector;
+import quickfix.transport.mina.Connector;
 import quickfix.ext.IFIXContext;
 import quickfix.transport.mina.SessionConnector;
 

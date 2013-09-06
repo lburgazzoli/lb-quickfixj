@@ -21,6 +21,7 @@ package quickfix.transport;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import quickfix.Session;
 import quickfix.ext.IFIXContext;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -33,7 +34,7 @@ public abstract class AbstractTransport implements ITransport {
     private static Logger LOGGER =
         LoggerFactory.getLogger(AbstractTransport.class);
 
-    private final FIXSessionHelper m_session;
+    private final FIXSessionHelper m_helper;
     private final AtomicBoolean m_running;
 
     private ITransportChannel m_channel;
@@ -41,14 +42,14 @@ public abstract class AbstractTransport implements ITransport {
     /**
      * c-tor
      *
-     * @param session
+     * @param helper
      */
-    public AbstractTransport(FIXSessionHelper session) {
+    public AbstractTransport(FIXSessionHelper helper) {
         m_channel = null;
         m_running = new AtomicBoolean(false);
 
-        m_session = session;
-        m_session.getSession().setResponder(this);
+        m_helper = helper;
+        m_helper.getSession().setResponder(this);
     }
 
     /**
@@ -56,15 +57,23 @@ public abstract class AbstractTransport implements ITransport {
      * @return
      */
     protected IFIXContext getRuntime() {
-        return m_session.getContext();
+        return m_helper.getContext();
     }
 
     /**
      *
      * @return
      */
-    protected FIXSessionHelper getSession() {
-        return m_session;
+    protected FIXSessionHelper getHelper() {
+        return m_helper;
+    }
+
+    /**
+     *
+     * @return
+     */
+    protected Session getSession() {
+        return m_helper.getSession();
     }
 
     /**
