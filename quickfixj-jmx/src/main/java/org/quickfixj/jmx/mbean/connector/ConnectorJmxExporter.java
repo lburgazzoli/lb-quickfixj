@@ -22,11 +22,11 @@ import org.quickfixj.jmx.JmxExporter;
 import org.quickfixj.jmx.mbean.ObjectNameFactory;
 import org.quickfixj.jmx.mbean.session.SessionJmxExporter;
 import quickfix.ext.IFIXContext;
-import quickfix.transport.mina.Acceptor;
+import com.github.lburgazzoli.quickfixj.transport.mina.Acceptor;
 import quickfix.SessionID;
-import quickfix.transport.mina.SessionConnector;
-import quickfix.transport.mina.acceptor.AbstractSocketAcceptor;
-import quickfix.transport.mina.initiator.AbstractSocketInitiator;
+import com.github.lburgazzoli.quickfixj.transport.mina.SessionConnector;
+import com.github.lburgazzoli.quickfixj.transport.mina.acceptor.AbstractSocketAcceptor;
+import com.github.lburgazzoli.quickfixj.transport.mina.initiator.AbstractSocketInitiator;
 
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;

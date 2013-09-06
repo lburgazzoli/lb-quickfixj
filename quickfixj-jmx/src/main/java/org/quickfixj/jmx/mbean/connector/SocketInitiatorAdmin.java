@@ -6,8 +6,8 @@ import org.quickfixj.jmx.mbean.JmxSupport;
 import org.quickfixj.jmx.mbean.session.SessionJmxExporter;
 import org.quickfixj.jmx.openmbean.TabularDataAdapter;
 import quickfix.ext.IFIXContext;
-import quickfix.transport.mina.initiator.AbstractSocketInitiator;
-import quickfix.transport.mina.initiator.IoSessionInitiator;
+import com.github.lburgazzoli.quickfixj.transport.mina.initiator.AbstractSocketInitiator;
+import com.github.lburgazzoli.quickfixj.transport.mina.initiator.IoSessionInitiator;
 
 import javax.management.ObjectName;
 import javax.management.openmbean.OpenDataException;

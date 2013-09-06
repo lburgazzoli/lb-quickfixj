@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright (c) quickfixengine.org  All rights reserved.
+
+  This file is part of the QuickFIX FIX Engine
+
+  This file may be distributed under the terms of the quickfixengine.org
+  license as defined by quickfixengine.org and appearing in the file
+  LICENSE included in the packaging of this file.
+
+  This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING
+  THE WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A
+  PARTICULAR PURPOSE.
+
+  See http://www.quickfixengine.org/LICENSE for licensing information.
+
+  Contact ask@quickfixengine.org if any conditions of this licensing
+  are not clear to you.
+-->
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0">
+
+    <!-- ******************************************************************* -->
+    <!--                                                                     -->
+    <!-- ******************************************************************* -->
+
+    <cm:property-placeholder
+            persistent-id   = "com.github.lburgazzoli.quickfixj.osgi"
+            update-strategy = "reload">
+        <cm:default-properties>
+        </cm:default-properties>
+    </cm:property-placeholder>
+
+    <!-- ******************************************************************* -->
+    <!--                                                                     -->
+    <!-- ******************************************************************* -->
+
+    <bean id="FIX_CONTEXT" class="quickfix.ext.FIXContext"/>
+
+    <service id="fix.context.default" ref="FIX_CONTEXT">
+        <interfaces>
+            <value>quickfix.ext.IFIXContext</value>
+        </interfaces>
+        <service-properties>
+            <entry key="osgi.jndi.service.name" value="fix.context.default"/>
+        </service-properties>
+    </service>
+
+    <!-- ******************************************************************* -->
+    <!-- COMMANDS                                                            -->
+    <!-- ******************************************************************* -->
+
+    <command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.0.0">
+        <command name="fix/session-list">
+            <action class="com.github.lburgazzoli.quickfixj.karaf.cmd.SessionListCommand">
+                <property name="fixContext" ref="FIX_CONTEXT"/>
+            </action>
+        </command>
+    </command-bundle>
+
+</blueprint>

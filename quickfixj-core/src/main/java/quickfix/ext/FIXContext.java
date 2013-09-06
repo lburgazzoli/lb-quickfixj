@@ -36,6 +36,7 @@ import quickfix.field.TargetCompID;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -77,6 +78,11 @@ public class FIXContext implements IFIXContext {
     // *************************************************************************
     //
     // *************************************************************************
+
+    @Override
+    public Set<SessionID> getSessionIDs() {
+        return m_sessions.keySet();
+    }
 
     @Override
     public Session getSession(SessionID sessionId) {

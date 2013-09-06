@@ -8,6 +8,6 @@ lb-quickfixj
 [![Flattr Button](http://api.flattr.com/button/button-compact-static-100x17.png "Flattr This!")](https://github.com/lburgazzoli/lb-quickfixj "lb-quickfixj")
 
 ## License
-(http://www.quickfixengine.org/quickfix/doc/html/license.html)
+http://www.quickfixengine.org/LICENSE
 
 
