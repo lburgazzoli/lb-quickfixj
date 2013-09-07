@@ -29,7 +29,7 @@ import quickfix.Responder;
 import quickfix.Session;
 import quickfix.SessionID;
 import quickfix.SessionSettings;
-import quickfix.ext.IFIXContext;
+import com.github.lburgazzoli.quickfixj.core.IFIXContext;
 import com.github.lburgazzoli.quickfixj.transport.mina.Acceptor;
 import com.github.lburgazzoli.quickfixj.transport.mina.Initiator;
 import com.github.lburgazzoli.quickfixj.transport.mina.SessionConnector;

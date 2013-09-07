@@ -24,42 +24,35 @@
     <!--                                                                     -->
     <!-- ******************************************************************* -->
 
-    <cm:property-placeholder
-            persistent-id   = "com.github.lburgazzoli.quickfixj.osgi"
-            update-strategy = "reload">
-        <cm:default-properties>
-        </cm:default-properties>
-    </cm:property-placeholder>
+    <manifest xmlns="http://karaf.apache.org/xmlns/deployer/blueprint/v1.0.0">
+        Bundle-Name: QFJ :: Connection :: 01
+        Bundle-SymbolicName: qfj.connection.01
+        Bundle-Version: 1.0.0
+    </manifest>
 
     <!-- ******************************************************************* -->
     <!--                                                                     -->
     <!-- ******************************************************************* -->
 
-    <bean id    = "QFJ_CTX_DEFAULT"
-          class = "com.github.lburgazzoli.quickfixj.core.FIXContext">
-        <argument value="qfj-ctx-default"/>
+    <reference
+         id        = "OSGI_CFG_ADMIN"
+         interface = "org.osgi.service.cm.ConfigurationAdmin"/>
+    <reference
+         id        = "QFJ_COTEXT_DEFAULT"
+         interface = "com.github.lburgazzoli.quickfixj.core.IFIXContext"/>
+
+    <!-- ******************************************************************* -->
+    <!--                                                                     -->
+    <!-- ******************************************************************* -->
+
+    <bean id             = "QFJ_CONNECTION_01"
+          class          = "com.github.lburgazzoli.quickfixj.osgi.FIXConnection"
+          init-method    = "init"
+          destroy-method = "destroy">
+        <argument ref   = "QFJ_COTEXT_DEFAULT"/>
+        <argument value = "qfj.connection.01"/>
+        <argument ref   = "blueprintBundleContext"/>
+        <argument ref   = "OSGI_CFG_ADMIN"/>
     </bean>
-
-    <service id="fix.context.default" ref="QFJ_CTX_DEFAULT">
-        <interfaces>
-            <value>com.github.lburgazzoli.quickfixj.core.IFIXContext</value>
-        </interfaces>
-        <service-properties>
-            <entry key="osgi.jndi.service.name" value="fix.context.default"/>
-        </service-properties>
-    </service>
-
-    <!-- ******************************************************************* -->
-    <!-- COMMANDS                                                            -->
-    <!-- ******************************************************************* -->
-
-    <command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.0.0">
-        <command name="fix/session-list">
-            <action class="com.github.lburgazzoli.quickfixj.karaf.cmd.SessionListCommand"/>
-        </command>
-        <command name="fix/context-list">
-            <action class="com.github.lburgazzoli.quickfixj.karaf.cmd.ContextListCommand"/>
-        </command>
-    </command-bundle>
 
 </blueprint>

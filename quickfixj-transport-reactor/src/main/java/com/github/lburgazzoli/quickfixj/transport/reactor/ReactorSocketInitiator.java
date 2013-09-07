@@ -97,27 +97,17 @@ public class ReactorSocketInitiator extends AbstractTransport {
 
             ReactorChannel channel = new ReactorChannel(ReactorConstants.ENV);
             channel.on(ReactorChannelEvents.ConnectionUp.class,m_consumerCnxUp);
-            channel.on(ReactorChannelEvents.ConnectionDown.class, m_consumerCnxDown);
+            channel.on(ReactorChannelEvents.ConnectionDown.class,m_consumerCnxDown);
             channel.on(ReactorChannelEvents.Data.class,m_consumerData);
-            channel.connect(host, port);
+            channel.connect(host,port);
 
-            setRunning(true);
-
-            while(isRunning()) {
-                try {
-                    setChannel(channel);
-                    setRunning(true);
-                    while(isRunning()) {
-                        try{ Thread.sleep(5000); } catch(Exception e) {}
-                    }
-                } catch(Exception e) {
-                    LOGGER.warn("Error", e);
-                }
+            if(!isRunning()) {
+                setRunning(true);
+                setChannel(channel);
             }
-
-            disconnect();
         } catch(Exception e) {
             LOGGER.warn("Exception", e);
+            setRunning(false);
         }
     }
 

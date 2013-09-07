@@ -23,7 +23,7 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageEncoder;
 import io.netty.util.CharsetUtil;
-import quickfix.ext.IFIXContext;
+import com.github.lburgazzoli.quickfixj.core.IFIXContext;
 
 import java.nio.charset.Charset;
 import java.util.List;

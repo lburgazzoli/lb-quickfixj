@@ -1,0 +1,19 @@
+<features name="quickfixj-karaf-repo" xmlns="http://karaf.apache.org/xmlns/features/v1.0.0">
+
+    <!--  ******************************************************************** -->
+    <!--                                                                       -->
+    <!--  ******************************************************************** -->
+
+    <feature name="quickfixj-dep" version="1.0.0">
+        <bundle>mvn:org.apache.commons/commons-lang3/3.1</bundle>
+        <bundle>mvn:commons-lang/commons-lang/2.6</bundle>
+        <bundle>mvn:com.google.guava/guava/14.0.1</bundle>
+        <bundle>mvn:com.lmax/disruptor/3.2.0</bundle>
+        <bundle>mvn:org.javolution/javolution-core-java:6.0.0</bundle>
+        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.dom4j/1.6.1_5</bundle>
+        <bundle>mvn:org.logicalcobwebs/com.springsource.org.logicalcobwebs.cglib.core/0.9.1</bundle>
+        <bundle>mvn:org.logicalcobwebs/com.springsource.org.logicalcobwebs.proxool/0.9.1</bundle>
+        <bundle>mvn:net.sourceforge.cglib/com.springsource.net.sf.cglib/2.2.0</bundle>
+    </feature>
+
+</features>

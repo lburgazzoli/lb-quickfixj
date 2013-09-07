@@ -19,7 +19,6 @@ ext {
     gradleScriptDir    = "${rootProject.projectDir}/gradle"
     mainResourcesDir   = "${rootProject.projectDir}/etc/resources"
     mainGeneratedDir   = "${rootProject.projectDir}/quickfixj-core/src/main/generated"
-    prefix             = "lb"
 }
 
 // *****************************************************************************
@@ -34,6 +33,7 @@ subprojects {
 
     version      = '2.0.0.SNAPSHOT'
     group        = 'com.github.lburgazzoli'
+    ext.prefix   = 'lb'
 
     repositories {
         maven { url "http://repo2.maven.org/maven2" }
@@ -77,13 +77,13 @@ subprojects {
     }
 
     jar {
-        baseName = "${group}-${project.prefix}-${project.name}"
+        baseName = "${project.prefix}-${project.name}"
 
-        manifest.attributes['Bundle-Description'     ] = "${group} :: ${project.prefix}-${project.name}"
-        manifest.attributes['Bundle-Name'            ] = "${group} :: ${project.prefix}-${project.name}"
-        manifest.attributes['Bundle-SymbolicName'    ] = "${group}-${project.prefix}-${project.name}"
+        manifest.attributes['Bundle-Description'     ] = "${project.prefix} :: ${project.name}"
+        manifest.attributes['Bundle-Name'            ] = "${project.prefix} :: ${project.name}"
+        manifest.attributes['Bundle-SymbolicName'    ] = "${project.group}-${project.prefix}-${project.name}"
         manifest.attributes['Bundle-Version'         ] = project.version
-        manifest.attributes['Implementation-Title'   ] = "${group}-${project.prefix}-${project.name}-${project.version}"
+        manifest.attributes['Implementation-Title'   ] = "${project.group}-${project.prefix}-${project.name}-${project.version}"
         manifest.attributes['Implementation-Version' ] = project.version
         manifest.attributes['Implementation-Vendor'  ] = 'lb'
 

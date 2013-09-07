@@ -30,7 +30,7 @@ import quickfix.Message;
 import quickfix.MessageUtils;
 import quickfix.Session;
 import quickfix.SessionID;
-import quickfix.ext.IFIXContext;
+import com.github.lburgazzoli.quickfixj.core.IFIXContext;
 import quickfix.field.MsgType;
 
 import java.io.IOException;

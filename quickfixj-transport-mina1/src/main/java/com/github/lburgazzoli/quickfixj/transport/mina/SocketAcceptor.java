@@ -28,7 +28,7 @@ import quickfix.MessageStoreFactory;
 import quickfix.RuntimeError;
 import quickfix.SessionFactory;
 import quickfix.SessionSettings;
-import quickfix.ext.IFIXContext;
+import com.github.lburgazzoli.quickfixj.core.IFIXContext;
 import com.github.lburgazzoli.quickfixj.transport.mina.acceptor.AbstractSocketAcceptor;
 
 /**

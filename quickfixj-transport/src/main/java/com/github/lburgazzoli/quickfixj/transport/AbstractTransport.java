@@ -22,7 +22,7 @@ package com.github.lburgazzoli.quickfixj.transport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import quickfix.Session;
-import quickfix.ext.IFIXContext;
+import com.github.lburgazzoli.quickfixj.core.IFIXContext;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -135,11 +135,15 @@ public abstract class AbstractTransport implements ITransport {
      */
     @Override
     public void disconnect() {
-        if(m_channel != null && isRunning()) {
+        LOGGER.debug("Disconnect isRunning={}, channel={}",isRunning(),m_channel);
+
+        if(isRunning()) {
             setRunning(false);
 
-            m_channel.disconnect();
-            m_channel = null;
+            if(m_channel != null) {
+                m_channel.disconnect();
+                m_channel = null;
+            }
         }
     }
 

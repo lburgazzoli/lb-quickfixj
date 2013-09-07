@@ -28,7 +28,7 @@ import quickfix.Application;
 import quickfix.ConfigError;
 import quickfix.DefaultSessionFactory;
 import quickfix.FieldConvertError;
-import quickfix.ext.IFIXContext;
+import com.github.lburgazzoli.quickfixj.core.IFIXContext;
 import com.github.lburgazzoli.quickfixj.transport.mina.Initiator;
 import quickfix.LogFactory;
 import quickfix.MessageFactory;

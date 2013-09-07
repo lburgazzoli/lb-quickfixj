@@ -38,6 +38,7 @@ public final class NettyChannelHandler extends SimpleChannelInboundHandler<FIXMe
     private static final Logger LOGGER =
         LoggerFactory.getLogger(NettyChannelHandler.class);
 
+    private final INettyStateHandler m_stateHandler;
     private final FIXSessionType m_sessionType;
     private final FIXSessionHelper m_session;
     private final FIXMessageEventQueue m_eventQueue;
@@ -48,13 +49,15 @@ public final class NettyChannelHandler extends SimpleChannelInboundHandler<FIXMe
     /**
      * c-tor
      *
+     * @param stateHandler
      * @param session
      * @param sessionType
      */
-    public NettyChannelHandler(FIXSessionHelper session, FIXSessionType sessionType) {
-        m_session     = session;
-        m_sessionType = sessionType;
-        m_eventQueue  = new FIXMessageEventQueue();
+    public NettyChannelHandler(INettyStateHandler stateHandler,FIXSessionHelper session, FIXSessionType sessionType) {
+        m_stateHandler = stateHandler;
+        m_session      = session;
+        m_sessionType  = sessionType;
+        m_eventQueue   = new FIXMessageEventQueue();
     }
 
     // *************************************************************************
@@ -77,6 +80,8 @@ public final class NettyChannelHandler extends SimpleChannelInboundHandler<FIXMe
                 m_session.startSessionTimer();
             }
         }
+
+        m_stateHandler.onConnect(ctx.channel());
     }
 
     @Override
@@ -93,15 +98,16 @@ public final class NettyChannelHandler extends SimpleChannelInboundHandler<FIXMe
     }
 
     @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        LOGGER.warn("Unexpected exception from downstream.", cause);
-        ctx.close();
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        m_session.stopSessionTimer();
+        m_eventQueue.stop();
+
+        m_stateHandler.onDisconnect(ctx.channel());
     }
 
     @Override
-    public void channelInactive(
-        ChannelHandlerContext ctx) throws Exception {
-        m_session.stopSessionTimer();
-        m_eventQueue.stop();
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        LOGGER.warn("Unexpected exception from downstream.", cause);
+        ctx.close();
     }
 }

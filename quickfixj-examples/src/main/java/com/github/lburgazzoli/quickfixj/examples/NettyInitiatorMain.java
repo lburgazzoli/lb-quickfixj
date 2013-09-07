@@ -19,6 +19,7 @@
 
 package com.github.lburgazzoli.quickfixj.examples;
 
+import com.github.lburgazzoli.quickfixj.transport.ITransport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import quickfix.Application;
@@ -32,9 +33,9 @@ import quickfix.SLF4JLogFactory;
 import quickfix.SessionFactory;
 import quickfix.SessionID;
 import quickfix.SessionSettings;
-import quickfix.ext.FIXContext;
-import quickfix.ext.IFIXContext;
-import quickfix.ext.util.TracingApplication;
+import com.github.lburgazzoli.quickfixj.core.FIXContext;
+import com.github.lburgazzoli.quickfixj.core.IFIXContext;
+import com.github.lburgazzoli.quickfixj.core.util.TracingApplication;
 import com.github.lburgazzoli.quickfixj.transport.FIXSessionHelper;
 import com.github.lburgazzoli.quickfixj.transport.netty.NettySocketInitiator;
 
@@ -42,7 +43,7 @@ import com.github.lburgazzoli.quickfixj.transport.netty.NettySocketInitiator;
  *
  */
 public class NettyInitiatorMain {
-    private static final Logger LOGGEGR = LoggerFactory.getLogger(NettyInitiatorMain.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(NettyInitiatorMain.class);
 
     /**
      * @param sid
@@ -72,7 +73,7 @@ public class NettyInitiatorMain {
      */
     public static void main(String[] args) {
         try {
-            IFIXContext           ctx  = new FIXContext();
+            IFIXContext           ctx  = new FIXContext("qfj-ctx-id");
             SessionID             sid  = new SessionID("FIX.4.2","TEST","EXEC");
             SessionSettings       cfg  = getSettingsFor(sid);
             Application           app  = new TracingApplication();
@@ -81,11 +82,20 @@ public class NettyInitiatorMain {
             MessageFactory        msgf = new DefaultMessageFactory();
             SessionFactory        sf   = new DefaultSessionFactory(ctx,app,msf,logf,msgf);
             FIXSessionHelper      sx   = new FIXSessionHelper(sf.create(sid,cfg),cfg);
+            ITransport            tx   = new NettySocketInitiator(sx);
 
-            new NettySocketInitiator(sx).run();
+            tx.run();
+
+            try {
+                while(true) {
+                    try{ Thread.sleep(5000); } catch(Exception e) {}
+                }
+            } catch(Exception e) {
+                LOGGER.warn("Exception", e);
+            }
 
         } catch(Exception e) {
-            LOGGEGR.warn("Exception", e);
+            LOGGER.warn("Exception", e);
         }
     }
 }

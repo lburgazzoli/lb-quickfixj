@@ -17,30 +17,34 @@
  * are not clear to you.
  ******************************************************************************/
 
-package com.github.lburgazzoli.quickfixj.karaf.cmd;
+package com.github.lburgazzoli.quickfixj.core.util;
 
-import org.apache.karaf.shell.console.OsgiCommandSupport;
+import java.util.concurrent.ThreadFactory;
 
 /**
  *
  */
-public abstract class AbstractFIXCommand extends OsgiCommandSupport {
+public class NamedThreadFactory implements ThreadFactory {
+    private final String m_threadName;
+
+    /**
+     * c-tor
+     *
+     * @param threadName
+     */
+    public NamedThreadFactory(String threadName) {
+        m_threadName = threadName;
+    }
+
     /**
      *
+     * @param runnable
+     * @return
      */
-    protected AbstractFIXCommand() {
-    }
-
     @Override
-    protected Object doExecute() throws Exception {
-        try {
-            execute();
-        } finally {
-            ungetServices();
-        }
-
-        return null;
+    public Thread newThread(Runnable runnable) {
+        Thread thread = new Thread(runnable,m_threadName);
+        thread.setDaemon(true);
+        return thread;
     }
-
-    protected abstract void execute() throws Exception;
 }

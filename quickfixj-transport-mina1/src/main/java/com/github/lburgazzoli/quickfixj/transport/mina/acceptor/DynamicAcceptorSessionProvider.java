@@ -29,7 +29,7 @@ import quickfix.Session;
 import quickfix.SessionFactory;
 import quickfix.SessionID;
 import quickfix.SessionSettings;
-import quickfix.ext.IFIXContext;
+import com.github.lburgazzoli.quickfixj.core.IFIXContext;
 import com.github.lburgazzoli.quickfixj.transport.mina.SessionConnector;
 
 import java.util.Collections;

@@ -46,10 +46,8 @@ public class NettyChannel implements ITransportChannel {
     @Override
     public boolean send(String data) {
         if(m_channel != null) {
-            ChannelFuture future = m_channel.writeAndFlush(data);
-            future.awaitUninterruptibly();
-
-            return future.isSuccess();
+            m_channel.writeAndFlush(data);
+            return true;
         }
 
         return false;

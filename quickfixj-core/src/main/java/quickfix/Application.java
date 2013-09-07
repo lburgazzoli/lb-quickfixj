@@ -19,7 +19,7 @@
 
 package quickfix;
 
-import quickfix.ext.IFIXContext;
+import com.github.lburgazzoli.quickfixj.core.IFIXContext;
 
 /**
  * This is the primary QuickFIX/J interface for processing session messages.

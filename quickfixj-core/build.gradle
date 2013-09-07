@@ -1,6 +1,7 @@
 
 project.ext {
     bundleImportPackages = [
+        'com.sleepycat.*;;resolution:=optional',
         '*'
     ]
 

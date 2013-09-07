@@ -33,7 +33,7 @@ import quickfix.Session;
 import quickfix.SessionID;
 import quickfix.field.MsgType;
 import com.github.lburgazzoli.quickfixj.transport.FIXMessageEvent;
-import quickfix.ext.IFIXContext;
+import com.github.lburgazzoli.quickfixj.core.IFIXContext;
 
 import java.nio.charset.Charset;
 import java.util.List;
@@ -116,7 +116,7 @@ public final class NettyMessageDecoder extends ByteToMessageDecoder {
 
             sw.stop();
 
-            LOGGER.debug("Decode.Tyme <{}>",sw.toString());
+            LOGGER.debug("Decode.Time <{}>",sw.toString());
 
             if(data != null) {
                 out.add(data);

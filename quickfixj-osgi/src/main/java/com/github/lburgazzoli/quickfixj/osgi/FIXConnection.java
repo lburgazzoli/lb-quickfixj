@@ -39,8 +39,8 @@ import quickfix.SLF4JLogFactory;
 import quickfix.SessionFactory;
 import quickfix.SessionID;
 import quickfix.SessionSettings;
-import quickfix.ext.IFIXContext;
-import quickfix.ext.util.TracingApplication;
+import com.github.lburgazzoli.quickfixj.core.IFIXContext;
+import com.github.lburgazzoli.quickfixj.core.util.TracingApplication;
 
 import java.io.IOException;
 import java.util.Dictionary;
@@ -137,15 +137,17 @@ public class FIXConnection {
      * @return
      */
     private SessionID buildSessionID(Dictionary<String,Object> prop) {
-        return new SessionID(
-            (String)prop.get(SessionSettings.BEGINSTRING),
-            (String)prop.get(SessionSettings.SENDERCOMPID),
-            (String)prop.get(SessionSettings.SENDERSUBID),
-            (String)prop.get(SessionSettings.SENDERLOCID),
-            (String)prop.get(SessionSettings.TARGETCOMPID),
-            (String)prop.get(SessionSettings.TARGETSUBID),
-            (String)prop.get(SessionSettings.TARGETLOCID),
-            (String)prop.get(SessionSettings.SESSION_QUALIFIER));
+        return (prop == null)
+            ? null
+            : new SessionID(
+                (String)prop.get(SessionSettings.BEGINSTRING),
+                (String)prop.get(SessionSettings.SENDERCOMPID),
+                (String)prop.get(SessionSettings.SENDERSUBID),
+                (String)prop.get(SessionSettings.SENDERLOCID),
+                (String)prop.get(SessionSettings.TARGETCOMPID),
+                (String)prop.get(SessionSettings.TARGETSUBID),
+                (String)prop.get(SessionSettings.TARGETLOCID),
+                (String)prop.get(SessionSettings.SESSION_QUALIFIER));
     }
 
     /**

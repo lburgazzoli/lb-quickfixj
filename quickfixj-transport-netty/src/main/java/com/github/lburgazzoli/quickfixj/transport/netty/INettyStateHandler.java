@@ -17,34 +17,23 @@
  * are not clear to you.
  ******************************************************************************/
 
-package quickfix.ext.util;
+package com.github.lburgazzoli.quickfixj.transport.netty;
 
-import java.util.concurrent.ThreadFactory;
+import io.netty.channel.Channel;
 
 /**
  *
  */
-public class NamedThreadFactory implements ThreadFactory {
-    private final String m_threadName;
-
+public interface INettyStateHandler {
     /**
-     * c-tor
      *
-     * @param threadName
+     * @param channel
      */
-    public NamedThreadFactory(String threadName) {
-        m_threadName = threadName;
-    }
+    public void onConnect(Channel channel);
 
     /**
      *
-     * @param runnable
-     * @return
+     * @param channel
      */
-    @Override
-    public Thread newThread(Runnable runnable) {
-        Thread thread = new Thread(runnable,m_threadName);
-        thread.setDaemon(true);
-        return thread;
-    }
+    public void onDisconnect(Channel channel);
 }

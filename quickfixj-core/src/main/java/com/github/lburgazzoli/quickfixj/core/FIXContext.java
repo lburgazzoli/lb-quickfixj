@@ -17,7 +17,7 @@
  * are not clear to you.
  ******************************************************************************/
 
-package quickfix.ext;
+package com.github.lburgazzoli.quickfixj.core;
 
 import com.google.common.collect.Maps;
 import org.apache.commons.lang3.StringUtils;
@@ -29,7 +29,7 @@ import quickfix.Session;
 import quickfix.SessionException;
 import quickfix.SessionID;
 import quickfix.SessionNotFound;
-import quickfix.ext.util.NamedThreadFactory;
+import com.github.lburgazzoli.quickfixj.core.util.NamedThreadFactory;
 import quickfix.field.BeginString;
 import quickfix.field.SenderCompID;
 import quickfix.field.TargetCompID;
@@ -49,14 +49,18 @@ public class FIXContext implements IFIXContext {
     private static Logger LOGGER =
         LoggerFactory.getLogger(FIXContext.class);
 
+    private final String m_id;
     private final ThreadFactory m_threadFactory;
     private final ScheduledExecutorService m_scheduler;
     private final ConcurrentMap<SessionID, Session> m_sessions;
 
     /**
      * c-tor
+     *
+     * @param id;
      */
-    public FIXContext() {
+    public FIXContext(String id) {
+        m_id = id;
         m_threadFactory = new NamedThreadFactory("QFJ_Timer");
         m_scheduler = Executors.newSingleThreadScheduledExecutor(m_threadFactory);
         m_sessions = Maps.newConcurrentMap();
@@ -66,10 +70,11 @@ public class FIXContext implements IFIXContext {
     //
     // *************************************************************************
 
-    /**
-     *
-     * @return
-     */
+    @Override
+    public String getId() {
+        return m_id;
+    }
+
     @Override
     public ScheduledExecutorService getScheduler() {
         return m_scheduler;
@@ -118,20 +123,13 @@ public class FIXContext implements IFIXContext {
         }
     }
 
-    /**
-     * Determine if a session exists with the given ID.
-     * @param sessionID
-     * @return true if session exists, false otherwise.
-     */
+    @Override
     public boolean doesSessionExist(SessionID sessionID) {
         return m_sessions.containsKey(sessionID);
     }
 
-    /**
-     * Return the session count.
-     * @return the number of sessions
-     */
-    public int numSessions() {
+    @Override
+    public int getNumSessions() {
         return m_sessions.size();
     }
 

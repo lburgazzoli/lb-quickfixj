@@ -22,7 +22,7 @@ package quickfix;
 import org.logicalcobwebs.proxool.ProxoolDataSource;
 import org.quickfixj.QFJException;
 import org.slf4j.LoggerFactory;
-import quickfix.ext.IFIXContext;
+import com.github.lburgazzoli.quickfixj.core.IFIXContext;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;

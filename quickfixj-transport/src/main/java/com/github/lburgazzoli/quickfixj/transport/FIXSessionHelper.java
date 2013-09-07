@@ -23,7 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import quickfix.Session;
 import quickfix.SessionSettings;
-import quickfix.ext.IFIXContext;
+import com.github.lburgazzoli.quickfixj.core.IFIXContext;
 
 import java.io.IOException;
 import java.util.concurrent.ScheduledFuture;

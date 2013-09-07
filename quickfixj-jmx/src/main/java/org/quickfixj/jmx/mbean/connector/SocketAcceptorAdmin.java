@@ -22,7 +22,7 @@ import org.quickfixj.jmx.mbean.JmxSupport;
 import org.quickfixj.jmx.mbean.session.SessionJmxExporter;
 import org.quickfixj.jmx.openmbean.TabularDataAdapter;
 import quickfix.SessionID;
-import quickfix.ext.IFIXContext;
+import com.github.lburgazzoli.quickfixj.core.IFIXContext;
 import com.github.lburgazzoli.quickfixj.transport.mina.acceptor.AbstractSocketAcceptor;
 
 import javax.management.ObjectName;

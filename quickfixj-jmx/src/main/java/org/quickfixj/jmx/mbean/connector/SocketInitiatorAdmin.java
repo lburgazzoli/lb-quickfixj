@@ -5,7 +5,7 @@ import org.quickfixj.jmx.JmxExporter;
 import org.quickfixj.jmx.mbean.JmxSupport;
 import org.quickfixj.jmx.mbean.session.SessionJmxExporter;
 import org.quickfixj.jmx.openmbean.TabularDataAdapter;
-import quickfix.ext.IFIXContext;
+import com.github.lburgazzoli.quickfixj.core.IFIXContext;
 import com.github.lburgazzoli.quickfixj.transport.mina.initiator.AbstractSocketInitiator;
 import com.github.lburgazzoli.quickfixj.transport.mina.initiator.IoSessionInitiator;
 

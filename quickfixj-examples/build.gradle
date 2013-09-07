@@ -15,6 +15,7 @@ dependencies {
     compile project(':quickfixj-transport-mina1')
     compile project(':quickfixj-transport-netty')
     compile project(':quickfixj-transport-reactor')
+    compile project(':quickfixj-osgi')
 }
 
 jar {

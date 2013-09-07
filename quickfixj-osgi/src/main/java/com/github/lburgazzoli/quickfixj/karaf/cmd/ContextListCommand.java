@@ -19,12 +19,8 @@
 
 package com.github.lburgazzoli.quickfixj.karaf.cmd;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.felix.gogo.commands.Argument;
-import org.apache.felix.gogo.commands.Command;
-import quickfix.Session;
-import quickfix.SessionID;
 import com.github.lburgazzoli.quickfixj.core.IFIXContext;
+import org.apache.felix.gogo.commands.Command;
 
 import java.util.List;
 
@@ -33,30 +29,13 @@ import java.util.List;
  */
 @Command(
     scope = "fix",
-    name  = "session-list")
-public class SessionListCommand extends AbstractFIXCommand {
+    name  = "context-list")
+public class ContextListCommand extends AbstractFIXCommand {
 
     private static final String[] COLUMNS = new String[] {
         "Context",
-        "BeginString",
-        "SenderCompID",
-        "TargetCompID",
-        "LoggeedOn",
-        "ExpectedSenderNum",
-        "ExpectedTargetNum"
+        "NumSessions"
     };
-
-    // *************************************************************************
-    //
-    // *************************************************************************
-
-    @Argument(
-        index       = 0,
-        name        = "ctx",
-        description = "The Context ID",
-        required    = false,
-        multiValued = false)
-    String ctx = null;
 
     // *************************************************************************
     //
@@ -69,24 +48,10 @@ public class SessionListCommand extends AbstractFIXCommand {
 
         if(ctxs != null) {
             for(IFIXContext context : ctxs) {
-                for(SessionID sid : context.getSessionIDs()) {
-                    Session session = context.getSession(sid);
-                    boolean add     = true;
-
-                    if(StringUtils.isNotEmpty(ctx)) {
-                        add = StringUtils.equalsIgnoreCase(ctx,context.getId());
-                    }
-
-                    table.addRow(
-                        context.getId(),
-                        sid.getBeginString(),
-                        sid.getSenderCompID(),
-                        sid.getTargetCompID(),
-                        session.isLoggedOn(),
-                        session.getExpectedSenderNum(),
-                        session.getExpectedTargetNum()
-                    );
-                }
+                table.addRow(
+                    context.getId(),
+                    context.getNumSessions()
+                );
             }
         }
 

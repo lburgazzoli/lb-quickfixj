@@ -21,7 +21,7 @@ import org.quickfixj.QFJException;
 import org.quickfixj.jmx.JmxExporter;
 import org.quickfixj.jmx.mbean.ObjectNameFactory;
 import org.quickfixj.jmx.mbean.session.SessionJmxExporter;
-import quickfix.ext.IFIXContext;
+import com.github.lburgazzoli.quickfixj.core.IFIXContext;
 import com.github.lburgazzoli.quickfixj.transport.mina.Acceptor;
 import quickfix.SessionID;
 import com.github.lburgazzoli.quickfixj.transport.mina.SessionConnector;

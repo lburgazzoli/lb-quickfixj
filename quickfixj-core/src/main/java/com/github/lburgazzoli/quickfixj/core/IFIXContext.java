@@ -17,7 +17,7 @@
  * are not clear to you.
  ******************************************************************************/
 
-package quickfix.ext;
+package com.github.lburgazzoli.quickfixj.core;
 
 import quickfix.Message;
 import quickfix.Session;
@@ -42,6 +42,12 @@ public interface IFIXContext {
     // *************************************************************************
     //
     // *************************************************************************
+
+    /**
+     *
+     * @return
+     */
+    public String getId();
 
     /**
      *
@@ -97,7 +103,7 @@ public interface IFIXContext {
      * Return the session count.
      * @return the number of sessions
      */
-    public int numSessions();
+    public int getNumSessions();
 
     // *************************************************************************
     //

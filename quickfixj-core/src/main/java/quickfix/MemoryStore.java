@@ -20,7 +20,7 @@
 package quickfix;
 
 import org.slf4j.LoggerFactory;
-import quickfix.ext.IFIXContext;
+import com.github.lburgazzoli.quickfixj.core.IFIXContext;
 
 import java.io.IOException;
 import java.util.Calendar;

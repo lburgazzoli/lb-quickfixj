@@ -20,7 +20,7 @@
 
 package quickfix;
 
-import quickfix.ext.IFIXContext;
+import com.github.lburgazzoli.quickfixj.core.IFIXContext;
 
 import java.io.IOException;
 

@@ -19,7 +19,7 @@
 
 package quickfix;
 
-import quickfix.ext.IFIXContext;
+import com.github.lburgazzoli.quickfixj.core.IFIXContext;
 
 /**
  * Creates a message store that stores messages in a file. Compatibility note: The file formats are not compatible with

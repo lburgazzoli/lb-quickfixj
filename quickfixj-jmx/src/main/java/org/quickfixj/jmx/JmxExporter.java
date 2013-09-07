@@ -21,7 +21,7 @@ import org.quickfixj.jmx.mbean.connector.ConnectorJmxExporter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.github.lburgazzoli.quickfixj.transport.mina.Connector;
-import quickfix.ext.IFIXContext;
+import com.github.lburgazzoli.quickfixj.core.IFIXContext;
 import com.github.lburgazzoli.quickfixj.transport.mina.SessionConnector;
 
 import javax.management.InstanceAlreadyExistsException;

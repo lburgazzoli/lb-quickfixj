@@ -19,7 +19,7 @@
 
 package quickfix;
 
-import quickfix.ext.IFIXContext;
+import com.github.lburgazzoli.quickfixj.core.IFIXContext;
 
 /**
  * Convenience class with default implementation for application methods

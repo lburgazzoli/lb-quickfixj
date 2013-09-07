@@ -20,7 +20,7 @@
 package quickfix;
 
 import org.quickfixj.CharsetSupport;
-import quickfix.ext.IFIXContext;
+import com.github.lburgazzoli.quickfixj.core.IFIXContext;
 import quickfix.field.converter.UtcTimestampConverter;
 
 import java.io.BufferedInputStream;

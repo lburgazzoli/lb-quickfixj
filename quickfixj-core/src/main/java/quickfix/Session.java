@@ -22,7 +22,7 @@ package quickfix;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import quickfix.Message.Header;
-import quickfix.ext.IFIXContext;
+import com.github.lburgazzoli.quickfixj.core.IFIXContext;
 import quickfix.field.ApplVerID;
 import quickfix.field.BeginSeqNo;
 import quickfix.field.BeginString;
