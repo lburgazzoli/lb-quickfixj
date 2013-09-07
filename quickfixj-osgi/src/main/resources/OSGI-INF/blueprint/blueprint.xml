@@ -54,11 +54,14 @@
     <!-- ******************************************************************* -->
 
     <command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.0.0">
-        <command name="fix/session-list">
-            <action class="com.github.lburgazzoli.quickfixj.karaf.cmd.SessionListCommand"/>
-        </command>
         <command name="fix/context-list">
             <action class="com.github.lburgazzoli.quickfixj.karaf.cmd.ContextListCommand"/>
+        </command>
+        <command name="fix/connection-list">
+            <action class="com.github.lburgazzoli.quickfixj.karaf.cmd.ConnectionListCommand"/>
+        </command>
+        <command name="fix/connection">
+            <action class="com.github.lburgazzoli.quickfixj.karaf.cmd.ConnectionCommand"/>
         </command>
     </command-bundle>
 

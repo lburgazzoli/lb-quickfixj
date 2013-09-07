@@ -19,11 +19,18 @@
 
 package com.github.lburgazzoli.quickfixj.transport;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import quickfix.FieldNotFound;
+import quickfix.InvalidMessage;
+import quickfix.Message;
+import quickfix.MessageUtils;
 import quickfix.Session;
+import quickfix.SessionID;
 import quickfix.SessionSettings;
 import com.github.lburgazzoli.quickfixj.core.IFIXContext;
+import quickfix.field.MsgType;
 
 import java.io.IOException;
 import java.util.concurrent.ScheduledFuture;
@@ -114,5 +121,59 @@ public class FIXSessionHelper {
 
             m_taskFuture = null;
         }
+    }
+
+    /**
+     *
+     * @param data
+     * @throws Exception
+     */
+    public void processIncomingRawMessage(byte[] data) throws Exception{
+        String    message   = new String(data);
+        SessionID sessionid = MessageUtils.getReverseSessionID(message);
+
+        if(validateSession(sessionid)) {
+            try {
+                Message msg = MessageUtils.parse(getSession(),message);
+
+                if (getSession().hasResponder()) {
+                    getSession().next(msg);
+                } else {
+                    try {
+                        final String msgType = msg.getHeader().getString(MsgType.FIELD);
+                        if (msgType.equals(MsgType.LOGOUT)) {
+                            getSession().next(msg);
+                        }
+                    } catch (FieldNotFound ex) {
+                        LOGGER.warn("FieldNotFound: {}",ex.getMessage());
+                    }
+                }
+            } catch(InvalidMessage e) {
+                try {
+                    if(MsgType.LOGON.equals(MessageUtils.getMessageType(message))) {
+                        LOGGER.error("Invalid LOGON message, disconnecting: " + e.getMessage());
+                    } else {
+                        LOGGER.error("Invalid message: " + e.getMessage());
+                    }
+                } catch(InvalidMessage e1) {
+                    LOGGER.error("Invalid message: " + e1.getMessage());
+                }
+            }
+            catch(Exception e)
+            {
+                LOGGER.warn("IOException,e");
+            }
+        } else {
+            LOGGER.error("Disconnecting: received message for unknown session: " + message);
+        }
+    }
+
+    /**
+     *
+     * @param sessionId
+     * @return
+     */
+    protected boolean validateSession(SessionID sessionId) {
+        return ObjectUtils.equals(sessionId,getSession().getSessionID());
     }
 }

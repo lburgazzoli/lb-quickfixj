@@ -19,10 +19,17 @@
 
 package com.github.lburgazzoli.quickfixj.transport;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import quickfix.FieldNotFound;
+import quickfix.InvalidMessage;
+import quickfix.Message;
+import quickfix.MessageUtils;
 import quickfix.Session;
 import com.github.lburgazzoli.quickfixj.core.IFIXContext;
+import quickfix.SessionID;
+import quickfix.field.MsgType;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -52,20 +59,70 @@ public abstract class AbstractTransport implements ITransport {
         m_helper.getSession().setResponder(this);
     }
 
+    // *************************************************************************
+    //
+    // *************************************************************************
+
     /**
      *
      * @return
      */
-    protected IFIXContext getRuntime() {
-        return m_helper.getContext();
+    @Override
+    public FIXSessionHelper getHelper() {
+        return m_helper;
+    }
+
+
+    /**
+     *
+     * @param data
+     * @return
+     */
+    @Override
+    public boolean send(String data) {
+        if(m_channel != null) {
+            return m_channel.send(data);
+        }
+
+        return false;
+    }
+
+    /**
+     *
+     */
+    @Override
+    public void disconnect() {
+        LOGGER.debug("Disconnect isRunning={}, channel={}",isRunning(),m_channel);
+
+        if(isRunning()) {
+            setRunning(false);
+        }
+
+        if(m_channel != null) {
+            m_channel.disconnect();
+            m_channel = null;
+        }
     }
 
     /**
      *
      * @return
      */
-    protected FIXSessionHelper getHelper() {
-        return m_helper;
+    @Override
+    public String getRemoteIPAddress() {
+        return m_channel != null ? m_channel.getRemoteIPAddress() : null;
+    }
+
+    // *************************************************************************
+    //
+    // *************************************************************************
+
+    /**
+     *
+     * @return
+     */
+    protected IFIXContext getContext() {
+        return m_helper.getContext();
     }
 
     /**
@@ -106,53 +163,5 @@ public abstract class AbstractTransport implements ITransport {
      */
     protected void setChannel(ITransportChannel channel) {
         m_channel = channel;
-    }
-
-    /**
-     *
-     */
-    public void stop() {
-        setRunning(false);
-        disconnect();
-    }
-
-    /**
-     *
-     * @param data
-     * @return
-     */
-    @Override
-    public boolean send(String data) {
-        if(m_channel != null) {
-            return m_channel.send(data);
-        }
-
-        return false;
-    }
-
-    /**
-     *
-     */
-    @Override
-    public void disconnect() {
-        LOGGER.debug("Disconnect isRunning={}, channel={}",isRunning(),m_channel);
-
-        if(isRunning()) {
-            setRunning(false);
-
-            if(m_channel != null) {
-                m_channel.disconnect();
-                m_channel = null;
-            }
-        }
-    }
-
-    /**
-     *
-     * @return
-     */
-    @Override
-    public String getRemoteIPAddress() {
-        return m_channel != null ? m_channel.getRemoteIPAddress() : null;
     }
 }

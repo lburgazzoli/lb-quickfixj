@@ -19,6 +19,8 @@
 
 package com.github.lburgazzoli.quickfixj.transport.netty;
 
+import com.github.lburgazzoli.quickfixj.transport.FIXMessageEvent;
+import com.github.lburgazzoli.quickfixj.transport.FIXSessionHelper;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
@@ -32,8 +34,6 @@ import quickfix.MessageUtils;
 import quickfix.Session;
 import quickfix.SessionID;
 import quickfix.field.MsgType;
-import com.github.lburgazzoli.quickfixj.transport.FIXMessageEvent;
-import com.github.lburgazzoli.quickfixj.core.IFIXContext;
 
 import java.nio.charset.Charset;
 import java.util.List;
@@ -54,35 +54,35 @@ public final class NettyMessageDecoder extends ByteToMessageDecoder {
     private static final char   CHAR_SOH      = 0x01;
 
     private final Charset m_charset;
-    private final IFIXContext m_runtime;
+    private final FIXSessionHelper m_helper;
 
     /**
      * c-tor
      *
      * @param runtime
      */
-    public NettyMessageDecoder(IFIXContext runtime) {
+    public NettyMessageDecoder(FIXSessionHelper runtime) {
         this(runtime, CharsetUtil.ISO_8859_1);
     }
 
     /**
      * c-tor
      *
+     * @param helper
      * @param charset
-     * @param runtime
      */
-    public NettyMessageDecoder(IFIXContext runtime, String charset) {
-        this(runtime,Charset.forName(charset));
+    public NettyMessageDecoder(FIXSessionHelper helper, String charset) {
+        this(helper,Charset.forName(charset));
     }
 
     /**
      * c-tor
      *
+     * @param helper
      * @param charset
-     * @param runtime
      */
-    public NettyMessageDecoder(IFIXContext runtime, Charset charset) {
-        m_runtime = runtime;
+    public NettyMessageDecoder(FIXSessionHelper helper, Charset charset) {
+        m_helper  = helper;
         m_charset = charset;
     }
 
@@ -191,7 +191,7 @@ public final class NettyMessageDecoder extends ByteToMessageDecoder {
                                 in.readBytes(msg,0,end-begin+1);
 
                                 if(validateCheckSum(msg,bodySize,csum)) {
-                                    rv = doDecodeBuffer(msg);
+                                    rv = msg;
                                 } else {
                                     throw new Exception("");
                                 }
@@ -211,37 +211,6 @@ public final class NettyMessageDecoder extends ByteToMessageDecoder {
         }
 
         return rv;
-    }
-
-    /**
-     *
-     * @param buffer
-     * @return
-     * @throws Exception
-     */
-    private Object doDecodeBuffer(byte[] buffer) throws Exception {
-        String    message   = new String(buffer);
-        SessionID sessionid = MessageUtils.getReverseSessionID(message);
-        Session   session   = m_runtime.getSession(sessionid);
-
-        if (session != null) {
-            session.getLog().onIncoming(message);
-            try {
-                return new FIXMessageEvent(session,MessageUtils.parse(session, message));
-            } catch (InvalidMessage e) {
-                if (MsgType.LOGON.equals(MessageUtils.getMessageType(message))) {
-                    LOGGER.error("Invalid LOGON message, disconnecting: " + e.getMessage());
-                    throw new Exception("Invalid LOGON message");
-                } else {
-                    LOGGER.error("Invalid message: " + e.getMessage());
-                }
-            }
-        } else {
-            LOGGER.error("Received message for unknown session, disconnecting: " + message);
-            throw new Exception("Received message for unknown session");
-        }
-
-        return null;
     }
 
     // *************************************************************************

@@ -48,11 +48,8 @@ import java.util.Enumeration;
 
 /**
  *
- * <reference
- *     id        = "configurationAdmin"
- *     interface = "org.osgi.service.cm.ConfigurationAdmin"/>
  */
-public class FIXConnection {
+public class FIXConnection implements IFIXConnection {
     private static final Logger LOGGER = LoggerFactory.getLogger(FIXConnection.class);
 
     private final IFIXContext        m_fixCtx;
@@ -80,16 +77,14 @@ public class FIXConnection {
     //
     // *************************************************************************
 
-    /**
-     *
-     */
+    @Override
     public void init() {
         try {
             Configuration             cfg  = m_cfgAdm.getConfiguration(m_cfgId);
             Dictionary<String,Object> prop = cfg.getProperties();
             SessionID                 sid  = buildSessionID(prop);
 
-            if(sid != null) {
+            if(sid != null && m_cnx == null) {
                 SessionSettings     settings = new SessionSettings();
                 Enumeration<String> keys     = prop.keys();
                 String              key      = null;
@@ -105,10 +100,6 @@ public class FIXConnection {
                     } else if(isAcceptor(prop)) {
                         m_cnx = initAcceptor(sid,settings);
                     }
-
-                    if(m_cnx != null) {
-                        m_cnx.run();
-                    }
                 } catch (Exception e) {
                     LOGGER.warn("Exception",e);
                 }
@@ -118,13 +109,44 @@ public class FIXConnection {
         }
     }
 
-    /**
-     *
-     */
+    @Override
     public void destroy() {
+        stop();
+
+        m_cnx = null;
+    }
+
+    @Override
+    public void start() {
+        if(m_cnx != null) {
+            m_cnx.connect();
+        }
+    }
+
+    @Override
+    public void stop() {
         if(m_cnx != null) {
             m_cnx.disconnect();
         }
+    }
+
+    // *************************************************************************
+    //
+    // *************************************************************************
+
+    @Override
+    public String getId() {
+        return m_cfgId;
+    }
+
+    @Override
+    public FIXSessionHelper getHelper() {
+        return m_cnx != null ? m_cnx.getHelper() : null;
+    }
+
+    @Override
+    public String getRemoteIpAddress() {
+        return m_cnx != null ? m_cnx.getRemoteIPAddress() : null;
     }
 
     // *************************************************************************

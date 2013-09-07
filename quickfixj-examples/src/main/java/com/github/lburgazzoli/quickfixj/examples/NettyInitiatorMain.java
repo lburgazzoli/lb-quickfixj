@@ -57,8 +57,8 @@ public class NettyInitiatorMain {
         cfg.setString(sid,"TargetCompID",sid.getTargetCompID());
         cfg.setString(sid,"ReconnectInterval","30");
         cfg.setString(sid,"HeartBtInt","30");
-        cfg.setString(sid,"SocketConnectPort","6543");
-        cfg.setString(sid,"SocketConnectHost","localhost");
+        cfg.setString(sid,"SocketConnectPort","7001");
+        cfg.setString(sid,"SocketConnectHost","exchange.marketcetera.com");
         cfg.setString(sid,"StartTime","00:00:00");
         cfg.setString(sid,"EndTime","23:59:00");
         cfg.setString(sid,"MillisecondsInTimeStamp","Y");
@@ -84,7 +84,7 @@ public class NettyInitiatorMain {
             FIXSessionHelper      sx   = new FIXSessionHelper(sf.create(sid,cfg),cfg);
             ITransport            tx   = new NettySocketInitiator(sx);
 
-            tx.run();
+            tx.connect();
 
             try {
                 while(true) {

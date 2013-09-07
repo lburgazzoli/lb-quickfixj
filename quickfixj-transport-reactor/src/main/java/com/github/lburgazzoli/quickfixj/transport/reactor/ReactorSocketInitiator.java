@@ -89,7 +89,7 @@ public class ReactorSocketInitiator extends AbstractTransport {
     // *************************************************************************
 
     @Override
-    public void run() {
+    public void connect() {
         try {
             SessionID sid  = getHelper().getSession().getSessionID();
             String    host = getHelper().getSettings().getString(sid, "SocketConnectHost");
@@ -135,47 +135,11 @@ public class ReactorSocketInitiator extends AbstractTransport {
      * @param data
      */
     protected void onData(final ReactorChannelEvents.Data data) {
-        String    message   = new String(data.get());
-        SessionID sessionid = MessageUtils.getReverseSessionID(message);
-        Session   session   = getRuntime().getSession(sessionid);
-
-        if(ObjectUtils.equals(sessionid, session.getSessionID())) {
-            try {
-                Message msg = MessageUtils.parse(session,message);
-
-                if (session.hasResponder()) {
-                    session.next(msg);
-                } else {
-                    try {
-                        final String msgType = msg.getHeader().getString(MsgType.FIELD);
-                        if (msgType.equals(MsgType.LOGOUT)) {
-                            session.next(msg);
-                        }
-                    } catch (FieldNotFound ex) {
-                        LOGGER.warn("FieldNotFound: {}",ex.getMessage());
-                    }
-                }
-            } catch(InvalidMessage e) {
-                try {
-                    if(MsgType.LOGON.equals(MessageUtils.getMessageType(message))) {
-                        LOGGER.error("Invalid LOGON message, disconnecting: " + e.getMessage());
-                        stop();
-                    } else {
-                        LOGGER.error("Invalid message: " + e.getMessage());
-                    }
-                } catch(InvalidMessage e1) {
-                    LOGGER.error("Invalid message: " + e1.getMessage());
-                }
-            }
-            catch(Exception e)
-            {
-                LOGGER.warn("IOException,e");
-            }
-        }
-        else
-        {
-            LOGGER.error("Disconnecting: received message for unknown session: " + message);
-            stop();
+        try {
+            getHelper().processIncomingRawMessage(data.get());
+        } catch(Exception e) {
+            LOGGER.error("Disconnecting: received message for unknown session",e);
+            disconnect();
         }
     }
 }

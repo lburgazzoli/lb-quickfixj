@@ -64,7 +64,7 @@ public class NettySocketInitiator extends AbstractTransport implements INettySta
      *
      */
     @Override
-    public void run() {
+    public void connect() {
         try {
             m_boot = new Bootstrap();
             m_boot.group(new NioEventLoopGroup());
@@ -81,7 +81,7 @@ public class NettySocketInitiator extends AbstractTransport implements INettySta
 
             if(!isRunning()) {
                 setRunning(true);
-                connect();
+                doConnect();
             }
         } catch(Exception e) {
             LOGGER.warn("Exception", e);
@@ -104,7 +104,7 @@ public class NettySocketInitiator extends AbstractTransport implements INettySta
     /**
      *
      */
-    private void connect() {
+    private void doConnect() {
         ChannelFuture future = m_boot.connect();
         future.addListener(new ChannelFutureListener() {
             public void operationComplete(ChannelFuture future) {
@@ -112,13 +112,13 @@ public class NettySocketInitiator extends AbstractTransport implements INettySta
                     setChannel(new NettyChannel(future.channel()));
                 } else if(!future.isSuccess() && !future.isCancelled()) {
                     LOGGER.warn("Error", future.cause());
-                    reconnect();
+                    doReconnect();
                 }
             }
         });
     }
 
-    private void reconnect() {
+    private void doReconnect() {
         if(isRunning() && m_boot != null) {
             Runnable task = new Runnable() {
                 public void run() {
@@ -140,6 +140,6 @@ public class NettySocketInitiator extends AbstractTransport implements INettySta
 
     @Override
     public void onDisconnect(Channel channel) {
-        reconnect();
+        doReconnect();
     }
 }

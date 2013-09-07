@@ -19,29 +19,25 @@
 
 package com.github.lburgazzoli.quickfixj.transport.netty;
 
+import com.github.lburgazzoli.quickfixj.transport.FIXSessionHelper;
+import com.github.lburgazzoli.quickfixj.transport.FIXSessionType;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.util.AttributeKey;
-import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.github.lburgazzoli.quickfixj.transport.FIXMessageEvent;
-import com.github.lburgazzoli.quickfixj.transport.FIXMessageEventQueue;
-import com.github.lburgazzoli.quickfixj.transport.FIXSessionHelper;
-import com.github.lburgazzoli.quickfixj.transport.FIXSessionType;
 
 /**
  *
  */
-public final class NettyChannelHandler extends SimpleChannelInboundHandler<FIXMessageEvent> {
+public final class NettyChannelHandler extends SimpleChannelInboundHandler<byte[]> {
 
     private static final Logger LOGGER =
         LoggerFactory.getLogger(NettyChannelHandler.class);
 
     private final INettyStateHandler m_stateHandler;
     private final FIXSessionType m_sessionType;
-    private final FIXSessionHelper m_session;
-    private final FIXMessageEventQueue m_eventQueue;
+    private final FIXSessionHelper m_helper;
 
     private static final AttributeKey<FIXSessionType> ATTR_SESSION_TYPE =
         new AttributeKey<FIXSessionType>("Session.Type");
@@ -50,14 +46,13 @@ public final class NettyChannelHandler extends SimpleChannelInboundHandler<FIXMe
      * c-tor
      *
      * @param stateHandler
-     * @param session
+     * @param helper
      * @param sessionType
      */
-    public NettyChannelHandler(INettyStateHandler stateHandler,FIXSessionHelper session, FIXSessionType sessionType) {
+    public NettyChannelHandler(INettyStateHandler stateHandler,FIXSessionHelper helper, FIXSessionType sessionType) {
         m_stateHandler = stateHandler;
-        m_session      = session;
+        m_helper       = helper;
         m_sessionType  = sessionType;
-        m_eventQueue   = new FIXMessageEventQueue();
     }
 
     // *************************************************************************
@@ -72,36 +67,22 @@ public final class NettyChannelHandler extends SimpleChannelInboundHandler<FIXMe
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        if(!m_eventQueue.isRunning()) {
-            m_eventQueue.start();
-
-            if(m_sessionType == FIXSessionType.INITIATOR) {
-                m_session.getSession().logon();
-                m_session.startSessionTimer();
-            }
+        if(m_sessionType == FIXSessionType.INITIATOR) {
+            m_helper.getSession().logon();
+            m_helper.startSessionTimer();
         }
 
         m_stateHandler.onConnect(ctx.channel());
     }
 
     @Override
-    public void channelRead0(ChannelHandlerContext ctx, FIXMessageEvent msg) throws Exception {
-        if(m_eventQueue.isRunning()) {
-            if(ObjectUtils.equals(m_session.getSession().getSessionID(), msg.getSession().getSessionID())) {
-                m_eventQueue.put(msg);
-            } else {
-                LOGGER.warn("Bad SessionID, expected <{}>, got <{}>",
-                    m_session.getSession().getSessionID(),
-                    msg.getSession().getSessionID());
-            }
-        }
+    public void channelRead0(ChannelHandlerContext ctx,byte[] msg) throws Exception {
+        m_helper.processIncomingRawMessage(msg);
     }
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        m_session.stopSessionTimer();
-        m_eventQueue.stop();
-
+        m_helper.stopSessionTimer();
         m_stateHandler.onDisconnect(ctx.channel());
     }
 

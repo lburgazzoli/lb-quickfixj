@@ -30,26 +30,26 @@ import com.github.lburgazzoli.quickfixj.transport.FIXSessionType;
 public class NettyChannelInitializer extends ChannelInitializer {
 
     private final INettyStateHandler m_stateHandler;
-    private final FIXSessionHelper m_session;
+    private final FIXSessionHelper m_helper;
     private final FIXSessionType m_sessionType;
 
     /**
      * c-tor
      *
      * @param stateHandler
-     * @param session
+     * @param helper
      * @param sessionType
      */
-    public NettyChannelInitializer(INettyStateHandler stateHandler,FIXSessionHelper session, FIXSessionType sessionType) {
+    public NettyChannelInitializer(INettyStateHandler stateHandler,FIXSessionHelper helper, FIXSessionType sessionType) {
         m_stateHandler = stateHandler;
-        m_session = session;
-        m_sessionType = sessionType;
+        m_helper       = helper;
+        m_sessionType  = sessionType;
     }
 
     @Override
     protected void initChannel(Channel ch) throws Exception {
-        ch.pipeline().addLast("decoder",new NettyMessageDecoder(m_session.getContext()));
-        ch.pipeline().addLast("encoder",new NettyMessageEncoder(m_session.getContext()));
-        ch.pipeline().addLast("handler",new NettyChannelHandler(m_stateHandler,m_session,m_sessionType));
+        ch.pipeline().addLast("decoder",new NettyMessageDecoder(m_helper));
+        ch.pipeline().addLast("encoder",new NettyMessageEncoder(m_helper));
+        ch.pipeline().addLast("handler",new NettyChannelHandler(m_stateHandler,m_helper,m_sessionType));
     }
 }

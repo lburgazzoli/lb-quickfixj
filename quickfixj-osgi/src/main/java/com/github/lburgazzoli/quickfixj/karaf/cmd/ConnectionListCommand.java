@@ -19,12 +19,11 @@
 
 package com.github.lburgazzoli.quickfixj.karaf.cmd;
 
+import com.github.lburgazzoli.quickfixj.osgi.IFIXConnection;
+import com.github.lburgazzoli.quickfixj.transport.FIXSessionHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.felix.gogo.commands.Argument;
 import org.apache.felix.gogo.commands.Command;
-import quickfix.Session;
-import quickfix.SessionID;
-import com.github.lburgazzoli.quickfixj.core.IFIXContext;
 
 import java.util.List;
 
@@ -33,8 +32,8 @@ import java.util.List;
  */
 @Command(
     scope = "fix",
-    name  = "session-list")
-public class SessionListCommand extends AbstractFIXCommand {
+    name  = "connection-list")
+public class ConnectionListCommand extends AbstractFIXCommand {
 
     private static final String[] COLUMNS = new String[] {
         "Context",
@@ -42,8 +41,7 @@ public class SessionListCommand extends AbstractFIXCommand {
         "SenderCompID",
         "TargetCompID",
         "LoggeedOn",
-        "ExpectedSenderNum",
-        "ExpectedTargetNum"
+        "RemoteAddress"
     };
 
     // *************************************************************************
@@ -64,27 +62,26 @@ public class SessionListCommand extends AbstractFIXCommand {
 
     @Override
     protected void execute() throws Exception {
-        ShellTable        table  = new ShellTable(COLUMNS);
-        List<IFIXContext> ctxs   = getAllServices(IFIXContext.class,null);
+        ShellTable           table  = new ShellTable(COLUMNS);
+        List<IFIXConnection> ctxs   = getAllServices(IFIXConnection.class,null);
 
         if(ctxs != null) {
-            for(IFIXContext context : ctxs) {
-                for(SessionID sid : context.getSessionIDs()) {
-                    Session session = context.getSession(sid);
-                    boolean add     = true;
+            for(IFIXConnection connection : ctxs) {
+                FIXSessionHelper helper = connection.getHelper();
+                boolean          add    = true;
 
-                    if(StringUtils.isNotEmpty(ctx)) {
-                        add = StringUtils.equalsIgnoreCase(ctx,context.getId());
-                    }
+                if(StringUtils.isNotEmpty(ctx)) {
+                    add = StringUtils.equalsIgnoreCase(ctx,helper.getContext().getId());
+                }
 
+                if(add) {
                     table.addRow(
-                        context.getId(),
-                        sid.getBeginString(),
-                        sid.getSenderCompID(),
-                        sid.getTargetCompID(),
-                        session.isLoggedOn(),
-                        session.getExpectedSenderNum(),
-                        session.getExpectedTargetNum()
+                        helper.getContext().getId(),
+                        helper.getSession().getSessionID().getBeginString(),
+                        helper.getSession().getSessionID().getSenderCompID(),
+                        helper.getSession().getSessionID().getTargetCompID(),
+                        helper.getSession().isLoggedOn(),
+                        connection.getRemoteIpAddress()
                     );
                 }
             }

@@ -84,7 +84,7 @@ public class ReactorInitiatorMain {
             FIXSessionHelper      sx   = new FIXSessionHelper(sf.create(sid,cfg),cfg);
             ITransport            tx   = new ReactorSocketInitiator(sx);
 
-            tx.run();
+            tx.connect();
 
             try {
                 while(true) {

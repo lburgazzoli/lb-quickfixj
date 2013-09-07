@@ -22,15 +22,21 @@
 
     <!-- ******************************************************************* -->
     <!--                                                                     -->
+    <!-- Define some MANIFEST's attribute                                    -->
+    <!--                                                                     -->
     <!-- ******************************************************************* -->
 
     <manifest xmlns="http://karaf.apache.org/xmlns/deployer/blueprint/v1.0.0">
-        Bundle-Name: QFJ :: Connection :: 01
+        Bundle-Name: lb :: quickfixj-examples :: qfj.connection.01
         Bundle-SymbolicName: qfj.connection.01
         Bundle-Version: 1.0.0
     </manifest>
 
     <!-- ******************************************************************* -->
+    <!--                                                                     -->
+    <!-- Lookup some services/objects                                        -->
+    <!--   - ConfigurationAdmin                                              -->
+    <!--   - IFIXContext                                                     -->
     <!--                                                                     -->
     <!-- ******************************************************************* -->
 
@@ -43,6 +49,8 @@
 
     <!-- ******************************************************************* -->
     <!--                                                                     -->
+    <!-- Construct the FIXConnection bean and export it as service           -->
+    <!--                                                                     -->
     <!-- ******************************************************************* -->
 
     <bean id             = "QFJ_CONNECTION_01"
@@ -54,5 +62,14 @@
         <argument ref   = "blueprintBundleContext"/>
         <argument ref   = "OSGI_CFG_ADMIN"/>
     </bean>
+
+    <service id="qfj.connection.01" ref="QFJ_CONNECTION_01">
+        <interfaces>
+            <value>com.github.lburgazzoli.quickfixj.osgi.IFIXConnection</value>
+        </interfaces>
+        <service-properties>
+            <entry key="osgi.jndi.service.name" value="qfj.connection.01"/>
+        </service-properties>
+    </service>
 
 </blueprint>

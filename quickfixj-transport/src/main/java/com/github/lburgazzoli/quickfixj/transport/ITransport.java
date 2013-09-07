@@ -24,5 +24,16 @@ import quickfix.Responder;
 /**
  *
  */
-public interface ITransport extends Runnable, Responder {
+public interface ITransport extends  Responder {
+
+    /**
+     *
+     */
+    public void connect();
+
+    /**
+     *
+     * @return
+     */
+    public FIXSessionHelper getHelper();
 }

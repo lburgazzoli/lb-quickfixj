@@ -19,11 +19,11 @@
 
 package com.github.lburgazzoli.quickfixj.transport.netty;
 
+import com.github.lburgazzoli.quickfixj.transport.FIXSessionHelper;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageEncoder;
 import io.netty.util.CharsetUtil;
-import com.github.lburgazzoli.quickfixj.core.IFIXContext;
 
 import java.nio.charset.Charset;
 import java.util.List;
@@ -33,25 +33,25 @@ import java.util.List;
  */
 public final class NettyMessageEncoder extends MessageToMessageEncoder<CharSequence> {
     private final Charset m_charset;
-    private final IFIXContext m_runtime;
+    private final FIXSessionHelper m_helper;
 
     /**
      * c-tor
      *
-     * @param runtime
+     * @param helper
      */
-    public NettyMessageEncoder(IFIXContext runtime) {
-        this(runtime, CharsetUtil.ISO_8859_1);
+    public NettyMessageEncoder(FIXSessionHelper helper) {
+        this(helper, CharsetUtil.ISO_8859_1);
     }
 
     /**
      * c-tor
      *
+     * @param helper
      * @param charset
-     * @param runtime
      */
-    public NettyMessageEncoder(IFIXContext runtime, Charset charset) {
-        m_runtime = runtime;
+    public NettyMessageEncoder(FIXSessionHelper helper, Charset charset) {
+        m_helper  = helper;
         m_charset = charset;
     }
 
