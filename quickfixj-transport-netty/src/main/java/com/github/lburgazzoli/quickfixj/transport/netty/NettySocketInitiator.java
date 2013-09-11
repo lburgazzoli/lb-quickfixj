@@ -122,7 +122,7 @@ public class NettySocketInitiator extends AbstractTransport implements INettySta
         if(isRunning() && m_boot != null) {
             Runnable task = new Runnable() {
                 public void run() {
-                    connect();
+                    doConnect();
                 }
             };
 

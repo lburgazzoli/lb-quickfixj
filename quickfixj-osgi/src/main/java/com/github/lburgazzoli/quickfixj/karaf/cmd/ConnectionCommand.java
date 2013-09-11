@@ -19,6 +19,7 @@
 
 package com.github.lburgazzoli.quickfixj.karaf.cmd;
 
+import com.github.lburgazzoli.karaf.common.cmd.AbstractCommand;
 import com.github.lburgazzoli.quickfixj.osgi.IFIXConnection;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.felix.gogo.commands.Argument;
@@ -32,7 +33,7 @@ import java.util.List;
 @Command(
     scope = "fix",
     name  = "connection")
-public class ConnectionCommand extends AbstractFIXCommand {
+public class ConnectionCommand extends AbstractCommand {
 
     // *************************************************************************
     //

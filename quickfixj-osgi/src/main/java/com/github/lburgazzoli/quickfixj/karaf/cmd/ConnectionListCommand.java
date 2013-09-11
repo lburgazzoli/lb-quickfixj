@@ -19,6 +19,8 @@
 
 package com.github.lburgazzoli.quickfixj.karaf.cmd;
 
+import com.github.lburgazzoli.karaf.common.cmd.AbstractCommand;
+import com.github.lburgazzoli.karaf.common.cmd.ShellTable;
 import com.github.lburgazzoli.quickfixj.osgi.IFIXConnection;
 import com.github.lburgazzoli.quickfixj.transport.FIXSessionHelper;
 import org.apache.commons.lang3.StringUtils;
@@ -33,7 +35,7 @@ import java.util.List;
 @Command(
     scope = "fix",
     name  = "connection-list")
-public class ConnectionListCommand extends AbstractFIXCommand {
+public class ConnectionListCommand extends AbstractCommand {
 
     private static final String[] COLUMNS = new String[] {
         "Context",

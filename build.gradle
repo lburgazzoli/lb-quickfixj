@@ -48,6 +48,8 @@ subprojects {
     }
 
     dependencies {
+        compile "com.github.lburgazzoli:lb-karaf-common:1.0.0.SNAPSHOT"
+
         compile "org.apache.commons:commons-math3:3.2"
         compile "org.apache.commons:commons-lang3:3.1"
         compile "org.apache.commons:commons-compress:1.5"

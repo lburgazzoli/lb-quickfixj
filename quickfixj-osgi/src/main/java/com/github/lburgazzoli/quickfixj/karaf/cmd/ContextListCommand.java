@@ -19,6 +19,8 @@
 
 package com.github.lburgazzoli.quickfixj.karaf.cmd;
 
+import com.github.lburgazzoli.karaf.common.cmd.AbstractCommand;
+import com.github.lburgazzoli.karaf.common.cmd.ShellTable;
 import com.github.lburgazzoli.quickfixj.core.IFIXContext;
 import org.apache.felix.gogo.commands.Command;
 
@@ -30,7 +32,7 @@ import java.util.List;
 @Command(
     scope = "fix",
     name  = "context-list")
-public class ContextListCommand extends AbstractFIXCommand {
+public class ContextListCommand extends AbstractCommand {
 
     private static final String[] COLUMNS = new String[] {
         "Context",
