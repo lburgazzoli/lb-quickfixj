@@ -18,6 +18,7 @@ dependencies {
     compile project(':quickfixj-transport-netty')
     compile project(':quickfixj-transport-reactor')
 
+    compile "com.github.lburgazzoli:lb-karaf-common:$lbKarafVersion"
     compile "org.osgi:org.osgi.core:$osgiVersion"
     compile "org.osgi:org.osgi.compendium:$osgiVersion"
     compile 'org.apache.felix:org.apache.felix.configadmin:1.6.0'
