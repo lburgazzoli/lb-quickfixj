@@ -44,9 +44,10 @@ subprojects {
         maven { url "http://repository.springsource.com/maven/bundles/release" }
         maven { url "http://repository.springsource.com/maven/bundles/external" }
         maven { url "http://oss.sonatype.org/content/groups/public" }
-        maven { url "http://oss.sonatype.org/content/repositories/snapshots" }
 
         mavenLocal()
+
+        maven { url "http://oss.sonatype.org/content/repositories/snapshots" }
     }
 
     dependencies {
