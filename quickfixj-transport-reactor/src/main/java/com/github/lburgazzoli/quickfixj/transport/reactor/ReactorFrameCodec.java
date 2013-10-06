@@ -19,7 +19,7 @@
 
 package com.github.lburgazzoli.quickfixj.transport.reactor;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.function.Consumer;
@@ -37,12 +37,12 @@ public class ReactorFrameCodec implements Codec<Buffer,byte[],byte[]> {
     private static final Logger LOGGER =
         LoggerFactory.getLogger(ReactorFrameCodec.class);
 
-    private static final int    MSG_MIN_CHARS = 30;
-    private static final String MSG_BEGIN     = "8=FIX";
-    private static final String REX_HEADER    = "(8=FIX[T]?\\.[0-9]\\.[0-9])\\x01(9=[0-9]+)\\x01";
-    private static final String REX_TRAILER   = "\\x01(10=[0-9]+)\\x01";
-    private static final char   CHAR_EQUALS   = '=';
-    private static final char   CHAR_SOH      = 0x01;
+    private static final String REX =
+        "(8=FIX[T]?\\.[0-9]\\.[0-9])\\x01(9=[0-9]+)\\x01([0-9].*=*).*\\x01(10=[0-9]+)\\x01";
+
+    private static final int  MSG_MIN_CHARS = 30;
+    private static final char CHAR_EQUALS   = '=';
+    private static final char CHAR_SOH      = 0x01;
 
     /**
      * c-tor
@@ -84,8 +84,8 @@ public class ReactorFrameCodec implements Codec<Buffer,byte[],byte[]> {
 
         @Override
         public byte[] apply(Buffer buffer) {
-            //LOGGER.debug("Decoder.Buffer - 1 - position={}, limit={}, remaining={}",
-            //    buffer.position(),buffer.limit(),buffer.remaining());
+            StopWatch sw = new StopWatch();
+            sw.start();
 
             byte[]  rv    = null;
             boolean reset = true;
@@ -96,74 +96,25 @@ public class ReactorFrameCodec implements Codec<Buffer,byte[],byte[]> {
                 int lim  = buffer.limit();
 
                 String  bs = buffer.asString();
-                Matcher mh = getMatcherFor(REX_HEADER,bs);
+                Matcher mh = getMatcherFor(REX,bs);
 
                 // reset the buffer
                 buffer.position(pos);
                 buffer.limit(lim);
 
-                // Extract following FIX tags:
+                // Extract the FIX message using:
                 // -  8 BeginString
                 // -  9 BodyLength
                 // - 10 CheckSum
-                if(mh.find() && (mh.groupCount() == 2)) {
+                if(mh.find() && (mh.groupCount() == 4)) {
                     int offset = mh.start(0);
-                    int hlen   = mh.end(0) - mh.start(0);
-                    int blen   = getValueAsInt(mh.group(2));
-                    int tbegin = offset + hlen + blen;
-                    int tend   = -1;
+                    int size   = mh.end(4) - mh.start(0) + 1;
 
-                    if((buffer.remaining() - offset - hlen) > blen) {
-                        buffer.position(tbegin-1);
-                        if( buffer.read() == 0x01 && buffer.read() == '1'  &&
-                            buffer.read() == '0'  && buffer.read() == '='  ) {
-                            for(int i=tbegin+4;buffer.remaining() > 0;i++) {
-                                if(buffer.read() == CHAR_SOH) {
-                                    tend = i;
-                                    break;
-                                }
-                            }
+                    rv    = buffer.createView(offset,offset+size).get().asBytes();
+                    reset = false;
 
-                            if(tend != -1) {
-                                buffer.position(pos);
-                                buffer.limit(lim);
-
-                                // csum     is used to check msg correctness
-                                // msgSize  is used to retrieve the whole message
-                                // bodySize is used for checksum
-                                int csum     = Buffer.parseInt(buffer,tbegin+3,tend-1);
-                                int msgSize  = tend   - offset - 1;
-                                int bodySize = tbegin - offset;
-
-                                if(msgSize > 0) {
-                                    // reset the bufefr and skip to the beinning of
-                                    // the FIX message (tag 8)
-                                    buffer.position(pos);
-                                    buffer.limit(lim);
-                                    buffer.skip(offset);
-
-                                    if(buffer.remaining() >= msgSize) {
-                                        int begin = buffer.position();
-                                        int end   = buffer.position() + msgSize;
-
-                                        // extract the message as byte array an
-                                        // flag the buffer as "consumed"
-                                        rv    = buffer.createView(begin,end+1).get().asBytes();
-                                        reset = false;
-
-                                        if(!validateCheckSum(rv,bodySize,csum)) {
-                                            //TODO: drop connection
-                                        }
-
-                                        // "consume" the buffer and leave partial
-                                        // messages in for further processing
-                                        buffer.position(offset+msgSize+1);
-                                        buffer.limit(lim);
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    buffer.position(mh.end(4));
+                    buffer.limit(lim);
                 }
 
                 if(reset) {
@@ -172,8 +123,9 @@ public class ReactorFrameCodec implements Codec<Buffer,byte[],byte[]> {
                 }
             }
 
-            //LOGGER.debug("Decoder.Buffer - 2 - position={}, limit={}, remaining={}",
-            //    buffer.position(),buffer.limit(),buffer.remaining());
+            sw.stop();
+
+            LOGGER.debug("Decode.Time <{}><{}>",sw.toString(),sw.getNanoTime());
 
             return next(rv);
         }
@@ -181,24 +133,6 @@ public class ReactorFrameCodec implements Codec<Buffer,byte[],byte[]> {
         // **********************************************************************
         //
         // **********************************************************************
-
-        /**
-         *
-         * @param data
-         * @param dataLen
-         * @param expectedCheckSum
-         * @return
-         */
-        private boolean validateCheckSum(byte[] data,int dataLen,int expectedCheckSum) {
-            int sum = calculateCheckSum(data,dataLen);
-
-            if(expectedCheckSum == sum) {
-                return true;
-            } else {
-                LOGGER.warn("Checksum KO - calc={},rec={}",sum,expectedCheckSum);
-                return false;
-            }
-        }
 
         /**
          *
@@ -225,31 +159,6 @@ public class ReactorFrameCodec implements Codec<Buffer,byte[],byte[]> {
             Matcher m = p.matcher(data);
 
             return m;
-        }
-
-        /**
-         *
-         * @param kv
-         * @return
-         */
-        private int getValueAsInt(String kv) {
-            String[] kv1 = StringUtils.split(kv, CHAR_EQUALS);
-            return (kv1.length == 2) ? Integer.parseInt(kv1[1]) : -1;
-        }
-
-        /**
-         *
-         * @param data
-         * @param dataLen
-         * @return
-         */
-        private int calculateCheckSum(byte[] data, int dataLen) {
-            int sum = 0;
-            for (int i = 0; i < dataLen; i++) {
-                sum += data[i];
-            }
-
-            return sum % 256;
         }
     }
 

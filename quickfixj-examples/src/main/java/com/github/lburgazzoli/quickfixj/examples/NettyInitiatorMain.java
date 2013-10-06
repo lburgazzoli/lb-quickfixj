@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * Copyright (c) quickfixengine.org  All rights reserved.
  *
  * This file is part of the QuickFIX FIX Engine
@@ -15,7 +15,7 @@
  *
  * Contact ask@quickfixengine.org if any conditions of this licensing
  * are not clear to you.
- ******************************************************************************/
+ */
 
 package com.github.lburgazzoli.quickfixj.examples;
 
@@ -57,8 +57,8 @@ public class NettyInitiatorMain {
         cfg.setString(sid,"TargetCompID",sid.getTargetCompID());
         cfg.setString(sid,"ReconnectInterval","30");
         cfg.setString(sid,"HeartBtInt","30");
-        cfg.setString(sid,"SocketConnectPort","6543");
-        cfg.setString(sid,"SocketConnectHost","localhost");
+        cfg.setString(sid,"SocketConnectPort","7001");
+        cfg.setString(sid,"SocketConnectHost","exchange.marketcetera.com");
         cfg.setString(sid,"StartTime","00:00:00");
         cfg.setString(sid,"EndTime","23:59:00");
         cfg.setString(sid,"MillisecondsInTimeStamp","Y");

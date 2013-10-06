@@ -13,8 +13,9 @@ ext {
     javassistVersion   = '3.18.0-GA';
     mina1Version       = '1.1.7'
     osgiVersion        = '4.3.1'
-    reactorVersion     = '1.0.0.M2'
-    lbKarafVersion     = '1.0.0-SNAPSHOT'
+    reactorVersion     = '1.0.0.M3'
+    lbKarafVersion     = '1.0.0.SNAPSHOT'
+    junitVersion       = '4.11'
     
     gradleVersion      = '1.7'
     gradleScriptDir    = "${rootProject.projectDir}/gradle"
@@ -71,12 +72,13 @@ subprojects {
         compile "org.slf4j:slf4j-log4j12:$slf4jVersion"
         compile "org.slf4j:jcl-over-slf4j:$slf4jVersion"
         compile "org.slf4j:jul-to-slf4j:$slf4jVersion"
-        compile "com.google.guava:guava:14.0.1"
+        compile "com.google.guava:guava:15.0"
         compile "com.lmax:disruptor:3.2.0"
         compile "org.javolution:javolution-core-java:6.0.0"
         compile "org.dom4j:com.springsource.org.dom4j:1.6.1"
         compile "org.logicalcobwebs:com.springsource.org.logicalcobwebs.proxool:0.9.1"
 
+        testCompile "junit:junit:$junitVersion"
     }
 
     jar {

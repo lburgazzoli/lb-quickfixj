@@ -48,8 +48,11 @@ public final class NettyMessageDecoder extends ByteToMessageDecoder {
     private static final Logger LOGGER =
         LoggerFactory.getLogger(NettyMessageDecoder.class);
 
+
+    private static final String REX =
+            "(8=FIX[T]?\\.[0-9]\\.[0-9])\\x01(9=[0-9]+)\\x01([0-9].*=*).*\\x01(10=[0-9]+)\\x01";
+
     private static final int    MSG_MIN_BYTES = 30;
-    private static final String REX_HEADER    = "(8=FIX[T]?\\.[0-9]\\.[0-9])\\x01(9=[0-9]+)\\x01";
     private static final char   CHAR_EQUALS   = '=';
     private static final char   CHAR_SOH      = 0x01;
 
@@ -116,7 +119,7 @@ public final class NettyMessageDecoder extends ByteToMessageDecoder {
 
             sw.stop();
 
-            LOGGER.debug("Decode.Time <{}>",sw.toString());
+            LOGGER.debug("Decode.Time <{}><{}>",sw.toString(),sw.getNanoTime());
 
             if(data != null) {
                 out.add(data);
@@ -135,75 +138,23 @@ public final class NettyMessageDecoder extends ByteToMessageDecoder {
      * @throws Exception
      */
     private Object doDecodeBuffer(ByteBuf in) throws Exception {
-        Object  rv     = null;
-        byte[]  msg    = null;
+        byte[]  rv     = null;
         int     rindex = in.readerIndex();
         String  bs     = in.toString(m_charset);
-        Matcher mh     = getMatcherFor(REX_HEADER,bs);
+        Matcher mh     = getMatcherFor(REX,bs);
         boolean reset  = true;
 
         in.readerIndex(rindex);
 
-        if(mh.find() && (mh.groupCount() == 2)) {
+        if(mh.find() && (mh.groupCount() == 4)) {
             int offset = mh.start(0);
-            int hlen   = mh.end(0) - mh.start(0);
-            int blen   = getValueAsInt(mh.group(2));
-            int tbegin = offset + hlen + blen;
-            int tend   = -1;
+            int size   = mh.end(4) - mh.start(0) + 1;
 
-            if((in.readableBytes() - offset - hlen) > blen) {
-                in.skipBytes(tbegin-1);
-                if( in.readByte() == 0x01 && in.readByte() == '1'  &&
-                    in.readByte() == '0'  && in.readByte() == '='  ) {
-                    for(int i=tbegin+4;in.readableBytes() > 0;i++) {
-                        if(in.readByte() == CHAR_SOH) {
-                            tend = i;
-                            break;
-                        }
-                    }
+            rv    = new byte[size];
+            reset = false;
 
-                    if(tend != -1) {
-                        in.readerIndex(rindex);
-
-                        // csum     is used to check msg correctness
-                        // msgSize  is used to retrieve the whole message
-                        // bodySize is used for checksum
-                        String csums    = in.toString(rindex + tbegin + 3,(tend - 1) - (tbegin + 3),m_charset);
-                        int    csum     = Integer.parseInt(csums);
-                        int    msgSize  = tend   - offset - 1;
-                        int    bodySize = tbegin - offset;
-
-                        if(msgSize > 0) {
-                            // reset the bufefr and skip to the beinning of
-                            // the FIX message (tag 8)
-                            in.readerIndex(rindex);
-                            in.skipBytes(offset);
-
-                            if(in.readableBytes() >= msgSize) {
-                                int begin = in.readerIndex();
-                                int end   = begin + msgSize;
-
-                                // extract the message as byte array an
-                                // flag the buffer as "consumed"
-                                msg   = new byte[end-begin+1];
-                                reset = false;
-
-                                in.readBytes(msg,0,end-begin+1);
-
-                                if(validateCheckSum(msg,bodySize,csum)) {
-                                    rv = msg;
-                                } else {
-                                    throw new Exception("");
-                                }
-
-                                // "consume" the buffer and leave partial
-                                // messages in for further processing
-                                in.readerIndex(end+1);
-                            }
-                        }
-                    }
-                }
-            }
+            in.readBytes(rv,offset,size);
+            in.readerIndex(mh.end(4)+1);
         }
 
         if(reset) {
@@ -228,34 +179,6 @@ public final class NettyMessageDecoder extends ByteToMessageDecoder {
         Matcher m = p.matcher(data);
 
         return m;
-    }
-
-    /**
-     *
-     * @param kv
-     * @return
-     */
-    private int getValueAsInt(String kv) {
-        String[] kv1 = StringUtils.split(kv, CHAR_EQUALS);
-        return (kv1.length == 2) ? Integer.parseInt(kv1[1]) : -1;
-    }
-
-    /**
-     *
-     * @param data
-     * @param dataLen
-     * @param expectedCheckSum
-     * @return
-     */
-    private boolean validateCheckSum(byte[] data, int dataLen, int expectedCheckSum) {
-        int sum = calculateCheckSum(data,dataLen);
-
-        if(expectedCheckSum == sum) {
-            return true;
-        } else {
-            LOGGER.warn("Checksum KO - calc={},rec={}",sum,expectedCheckSum);
-            return false;
-        }
     }
 
     /**
