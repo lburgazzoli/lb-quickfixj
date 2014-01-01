@@ -73,6 +73,6 @@ public final class NettyMessageEncoder extends MessageToMessageEncoder<CharSeque
             return;
         }
 
-        out.add(Unpooled.copiedBuffer(msg, m_charset));
+        out.add(Unpooled.copiedBuffer(msg,m_charset));
     }
 }
