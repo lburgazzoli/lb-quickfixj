@@ -68,8 +68,7 @@ public final class NettyMessageEncoder extends MessageToMessageEncoder<CharSeque
      * @throws Exception
      */
     @Override
-    protected void encode(
-        ChannelHandlerContext ctx, CharSequence msg, List<Object> out) throws Exception {
+    protected void encode(ChannelHandlerContext ctx, CharSequence msg, List<Object> out) throws Exception {
         if (msg.length() == 0) {
             return;
         }

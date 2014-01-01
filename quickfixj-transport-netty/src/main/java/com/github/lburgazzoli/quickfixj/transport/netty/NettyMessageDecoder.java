@@ -81,13 +81,6 @@ public final class NettyMessageDecoder extends ByteToMessageDecoder {
 
     /**
      *
-     * 8=FIX.4.0|9=    => len=12
-     * 8=FIX.4.1|9=    => len=12
-     * 8=FIX.4.2|9=    => len=12
-     * 8=FIX.4.3|9=    => len=12
-     * 8=FIX.4.4|9=    => len=12
-     * 8=FIXT.1.1|9=   => len=13
-     *
      * @param ctx
      * @param in
      * @param out
@@ -95,8 +88,7 @@ public final class NettyMessageDecoder extends ByteToMessageDecoder {
      * @throws Exception
      */
     @Override
-    public void decode(
-        ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
+    public void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
         if (in.readableBytes() >= FIXCodecHelper.MSG_MIN_BYTES) {
             StopWatch sw = new StopWatch();
             sw.start();
