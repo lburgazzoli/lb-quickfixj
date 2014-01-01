@@ -20,9 +20,9 @@
 package com.github.lburgazzoli.quickfixj.karaf.cmd;
 
 import com.github.lburgazzoli.karaf.common.cmd.AbstractCommand;
-import com.github.lburgazzoli.karaf.common.cmd.ShellTable;
+import com.github.lburgazzoli.karaf.common.cmd.CommandShellTable;
 import com.github.lburgazzoli.quickfixj.core.IFIXContext;
-import org.apache.felix.gogo.commands.Command;
+import org.apache.karaf.shell.commands.Command;
 
 import java.util.List;
 
@@ -45,14 +45,14 @@ public class ContextListCommand extends AbstractCommand {
 
     @Override
     protected void execute() throws Exception {
-        ShellTable        table  = new ShellTable(COLUMNS);
-        List<IFIXContext> ctxs   = getAllServices(IFIXContext.class,null);
+        CommandShellTable table = new CommandShellTable(COLUMNS);
+        List<IFIXContext> ctxs  = getAllServices(IFIXContext.class,null);
 
         if(ctxs != null) {
             for(IFIXContext context : ctxs) {
-                table.addRow(
-                    context.getId(),
-                    context.getNumSessions()
+                table.row(
+                        context.getId(),
+                        context.getNumSessions()
                 );
             }
         }

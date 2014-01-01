@@ -22,8 +22,8 @@ package com.github.lburgazzoli.quickfixj.karaf.cmd;
 import com.github.lburgazzoli.karaf.common.cmd.AbstractCommand;
 import com.github.lburgazzoli.quickfixj.osgi.IFIXConnection;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.felix.gogo.commands.Argument;
-import org.apache.felix.gogo.commands.Command;
+import org.apache.karaf.shell.commands.Argument;
+import org.apache.karaf.shell.commands.Command;
 
 import java.util.List;
 

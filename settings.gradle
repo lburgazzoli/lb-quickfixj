@@ -1,5 +1,5 @@
 
-include "quickfixj-codegen"
+//include "quickfixj-codegen"
 include "quickfixj-core"
 include "quickfixj-transport"
 include "quickfixj-transport-mina1"

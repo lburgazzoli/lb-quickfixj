@@ -19,23 +19,31 @@
 
 package com.github.lburgazzoli.quickfixj.transport.reactor;
 
-import reactor.function.Consumer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import reactor.function.Function;
 import reactor.io.Buffer;
-import reactor.tcp.encoding.Codec;
 
 /**
  *
  */
-public class ReactorFrameCodec implements Codec<Buffer,byte[],byte[]> {
+public class ReactorFrameEncoder implements Function<byte[], Buffer> {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ReactorFrameEncoder.class);
 
-    @Override
-    public Function<Buffer, byte[]> decoder(final Consumer<byte[]> next) {
-        return new ReactorFrameDecoder(next);
+    /**
+     * c-tor
+     */
+    public ReactorFrameEncoder() {
     }
 
     @Override
-    public Function<byte[], Buffer> encoder() {
-        return new ReactorFrameEncoder();
+    public Buffer apply(byte[] buffer) {
+        if (null == buffer) {
+            return null;
+        } else if (buffer.length == 0) {
+            return null;
+        }
+
+        return Buffer.wrap(buffer);
     }
 }

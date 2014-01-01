@@ -20,12 +20,12 @@
 package com.github.lburgazzoli.quickfixj.karaf.cmd;
 
 import com.github.lburgazzoli.karaf.common.cmd.AbstractCommand;
-import com.github.lburgazzoli.karaf.common.cmd.ShellTable;
+import com.github.lburgazzoli.karaf.common.cmd.CommandShellTable;
 import com.github.lburgazzoli.quickfixj.osgi.IFIXConnection;
 import com.github.lburgazzoli.quickfixj.transport.FIXSessionHelper;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.felix.gogo.commands.Argument;
 import org.apache.felix.gogo.commands.Command;
+import org.apache.karaf.shell.commands.Argument;
 
 import java.util.List;
 
@@ -64,7 +64,7 @@ public class ConnectionListCommand extends AbstractCommand {
 
     @Override
     protected void execute() throws Exception {
-        ShellTable           table  = new ShellTable(COLUMNS);
+        CommandShellTable    table  = new CommandShellTable(COLUMNS);
         List<IFIXConnection> ctxs   = getAllServices(IFIXConnection.class,null);
 
         if(ctxs != null) {
@@ -77,7 +77,7 @@ public class ConnectionListCommand extends AbstractCommand {
                 }
 
                 if(add) {
-                    table.addRow(
+                    table.row(
                         helper.getContext().getId(),
                         helper.getSession().getSessionID().getBeginString(),
                         helper.getSession().getSessionID().getSenderCompID(),

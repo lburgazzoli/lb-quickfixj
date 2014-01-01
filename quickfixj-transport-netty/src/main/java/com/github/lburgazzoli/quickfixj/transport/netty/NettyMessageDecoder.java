@@ -19,21 +19,15 @@
 
 package com.github.lburgazzoli.quickfixj.transport.netty;
 
-import com.github.lburgazzoli.quickfixj.transport.FIXMessageEvent;
+import com.github.lburgazzoli.quickfixj.transport.FIXCodecHelper;
 import com.github.lburgazzoli.quickfixj.transport.FIXSessionHelper;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import io.netty.util.CharsetUtil;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import quickfix.InvalidMessage;
-import quickfix.MessageUtils;
-import quickfix.Session;
-import quickfix.SessionID;
-import quickfix.field.MsgType;
 
 import java.nio.charset.Charset;
 import java.util.List;
@@ -47,14 +41,6 @@ public final class NettyMessageDecoder extends ByteToMessageDecoder {
 
     private static final Logger LOGGER =
         LoggerFactory.getLogger(NettyMessageDecoder.class);
-
-
-    private static final String REX =
-            "(8=FIX[T]?\\.[0-9]\\.[0-9])\\x01(9=[0-9]+)\\x01([0-9].*=*).*\\x01(10=[0-9]+)\\x01";
-
-    private static final int    MSG_MIN_BYTES = 30;
-    private static final char   CHAR_EQUALS   = '=';
-    private static final char   CHAR_SOH      = 0x01;
 
     private final Charset m_charset;
     private final FIXSessionHelper m_helper;
@@ -111,7 +97,7 @@ public final class NettyMessageDecoder extends ByteToMessageDecoder {
     @Override
     public void decode(
         ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
-        if (in.readableBytes() >= MSG_MIN_BYTES) {
+        if (in.readableBytes() >= FIXCodecHelper.MSG_MIN_BYTES) {
             StopWatch sw = new StopWatch();
             sw.start();
 
@@ -141,7 +127,7 @@ public final class NettyMessageDecoder extends ByteToMessageDecoder {
         byte[]  rv     = null;
         int     rindex = in.readerIndex();
         String  bs     = in.toString(m_charset);
-        Matcher mh     = getMatcherFor(REX,bs);
+        Matcher mh     = FIXCodecHelper.getCodecMatcher(bs);
         boolean reset  = true;
 
         in.readerIndex(rindex);
@@ -162,37 +148,5 @@ public final class NettyMessageDecoder extends ByteToMessageDecoder {
         }
 
         return rv;
-    }
-
-    // *************************************************************************
-    //
-    // *************************************************************************
-
-    /**
-     *
-     * @param pattern
-     * @param data
-     * @return
-     */
-    private Matcher getMatcherFor(String pattern, CharSequence data) {
-        Pattern p = Pattern.compile(pattern);
-        Matcher m = p.matcher(data);
-
-        return m;
-    }
-
-    /**
-     *
-     * @param data
-     * @param dataLen
-     * @return
-     */
-    private int calculateCheckSum(byte[] data, int dataLen) {
-        int sum = 0;
-        for (int i = 0; i < dataLen; i++) {
-            sum += data[i];
-        }
-
-        return sum % 256;
     }
 }
