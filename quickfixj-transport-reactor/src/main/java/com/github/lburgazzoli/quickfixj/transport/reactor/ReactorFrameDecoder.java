@@ -51,8 +51,6 @@ public class ReactorFrameDecoder implements Function<Buffer,byte[]> {
 
     @Override
     public byte[] apply(Buffer buffer) {
-        StopWatch sw = new StopWatch();
-        sw.start();
 
         byte[]  rv    = null;
         boolean reset = true;
@@ -89,10 +87,6 @@ public class ReactorFrameDecoder implements Function<Buffer,byte[]> {
                 buffer.limit(lim);
             }
         }
-
-        sw.stop();
-
-        LOGGER.debug("Decode.Time <{}><{}>",sw.toString(),sw.getNanoTime());
 
         return next(rv);
     }

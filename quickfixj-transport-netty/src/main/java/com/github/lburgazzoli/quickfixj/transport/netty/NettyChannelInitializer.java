@@ -19,10 +19,12 @@
 
 package com.github.lburgazzoli.quickfixj.transport.netty;
 
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelInitializer;
 import com.github.lburgazzoli.quickfixj.transport.FIXSessionHelper;
 import com.github.lburgazzoli.quickfixj.transport.FIXSessionType;
+import com.github.lburgazzoli.quickfixj.transport.netty.codec.NettyMessageDecoder;
+import com.github.lburgazzoli.quickfixj.transport.netty.codec.NettyMessageEncoder;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelInitializer;
 
 /**
  *

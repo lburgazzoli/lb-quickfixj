@@ -33,25 +33,26 @@ public class ReactorFrameCodectest
 {
     @Test
     public void testDecode() {
-        String message = "8=FIX.4.4|"
-            + "9=157|"
-            + "35=V|"
-            + "34=2|"
-            + "49=BRKR|"
-            + "52=20120921-06:41:04.295|"
-            + "56=QUOTE1-T|"
-            + "262=1:TOP:EURUSD|"
-            + "263=1|"
-            + "264=1|"
-            + "265=0|"
-            + "266=Y|"
-            + "146=1|"
-            + "55=EUR/USD|"
-            + "460=4|"
-            + "267=2|"
-            + "269=0|"
-            + "269=1|"
-            + "10=170|";
+        String message = "8=FIX.4.4"
+            + 0x01 + "9=157"
+            + 0x01 + "35=V"
+            + 0x01 + "34=2"
+            + 0x01 + "49=BRKR"
+            + 0x01 + "52=20120921-06:41:04.295"
+            + 0x01 + "56=QUOTE1-T"
+            + 0x01 + "262=1:TOP:EURUSD"
+            + 0x01 + "263=1"
+            + 0x01 + "264=1"
+            + 0x01 + "265=0"
+            + 0x01 + "266=Y"
+            + 0x01 + "146=1"
+            + 0x01 + "55=EUR/USD"
+            + 0x01 + "460=4"
+            + 0x01 + "267=2"
+            + 0x01 + "269=0"
+            + 0x01 + "269=1"
+            + 0x01 + "10=170"
+            + 0x01;
 
         Function<Buffer, byte[]> decoder =
             new ReactorFrameCodec().decoder(new Consumer<byte[]>() {

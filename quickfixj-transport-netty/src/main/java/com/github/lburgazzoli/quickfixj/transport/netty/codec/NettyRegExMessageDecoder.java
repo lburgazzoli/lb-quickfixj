@@ -17,61 +17,31 @@
  * are not clear to you.
  ******************************************************************************/
 
-package com.github.lburgazzoli.quickfixj.transport.netty;
+package com.github.lburgazzoli.quickfixj.transport.netty.codec;
 
 import com.github.lburgazzoli.quickfixj.transport.FIXCodecHelper;
 import com.github.lburgazzoli.quickfixj.transport.FIXSessionHelper;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
-import io.netty.util.CharsetUtil;
-import org.apache.commons.lang3.time.StopWatch;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.nio.charset.Charset;
 import java.util.List;
 import java.util.regex.Matcher;
 
 /**
  *
  */
-public final class NettyMessageDecoder extends ByteToMessageDecoder {
+public final class NettyRegExMessageDecoder extends ByteToMessageDecoder {
 
-    private static final Logger LOGGER =
-        LoggerFactory.getLogger(NettyMessageDecoder.class);
-
-    private final Charset m_charset;
     private final FIXSessionHelper m_helper;
 
     /**
      * c-tor
      *
-     * @param runtime
-     */
-    public NettyMessageDecoder(FIXSessionHelper runtime) {
-        this(runtime, CharsetUtil.ISO_8859_1);
-    }
-
-    /**
-     * c-tor
-     *
      * @param helper
-     * @param charset
      */
-    public NettyMessageDecoder(FIXSessionHelper helper, String charset) {
-        this(helper,Charset.forName(charset));
-    }
-
-    /**
-     * c-tor
-     *
-     * @param helper
-     * @param charset
-     */
-    public NettyMessageDecoder(FIXSessionHelper helper, Charset charset) {
+    public NettyRegExMessageDecoder(FIXSessionHelper helper) {
         m_helper  = helper;
-        m_charset = charset;
     }
 
     // *************************************************************************
@@ -89,15 +59,7 @@ public final class NettyMessageDecoder extends ByteToMessageDecoder {
     @Override
     public void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
         if (in.readableBytes() >= FIXCodecHelper.MSG_MIN_BYTES) {
-            StopWatch sw = new StopWatch();
-            sw.start();
-
             Object data = doDecodeBuffer(in);
-
-            sw.stop();
-
-            LOGGER.debug("Decode.Time <{}><{}>",sw.toString(),sw.getNanoTime());
-
             if(data != null) {
                 out.add(data);
             }
@@ -117,7 +79,7 @@ public final class NettyMessageDecoder extends ByteToMessageDecoder {
     private Object doDecodeBuffer(ByteBuf in) throws Exception {
         byte[]  rv     = null;
         int     rindex = in.readerIndex();
-        String  bs     = in.toString(m_charset);
+        String  bs     = in.toString();
         Matcher mh     = FIXCodecHelper.getCodecMatcher(bs);
         boolean reset  = true;
 
@@ -130,8 +92,8 @@ public final class NettyMessageDecoder extends ByteToMessageDecoder {
             rv    = new byte[size];
             reset = false;
 
-            in.readBytes(rv,offset,size);
-            in.readerIndex(mh.end(4)+1);
+            in.readBytes(rv, offset, size);
+            in.readerIndex(mh.end(4) + 1);
         }
 
         if(reset) {

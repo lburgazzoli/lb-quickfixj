@@ -46,7 +46,7 @@ public class NettyChannel implements ITransportChannel {
     @Override
     public boolean send(String data) {
         if(m_channel != null) {
-            m_channel.writeAndFlush(data);
+            m_channel.writeAndFlush(data.getBytes());
             return true;
         }
 

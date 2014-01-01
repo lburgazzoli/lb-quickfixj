@@ -17,22 +17,20 @@
  * are not clear to you.
  ******************************************************************************/
 
-package com.github.lburgazzoli.quickfixj.transport.netty;
+package com.github.lburgazzoli.quickfixj.transport.netty.codec;
 
 import com.github.lburgazzoli.quickfixj.transport.FIXSessionHelper;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageEncoder;
-import io.netty.util.CharsetUtil;
 
-import java.nio.charset.Charset;
 import java.util.List;
 
 /**
  *
  */
-public final class NettyMessageEncoder extends MessageToMessageEncoder<CharSequence> {
-    private final Charset m_charset;
+public final class NettyMessageEncoder extends MessageToMessageEncoder<byte[]> {
+
     private final FIXSessionHelper m_helper;
 
     /**
@@ -41,18 +39,7 @@ public final class NettyMessageEncoder extends MessageToMessageEncoder<CharSeque
      * @param helper
      */
     public NettyMessageEncoder(FIXSessionHelper helper) {
-        this(helper, CharsetUtil.ISO_8859_1);
-    }
-
-    /**
-     * c-tor
-     *
-     * @param helper
-     * @param charset
-     */
-    public NettyMessageEncoder(FIXSessionHelper helper, Charset charset) {
         m_helper  = helper;
-        m_charset = charset;
     }
 
     // *************************************************************************
@@ -68,11 +55,9 @@ public final class NettyMessageEncoder extends MessageToMessageEncoder<CharSeque
      * @throws Exception
      */
     @Override
-    protected void encode(ChannelHandlerContext ctx, CharSequence msg, List<Object> out) throws Exception {
-        if (msg.length() == 0) {
-            return;
+    protected void encode(ChannelHandlerContext ctx, byte[] msg, List<Object> out) throws Exception {
+        if (msg.length != 0) {
+            out.add(Unpooled.copiedBuffer(msg));
         }
-
-        out.add(Unpooled.copiedBuffer(msg,m_charset));
     }
 }
