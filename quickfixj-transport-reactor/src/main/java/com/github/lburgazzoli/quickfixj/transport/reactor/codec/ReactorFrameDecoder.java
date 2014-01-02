@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.lburgazzoli.quickfixj.transport.reactor;
+package com.github.lburgazzoli.quickfixj.transport.reactor.codec;
 
 import com.github.lburgazzoli.quickfixj.transport.FIXCodecHelper;
 import org.slf4j.Logger;

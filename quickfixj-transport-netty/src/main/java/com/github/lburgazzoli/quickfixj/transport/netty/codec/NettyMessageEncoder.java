@@ -27,15 +27,10 @@ import java.util.List;
  */
 public final class NettyMessageEncoder extends MessageToMessageEncoder<byte[]> {
 
-    private final FIXSessionHelper m_helper;
-
     /**
      * c-tor
-     *
-     * @param helper
      */
-    public NettyMessageEncoder(FIXSessionHelper helper) {
-        m_helper  = helper;
+    public NettyMessageEncoder() {
     }
 
     // *************************************************************************

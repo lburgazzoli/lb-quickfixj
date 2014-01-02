@@ -15,9 +15,12 @@
  */
 package com.github.lburgazzoli.quickfixj.transport.reactor;
 
+import com.github.lburgazzoli.quickfixj.transport.ITransportChannel;
+import com.github.lburgazzoli.quickfixj.transport.netty.codec.NettyMessageDecoder;
+import com.github.lburgazzoli.quickfixj.transport.netty.codec.NettyMessageEncoder;
+import io.netty.channel.ChannelPipeline;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.github.lburgazzoli.quickfixj.transport.ITransportChannel;
 import reactor.core.Environment;
 import reactor.core.Reactor;
 import reactor.core.composable.Promise;
@@ -29,7 +32,7 @@ import reactor.function.Consumer;
 import reactor.tcp.Reconnect;
 import reactor.tcp.TcpClient;
 import reactor.tcp.TcpConnection;
-import reactor.tcp.config.ClientSocketOptions;
+import reactor.tcp.netty.NettyClientSocketOptions;
 import reactor.tcp.netty.NettyTcpClient;
 import reactor.tcp.spec.TcpClientSpec;
 import reactor.tuple.Tuple;
@@ -39,6 +42,9 @@ import java.net.InetSocketAddress;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+/**
+ *
+ */
 public class ReactorChannel implements ITransportChannel {
     private static final Logger LOGGER = LoggerFactory.getLogger(ReactorChannel.class);
 
@@ -82,12 +88,23 @@ public class ReactorChannel implements ITransportChannel {
      */
     public ReactorChannel connect(String host,int port) {
         if(m_tcpClient == null) {
+
+            final Consumer<ChannelPipeline> pipelineConsumer = new Consumer<ChannelPipeline>() {
+                @Override
+                public void accept(ChannelPipeline pipeline) {
+                    pipeline.addLast("fix-decoder", new NettyMessageDecoder());
+                    pipeline.addLast("fix-encoder", new NettyMessageEncoder());
+                }
+            };
+
+            // To use Reactor's Codecs:
+            //  .codec(new ReactorFrameCodec())
             m_tcpClient = new TcpClientSpec<byte[],byte[]>(NettyTcpClient.class)
                 .env(m_tcpEnv)
-                .codec(new ReactorFrameCodec())
                 .dispatcher(Environment.RING_BUFFER)
                 .options(
-                    new ClientSocketOptions()
+                    new NettyClientSocketOptions()
+                        .pipelineConfigurer(pipelineConsumer)
                         .keepAlive(true)
                         .tcpNoDelay(true))
                 .connect(host,port)

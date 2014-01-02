@@ -46,8 +46,8 @@ public class NettyChannelInitializer extends ChannelInitializer {
 
     @Override
     protected void initChannel(Channel ch) throws Exception {
-        ch.pipeline().addLast("decoder",new NettyMessageDecoder(m_helper));
-        ch.pipeline().addLast("encoder",new NettyMessageEncoder(m_helper));
+        ch.pipeline().addLast("decoder",new NettyMessageDecoder());
+        ch.pipeline().addLast("encoder",new NettyMessageEncoder());
         ch.pipeline().addLast("handler",new NettyChannelHandler(m_stateHandler,m_helper,m_sessionType));
     }
 }

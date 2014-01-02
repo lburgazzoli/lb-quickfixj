@@ -11,6 +11,7 @@ project.ext {
 
 dependencies {
     compile project(':quickfixj-transport')
+    compile project(':quickfixj-transport-netty')
 
     compile "org.projectreactor:reactor-core:$reactorVersion"
     compile "org.projectreactor:reactor-tcp:$reactorVersion"

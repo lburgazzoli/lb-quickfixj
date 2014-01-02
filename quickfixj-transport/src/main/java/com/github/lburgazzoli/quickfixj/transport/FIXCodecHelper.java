@@ -23,9 +23,10 @@ public class FIXCodecHelper {
     public static final String MESSAGE_REX =
         "(8=FIX[T]?\\.[0-9]\\.[0-9])\\x01(9=[0-9]+)\\x01([0-9].*=*).*\\x01(10=[0-9]+)\\x01";
 
-    public static final int  MSG_MIN_BYTES    = 30;
+    public static final int  MSG_MIN_BYTES     = 30;
     public static final int  MSG_CSUM_LEN      = 7;
-    public static final char CHAR_EQUALS       = '=';
+    public static final byte BYTE_EQUALS       = '=';
+    public static final char CHAR_EQUALS       = BYTE_EQUALS;
     public static final byte BYTE_SOH          = 0x01;
     public static final char CHAR_SOH          = BYTE_SOH;
     public static final byte BYTE_BEGIN_STRING = '8';

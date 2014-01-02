@@ -20,6 +20,8 @@
 package com.github.lburgazzoli.quickfixj.examples;
 
 import com.github.lburgazzoli.quickfixj.transport.ITransport;
+import com.github.lburgazzoli.quickfixj.transport.reactor.ReactorSocketInitiator;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import quickfix.Application;
@@ -42,8 +44,8 @@ import com.github.lburgazzoli.quickfixj.transport.netty.NettySocketInitiator;
 /**
  *
  */
-public class NettyInitiatorMain {
-    private static final Logger LOGGER = LoggerFactory.getLogger(NettyInitiatorMain.class);
+public class InitiatorMain {
+    private static final Logger LOGGER = LoggerFactory.getLogger(InitiatorMain.class);
 
     /**
      * @param sid
@@ -82,18 +84,28 @@ public class NettyInitiatorMain {
             MessageFactory        msgf = new DefaultMessageFactory();
             SessionFactory        sf   = new DefaultSessionFactory(ctx,app,msf,logf,msgf);
             FIXSessionHelper      sx   = new FIXSessionHelper(sf.create(sid,cfg),cfg);
-            ITransport            tx   = new NettySocketInitiator(sx);
+            ITransport            tx   = null;
 
-            tx.connect();
+            if(args.length >= 1) {
 
-            try {
-                while(true) {
-                    try{ Thread.sleep(5000); } catch(Exception e) {}
+                if(StringUtils.equalsIgnoreCase("netty",args[0])) {
+                    tx = new NettySocketInitiator(sx);
+                } else if(StringUtils.equalsIgnoreCase("reactor",args[0])) {
+                    tx = new ReactorSocketInitiator(sx);
                 }
-            } catch(Exception e) {
-                LOGGER.warn("Exception", e);
             }
 
+            if(tx != null) {
+                tx.connect();
+
+                try {
+                    while(true) {
+                        try{ Thread.sleep(5000); } catch(Exception e) {}
+                    }
+                } catch(Exception e) {
+                    LOGGER.warn("Exception", e);
+                }
+            }
         } catch(Exception e) {
             LOGGER.warn("Exception", e);
         }

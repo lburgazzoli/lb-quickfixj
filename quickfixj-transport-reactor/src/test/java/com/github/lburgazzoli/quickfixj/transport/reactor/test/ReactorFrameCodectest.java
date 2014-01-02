@@ -19,7 +19,7 @@
 
 package com.github.lburgazzoli.quickfixj.transport.reactor.test;
 
-import com.github.lburgazzoli.quickfixj.transport.reactor.ReactorFrameCodec;
+import com.github.lburgazzoli.quickfixj.transport.reactor.codec.ReactorFrameCodec;
 import org.junit.Assert;
 import org.junit.Test;
 import reactor.function.Consumer;
