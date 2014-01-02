@@ -93,17 +93,17 @@ public class InitiatorMain {
                 } else if(StringUtils.equalsIgnoreCase("reactor",args[0])) {
                     tx = new ReactorSocketInitiator(sx);
                 }
-            }
 
-            if(tx != null) {
-                tx.connect();
+                if(tx != null) {
+                    tx.connect();
 
-                try {
-                    while(true) {
-                        try{ Thread.sleep(5000); } catch(Exception e) {}
+                    try {
+                        while(true) {
+                            try{ Thread.sleep(5000); } catch(Exception e) {}
+                        }
+                    } catch(Exception e) {
+                        LOGGER.warn("Exception", e);
                     }
-                } catch(Exception e) {
-                    LOGGER.warn("Exception", e);
                 }
             }
         } catch(Exception e) {
