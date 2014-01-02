@@ -12,25 +12,12 @@ import org.junit.Test;
 public class NettyFrameCodecTest extends NettyTestSupport {
 
     // *************************************************************************
-    //
+    // DECODER
     // *************************************************************************
 
     @Test
     public void testDecode() {
-        ByteBuf message = new MessageBuilder()
-            .add(  "8","FIX.4.2")
-            .add(  "9","69")
-            .add( "35","A")
-            .add( "34","1")
-            .add( "49","TEST")
-            .add( "52","20140102-11:55:47.746")
-            .add( "56","EXEC")
-            .add( "98","0")
-            .add("108","30")
-            .add("141","Y")
-            .add( "10","151")
-            .build();
-
+        ByteBuf         message = newLogonMessage();
         ByteBuf         msgcopy = message.copy();
         EmbeddedChannel channel = new EmbeddedChannel(new NettyMessageDecoder());
 
@@ -45,5 +32,53 @@ public class NettyFrameCodecTest extends NettyTestSupport {
         if(msgcopy.hasArray()) {
             Assert.assertArrayEquals(msgcopy.array(),result);
         }
+    }
+
+    @Test
+    public void testDecodeMultiple() {
+        EmbeddedChannel channel = new EmbeddedChannel(new NettyMessageDecoder());
+
+        // raw write write
+        Assert.assertTrue(channel.writeInbound(newLogonMessage().writeBytes(newLogonMessage())));
+        Assert.assertTrue(channel.finish());
+
+        // read
+        Assert.assertNotNull(channel.readInbound());
+        Assert.assertNotNull(channel.readInbound());
+        Assert.assertNull(channel.readInbound());
+    }
+
+    @Test
+    public void testDecodeMultipleWithPartialMessages() {
+
+        ByteBuf pmessage  = newLogonMessage();
+        ByteBuf pmessage1 = pmessage.readBytes(10);
+        ByteBuf pmessage2 = pmessage.readBytes(pmessage.readableBytes());
+
+        EmbeddedChannel channel  = new EmbeddedChannel(new NettyMessageDecoder());
+
+        // raw write:
+        // - 1 complete message
+        // - 1 partial message
+        Assert.assertTrue(channel.writeInbound(newLogonMessage().writeBytes(pmessage1)));
+
+        // read
+        Assert.assertNotNull(channel.readInbound());
+        Assert.assertNull(channel.readInbound());
+
+        // raw write:
+        // - 1 partial message
+        // - 1 compete message
+        Assert.assertTrue(channel.writeInbound(pmessage2.writeBytes(newLogonMessage())));
+        Assert.assertTrue(channel.finish());
+
+        // read
+        byte[] result1 = (byte[])channel.readInbound();
+        Assert.assertNotNull(result1);
+
+        byte[] result2 = (byte[])channel.readInbound();
+        Assert.assertNotNull(result2);
+
+        Assert.assertNull(channel.readInbound());
     }
 }

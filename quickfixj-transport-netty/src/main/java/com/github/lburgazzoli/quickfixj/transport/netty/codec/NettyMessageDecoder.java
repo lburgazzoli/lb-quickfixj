@@ -19,8 +19,6 @@ import com.github.lburgazzoli.quickfixj.transport.FIXCodecHelper;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -28,7 +26,6 @@ import java.util.List;
  *
  */
 public class NettyMessageDecoder extends ByteToMessageDecoder {
-    private static final Logger LOGGER = LoggerFactory.getLogger(NettyMessageDecoder.class);
 
     private int m_msgLength;
 
@@ -61,7 +58,9 @@ public class NettyMessageDecoder extends ByteToMessageDecoder {
     protected void doDecode(ByteBuf in, List<Object> out) {
         if(m_msgLength == -1) {
             if(in.readableBytes() >= FIXCodecHelper.MSG_MIN_BYTES) {
-                int bsi = in.indexOf(0, 12,FIXCodecHelper.BYTE_SOH);
+                //int rindex = in.readerIndex();
+
+                int bsi = in.indexOf(0,12,FIXCodecHelper.BYTE_SOH);
                 int bli = in.indexOf(12,20,FIXCodecHelper.BYTE_SOH);
 
                 // check the existence of:
@@ -89,11 +88,10 @@ public class NettyMessageDecoder extends ByteToMessageDecoder {
             if(in.readableBytes() >= m_msgLength) {
                 byte[] rv = new byte[m_msgLength];
                 in.readBytes(rv);
+                in.discardReadBytes();
 
                 //TODO: validate checksum
                 out.add(rv);
-
-                LOGGER.debug("ByteBuf: read {}, remaining {}",m_msgLength,in.readableBytes());
 
                 m_msgLength = -1;
             } else {
