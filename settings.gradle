@@ -1,3 +1,4 @@
+rootProject.name = "lb-quickfixj"
 
 //include "quickfixj-codegen"
 include "quickfixj-core"
