@@ -16,7 +16,6 @@
 package com.github.lburgazzoli.quickfixj.transport.netty.codec;
 
 import com.github.lburgazzoli.quickfixj.transport.FIXCodecHelper;
-import com.github.lburgazzoli.quickfixj.transport.FIXSessionHelper;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;

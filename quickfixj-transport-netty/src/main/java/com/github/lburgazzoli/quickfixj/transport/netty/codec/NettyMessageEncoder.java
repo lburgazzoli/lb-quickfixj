@@ -15,7 +15,6 @@
  */
 package com.github.lburgazzoli.quickfixj.transport.netty.codec;
 
-import com.github.lburgazzoli.quickfixj.transport.FIXSessionHelper;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageEncoder;
