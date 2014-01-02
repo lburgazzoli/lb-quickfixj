@@ -2,8 +2,7 @@ anguage:
   - java
 
 script:
-  - ./gradlew clean
-  - ./gradlew build
+  - ./gradlew clean build test
 
 jdk:
   - oraclejdk7

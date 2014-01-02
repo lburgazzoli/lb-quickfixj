@@ -43,15 +43,22 @@ public class NettyMessageDecoder extends ByteToMessageDecoder {
     //
     // *************************************************************************
 
-    /**
-     *
-     * @param ctx
-     * @param in
-     * @param out
-     * @throws Exception
-     */
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
+        doDecode(in,out);
+    }
+
+    // *************************************************************************
+    //
+    // *************************************************************************
+
+    /**
+     * TODO: loop for more messages in the ByteBuf
+     *
+     * @param in
+     * @param out
+     */
+    protected void doDecode(ByteBuf in, List<Object> out) {
         if(m_msgLength == -1) {
             if(in.readableBytes() >= FIXCodecHelper.MSG_MIN_BYTES) {
                 int bsi = in.indexOf(0, 12,FIXCodecHelper.BYTE_SOH);
