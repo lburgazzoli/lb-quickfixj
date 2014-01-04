@@ -15,16 +15,14 @@
  */
 package com.github.lburgazzoli.quickfixj.transport.netty.codec;
 
-import io.netty.buffer.Unpooled;
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.MessageToMessageEncoder;
-
-import java.util.List;
+import io.netty.handler.codec.MessageToByteEncoder;
 
 /**
  *
  */
-public final class NettyMessageEncoder extends MessageToMessageEncoder<byte[]> {
+public final class NettyMessageEncoder extends MessageToByteEncoder<byte[]> {
 
     /**
      * c-tor
@@ -45,9 +43,9 @@ public final class NettyMessageEncoder extends MessageToMessageEncoder<byte[]> {
      * @throws Exception
      */
     @Override
-    protected void encode(ChannelHandlerContext ctx, byte[] msg, List<Object> out) throws Exception {
+    protected void encode(ChannelHandlerContext ctx, byte[] msg, ByteBuf out) throws Exception {
         if (msg.length != 0) {
-            out.add(Unpooled.copiedBuffer(msg));
+            out.writeBytes(msg);
         }
     }
 }
