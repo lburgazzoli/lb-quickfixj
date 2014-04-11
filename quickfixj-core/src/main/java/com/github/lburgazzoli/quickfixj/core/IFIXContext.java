@@ -36,16 +36,6 @@ public interface IFIXContext {
 
     public ScheduledExecutorService getScheduler();
 
-    // *************************************************************************
-    //
-    // *************************************************************************
-
-    /**
-     *
-     * @return
-     */
-    public SessionSettings getSettings();
-
     /**
      *
      * @return

@@ -19,39 +19,19 @@
 
 package com.github.lburgazzoli.quickfixj.transport.mina.initiator;
 
+import com.github.lburgazzoli.quickfixj.core.IFIXContext;
+import com.github.lburgazzoli.quickfixj.transport.mina.*;
+import com.github.lburgazzoli.quickfixj.transport.mina.ssl.SSLSupport;
 import org.apache.mina.common.ByteBuffer;
 import org.apache.mina.common.SimpleByteBufferAllocator;
 import org.apache.mina.common.TransportType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import quickfix.Application;
-import quickfix.ConfigError;
-import quickfix.DefaultSessionFactory;
-import quickfix.FieldConvertError;
-import com.github.lburgazzoli.quickfixj.core.IFIXContext;
-import com.github.lburgazzoli.quickfixj.transport.mina.Initiator;
-import quickfix.LogFactory;
-import quickfix.MessageFactory;
-import quickfix.MessageStoreFactory;
-import quickfix.Session;
-import quickfix.SessionFactory;
-import quickfix.SessionID;
-import quickfix.SessionSettings;
+import quickfix.*;
 import quickfix.field.converter.BooleanConverter;
-import com.github.lburgazzoli.quickfixj.transport.mina.EventHandlingStrategy;
-import com.github.lburgazzoli.quickfixj.transport.mina.NetworkingOptions;
-import com.github.lburgazzoli.quickfixj.transport.mina.ProtocolFactory;
-import com.github.lburgazzoli.quickfixj.transport.mina.SessionConnector;
-import com.github.lburgazzoli.quickfixj.transport.mina.ssl.SSLSupport;
 
 import java.net.SocketAddress;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Abstract base class for socket initiators.
@@ -61,17 +41,31 @@ public abstract class AbstractSocketInitiator extends SessionConnector implement
     protected final Logger log = LoggerFactory.getLogger(getClass());
     private final Set<IoSessionInitiator> initiators = new HashSet<IoSessionInitiator>();
 
-    protected AbstractSocketInitiator(IFIXContext context,Application application,
-            MessageStoreFactory messageStoreFactory, SessionSettings settings,
-            LogFactory logFactory, MessageFactory messageFactory) throws ConfigError {
+    protected AbstractSocketInitiator(
+        IFIXContext context,
+        Application application,
+        MessageStoreFactory messageStoreFactory,
+        SessionSettings settings,
+        MessageFactory messageFactory) throws ConfigError {
         this(context,
             settings,
-            new DefaultSessionFactory(context,application, messageStoreFactory, logFactory,messageFactory));
+            new DefaultSessionFactory(
+                context,
+                settings,
+                application,
+                messageStoreFactory,
+                messageFactory));
     }
 
-    protected AbstractSocketInitiator(IFIXContext context,SessionSettings settings, SessionFactory sessionFactory)
-            throws ConfigError {
-        super(context,settings, sessionFactory);
+    protected AbstractSocketInitiator(
+        IFIXContext context,
+        SessionSettings settings,
+        SessionFactory sessionFactory)
+        throws ConfigError {
+        super(
+            context,
+            settings,
+            sessionFactory);
             ByteBuffer.setAllocator(new SimpleByteBufferAllocator());
             ByteBuffer.setUseDirectBuffers(false);
     }

@@ -65,10 +65,10 @@ public class InitiatorMain {
         try {
             SessionID             sid  = new SessionID("FIX.4.2","TEST","EXEC");
             SessionSettings       cfg  = getSettingsFor(sid);
-            IFIXContext           ctx  = new FIXContext("qfj-ctx-id",cfg);
+            IFIXContext           ctx  = new FIXContext("qfj-ctx-id");
             Application           app  = new TracingApplication();
             MessageStoreFactory   msf  = new MemoryStoreFactory(ctx);
-            SessionFactory        sf   = new DefaultSessionFactory(ctx,app,msf);
+            SessionFactory        sf   = new DefaultSessionFactory(ctx,cfg,app,msf);
             FIXSessionHelper      sx   = new FIXSessionHelper(sf.create(sid,cfg),cfg);
             ITransport            tx   = new NettySocketInitiator(sx);
 

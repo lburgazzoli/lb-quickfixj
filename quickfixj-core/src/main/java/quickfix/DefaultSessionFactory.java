@@ -46,32 +46,36 @@ public class DefaultSessionFactory implements SessionFactory {
      * c-tor
      *
      * @param context
+     * @param settings
      * @param application
      * @param messageStoreFactory
      */
     public DefaultSessionFactory(
-        IFIXContext context,
-        Application application,
-        MessageStoreFactory messageStoreFactory) {
-        this(context,application,messageStoreFactory,new DefaultMessageFactory());
+        final IFIXContext context,
+        final SessionSettings settings,
+        final Application application,
+        final MessageStoreFactory messageStoreFactory) {
+        this(context,settings,application,messageStoreFactory,new DefaultMessageFactory());
     }
 
     /**
      * c-tor
      *
      * @param context
+     * @param settings
      * @param application
      * @param messageStoreFactory
      * @param messageFactory
      */
     public DefaultSessionFactory(
-        IFIXContext context,
-        Application application,
-        MessageStoreFactory messageStoreFactory,
-        MessageFactory messageFactory) {
+        final IFIXContext context,
+        final SessionSettings settings,
+        final Application application,
+        final MessageStoreFactory messageStoreFactory,
+        final MessageFactory messageFactory) {
         this.application = application;
         this.messageStoreFactory = messageStoreFactory;
-        this.logFactory = new SLF4JLogFactory(context.getSettings());
+        this.logFactory = new SLF4JLogFactory(settings);
         this.messageFactory = messageFactory;
         this.context = context;
     }

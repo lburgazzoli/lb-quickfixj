@@ -19,17 +19,9 @@
 
 package com.github.lburgazzoli.quickfixj.transport.mina;
 
-import quickfix.Application;
-import quickfix.ConfigError;
-import quickfix.LogFactory;
-import quickfix.MessageFactory;
-import quickfix.MessageStoreFactory;
-import quickfix.RuntimeError;
-import quickfix.ScreenLogFactory;
-import quickfix.SessionFactory;
-import quickfix.SessionSettings;
 import com.github.lburgazzoli.quickfixj.core.IFIXContext;
 import com.github.lburgazzoli.quickfixj.transport.mina.initiator.AbstractSocketInitiator;
+import quickfix.*;
 
 /**
  * Initiates connections and uses a separate thread per session to process messages.
@@ -40,15 +32,8 @@ public class ThreadedSocketInitiator extends AbstractSocketInitiator {
 
     public ThreadedSocketInitiator(final IFIXContext context,Application application,
             MessageStoreFactory messageStoreFactory, SessionSettings settings,
-            LogFactory logFactory, MessageFactory messageFactory) throws ConfigError {
-        super(context,application, messageStoreFactory, settings, logFactory, messageFactory);
-    }
-
-    public ThreadedSocketInitiator(final IFIXContext context,Application application,
-            MessageStoreFactory messageStoreFactory, SessionSettings settings,
             MessageFactory messageFactory) throws ConfigError {
-        super(context,application, messageStoreFactory, settings, new ScreenLogFactory(settings),
-                messageFactory);
+        super(context,application, messageStoreFactory, settings, messageFactory);
     }
 
     public ThreadedSocketInitiator(final IFIXContext context,SessionFactory sessionFactory, SessionSettings settings)

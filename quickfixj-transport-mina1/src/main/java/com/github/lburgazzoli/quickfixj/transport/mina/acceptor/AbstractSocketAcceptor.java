@@ -89,7 +89,7 @@ public abstract class AbstractSocketAcceptor extends SessionConnector implements
             MessageStoreFactory messageStoreFactory, SessionSettings settings,
             LogFactory logFactory, MessageFactory messageFactory) throws ConfigError {
         this(context,settings,
-            new DefaultSessionFactory(context,application, messageStoreFactory, logFactory,messageFactory));
+            new DefaultSessionFactory(context,settings,application, messageStoreFactory,messageFactory));
     }
 
     // TODO SYNC Does this method really need synchronization?

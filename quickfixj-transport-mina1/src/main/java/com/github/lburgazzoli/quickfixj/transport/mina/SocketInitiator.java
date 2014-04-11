@@ -19,18 +19,9 @@
 
 package com.github.lburgazzoli.quickfixj.transport.mina;
 
-import quickfix.Application;
-import quickfix.ConfigError;
-import quickfix.LogFactory;
-import quickfix.MessageFactory;
-import quickfix.MessageStoreFactory;
-import quickfix.RuntimeError;
-import quickfix.ScreenLogFactory;
-import quickfix.Session;
-import quickfix.SessionFactory;
-import quickfix.SessionSettings;
 import com.github.lburgazzoli.quickfixj.core.IFIXContext;
 import com.github.lburgazzoli.quickfixj.transport.mina.initiator.AbstractSocketInitiator;
+import quickfix.*;
 
 /**
  * Initiates connections and uses a single thread to process messages for all
@@ -43,18 +34,9 @@ public class SocketInitiator extends AbstractSocketInitiator {
     	new SingleThreadedEventHandlingStrategy(this);
 
     public SocketInitiator(final IFIXContext context,Application application, MessageStoreFactory messageStoreFactory,
-            SessionSettings settings, MessageFactory messageFactory) throws ConfigError {
-        super(context,application, messageStoreFactory, settings, new ScreenLogFactory(settings),
-                messageFactory);
-        if (settings == null) {
-            throw new ConfigError("no settings");
-        }
-    }
-
-    public SocketInitiator(final IFIXContext context,Application application, MessageStoreFactory messageStoreFactory,
-            SessionSettings settings, LogFactory logFactory, MessageFactory messageFactory)
+            SessionSettings settings, MessageFactory messageFactory)
             throws ConfigError {
-        super(context,application, messageStoreFactory, settings, logFactory, messageFactory);
+        super(context,application, messageStoreFactory, settings, messageFactory);
         if (settings == null) {
             throw new ConfigError("no settings");
         }

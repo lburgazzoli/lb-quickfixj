@@ -133,8 +133,12 @@ public class DynamicAcceptorSessionProvider implements AcceptorSessionProvider {
         this.settings = settings;
         this.templateMappings = templateMappings;
         this.context = context;
-        sessionFactory = new DefaultSessionFactory(context,application, messageStoreFactory, logFactory,
-                messageFactory);
+        sessionFactory = new DefaultSessionFactory(
+            context,
+            settings,
+            application,
+            messageStoreFactory,
+            messageFactory);
     }
 
     public synchronized Session getSession(SessionID sessionID, SessionConnector sessionConnector) {

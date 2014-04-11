@@ -41,24 +41,20 @@ import java.util.concurrent.ThreadFactory;
  *
  */
 public class FIXContext implements IFIXContext {
-    private static Logger LOGGER =
-        LoggerFactory.getLogger(FIXContext.class);
+    private static Logger LOGGER = LoggerFactory.getLogger(FIXContext.class);
 
     private final String m_id;
     private final ThreadFactory m_threadFactory;
     private final ScheduledExecutorService m_scheduler;
     private final ConcurrentMap<SessionID, Session> m_sessions;
-    private final SessionSettings m_settings;
 
     /**
      * c-tor
      *
      * @param id;
-     * @param settings;
      */
-    public FIXContext(String id, final SessionSettings settings) {
+    public FIXContext(String id) {
         m_id = id;
-        m_settings = settings;
         m_threadFactory = new NamedThreadFactory("QFJ_Timer");
         m_scheduler = Executors.newSingleThreadScheduledExecutor(m_threadFactory);
         m_sessions = Maps.newConcurrentMap();
@@ -67,11 +63,6 @@ public class FIXContext implements IFIXContext {
     // *************************************************************************
     //
     // *************************************************************************
-
-    @Override
-    public SessionSettings getSettings() {
-        return m_settings;
-    }
 
     @Override
     public String getId() {

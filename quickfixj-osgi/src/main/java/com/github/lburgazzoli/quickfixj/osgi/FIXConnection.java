@@ -19,6 +19,8 @@
 
 package com.github.lburgazzoli.quickfixj.osgi;
 
+import com.github.lburgazzoli.quickfixj.core.IFIXContext;
+import com.github.lburgazzoli.quickfixj.core.util.TracingApplication;
 import com.github.lburgazzoli.quickfixj.transport.FIXSessionHelper;
 import com.github.lburgazzoli.quickfixj.transport.ITransport;
 import com.github.lburgazzoli.quickfixj.transport.netty.NettySocketInitiator;
@@ -28,19 +30,7 @@ import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import quickfix.Application;
-import quickfix.DefaultMessageFactory;
-import quickfix.DefaultSessionFactory;
-import quickfix.LogFactory;
-import quickfix.MemoryStoreFactory;
-import quickfix.MessageFactory;
-import quickfix.MessageStoreFactory;
-import quickfix.SLF4JLogFactory;
-import quickfix.SessionFactory;
-import quickfix.SessionID;
-import quickfix.SessionSettings;
-import com.github.lburgazzoli.quickfixj.core.IFIXContext;
-import com.github.lburgazzoli.quickfixj.core.util.TracingApplication;
+import quickfix.*;
 
 import java.io.IOException;
 import java.util.Dictionary;
@@ -207,9 +197,7 @@ public class FIXConnection implements IFIXConnection {
     private ITransport initInitator(SessionID sid,SessionSettings settings) throws Exception {
         Application         app  = new TracingApplication();
         MessageStoreFactory msf  = new MemoryStoreFactory(m_fixCtx);
-        LogFactory          logf = new SLF4JLogFactory(settings);
-        MessageFactory      msgf = new DefaultMessageFactory();
-        SessionFactory      sf   = new DefaultSessionFactory(m_fixCtx,app,msf,logf,msgf);
+        SessionFactory      sf   = new DefaultSessionFactory(m_fixCtx,settings,app,msf);
         FIXSessionHelper    sx   = new FIXSessionHelper(sf.create(sid,settings),settings);
 
         return new NettySocketInitiator(sx);
