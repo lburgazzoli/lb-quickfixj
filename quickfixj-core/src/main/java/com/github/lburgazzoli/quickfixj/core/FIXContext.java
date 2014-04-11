@@ -23,12 +23,7 @@ import com.google.common.collect.Maps;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import quickfix.FieldNotFound;
-import quickfix.Message;
-import quickfix.Session;
-import quickfix.SessionException;
-import quickfix.SessionID;
-import quickfix.SessionNotFound;
+import quickfix.*;
 import com.github.lburgazzoli.quickfixj.core.util.NamedThreadFactory;
 import quickfix.field.BeginString;
 import quickfix.field.SenderCompID;
@@ -53,14 +48,17 @@ public class FIXContext implements IFIXContext {
     private final ThreadFactory m_threadFactory;
     private final ScheduledExecutorService m_scheduler;
     private final ConcurrentMap<SessionID, Session> m_sessions;
+    private final SessionSettings m_settings;
 
     /**
      * c-tor
      *
      * @param id;
+     * @param settings;
      */
-    public FIXContext(String id) {
+    public FIXContext(String id, final SessionSettings settings) {
         m_id = id;
+        m_settings = settings;
         m_threadFactory = new NamedThreadFactory("QFJ_Timer");
         m_scheduler = Executors.newSingleThreadScheduledExecutor(m_threadFactory);
         m_sessions = Maps.newConcurrentMap();
@@ -69,6 +67,11 @@ public class FIXContext implements IFIXContext {
     // *************************************************************************
     //
     // *************************************************************************
+
+    @Override
+    public SessionSettings getSettings() {
+        return m_settings;
+    }
 
     @Override
     public String getId() {

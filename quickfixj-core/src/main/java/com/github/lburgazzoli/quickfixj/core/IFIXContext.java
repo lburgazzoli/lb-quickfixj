@@ -19,10 +19,7 @@
 
 package com.github.lburgazzoli.quickfixj.core;
 
-import quickfix.Message;
-import quickfix.Session;
-import quickfix.SessionID;
-import quickfix.SessionNotFound;
+import quickfix.*;
 
 import java.util.Collection;
 import java.util.Set;
@@ -42,6 +39,12 @@ public interface IFIXContext {
     // *************************************************************************
     //
     // *************************************************************************
+
+    /**
+     *
+     * @return
+     */
+    public SessionSettings getSettings();
 
     /**
      *

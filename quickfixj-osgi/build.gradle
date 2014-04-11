@@ -16,7 +16,6 @@ dependencies {
     compile project(':quickfixj-core')
     compile project(':quickfixj-transport')
     compile project(':quickfixj-transport-netty')
-    compile project(':quickfixj-transport-reactor')
 
     compile "com.github.lburgazzoli:lb-karaf-common:$lbKarafCommonVersion"
     compile "org.osgi:org.osgi.core:$osgiVersion"

@@ -28,6 +28,7 @@ public class NettyChannel implements ITransportChannel {
 
     /**
      * c-tor
+     *
      * @param channel
      */
     public NettyChannel(Channel channel) {

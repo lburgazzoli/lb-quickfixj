@@ -9,18 +9,19 @@ ext {
 
     slf4jVersion                = '1.7.5'
     log4jVersion                = '1.2.17'
-    nettyVersion                = '4.0.11.Final'
+    nettyVersion                = '4.0.18.Final'
     javassistVersion            = '3.18.0-GA';
     mina1Version                = '1.1.7'
     osgiVersion                 = '5.0.0'
-    reactorVersion              = '1.0.0.RELEASE'
+    reactorVersion              = '1.0.1.RELEASE'
     lbKarafCommonVersion        = '3.0.0.SNAPSHOT'
     karafVersion                = '3.0.0'
     junitVersion                = '4.11'
-    openHftJavaLangVersion      = '6.1.1'
-    openHftJavaChronicleVersion = '2.0.2'
+    openHftJavaLangVersion      = '6.3.4'
+    openHftJavaChronicleVersion = '3.0a'
+    hazelcastVersion            = '3.2'
     
-    gradleVersion               = '1.9'
+    gradleVersion               = '1.11'
     gradleScriptDir             = "${rootProject.projectDir}/gradle"
     //mainResourcesDir            = "${rootProject.projectDir}/etc/resources"
     //mainGeneratedDir            = "${rootProject.projectDir}/quickfixj-core/src/main/generated"
@@ -33,8 +34,12 @@ ext {
 subprojects {
 
     apply plugin: "java"
+    apply plugin: "groovy"
     apply plugin: "maven"
     apply plugin: "osgi"
+
+    sourceCompatibility = '1.7'
+    targetCompatibility = '1.7'
 
     version      = '2.0.0-SNAPSHOT'
     group        = 'com.github.lburgazzoli'
@@ -56,10 +61,10 @@ subprojects {
 
     dependencies {
         compile "org.apache.commons:commons-math3:3.2"
-        compile "org.apache.commons:commons-lang3:3.1"
+        compile "org.apache.commons:commons-lang3:3.3.2"
         compile "org.apache.commons:commons-compress:1.5"
         compile "commons-io:commons-io:2.4"
-        compile "commons-codec:commons-codec:1.7"
+        compile "commons-codec:commons-codec:1.9"
         compile "commons-collections:commons-collections:3.2.1"
         compile "commons-dbcp:commons-dbcp:1.4"
         compile "commons-dbutils:commons-dbutils:1.5"
@@ -75,8 +80,8 @@ subprojects {
         compile "org.slf4j:slf4j-log4j12:$slf4jVersion"
         compile "org.slf4j:jcl-over-slf4j:$slf4jVersion"
         compile "org.slf4j:jul-to-slf4j:$slf4jVersion"
-        compile "com.google.guava:guava:15.0"
-        compile "com.lmax:disruptor:3.2.0"
+        compile "com.google.guava:guava:16.0.1"
+        compile "com.lmax:disruptor:3.2.1"
         compile "org.javolution:javolution-core-java:6.0.0"
         compile "org.dom4j:com.springsource.org.dom4j:1.6.1"
         compile "org.logicalcobwebs:com.springsource.org.logicalcobwebs.proxool:0.9.1"

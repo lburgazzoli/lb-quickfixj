@@ -15,7 +15,11 @@
  */
 package com.github.lburgazzoli.quickfixj.transport.netty;
 
+import com.github.lburgazzoli.quickfixj.transport.AbstractTransport;
+import com.github.lburgazzoli.quickfixj.transport.FIXSessionHelper;
+import com.github.lburgazzoli.quickfixj.transport.FIXSessionType;
 import io.netty.bootstrap.Bootstrap;
+import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
@@ -25,9 +29,6 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import quickfix.SessionID;
-import com.github.lburgazzoli.quickfixj.transport.AbstractTransport;
-import com.github.lburgazzoli.quickfixj.transport.FIXSessionHelper;
-import com.github.lburgazzoli.quickfixj.transport.FIXSessionType;
 
 import java.net.InetSocketAddress;
 import java.util.concurrent.TimeUnit;
@@ -67,6 +68,7 @@ public class NettySocketInitiator extends AbstractTransport implements INettySta
             m_boot.channel(NioSocketChannel.class);
             m_boot.option(ChannelOption.SO_KEEPALIVE, true);
             m_boot.option(ChannelOption.TCP_NODELAY, true);
+            m_boot.option(ChannelOption.ALLOCATOR,new PooledByteBufAllocator(true));
             m_boot.handler(new NettyChannelInitializer(this,getHelper(), FIXSessionType.INITIATOR));
 
             SessionID sid  = getHelper().getSession().getSessionID();

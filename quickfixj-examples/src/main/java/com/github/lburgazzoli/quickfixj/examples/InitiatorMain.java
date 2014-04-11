@@ -19,27 +19,15 @@
 
 package com.github.lburgazzoli.quickfixj.examples;
 
-import com.github.lburgazzoli.quickfixj.transport.ITransport;
-import com.github.lburgazzoli.quickfixj.transport.reactor.ReactorSocketInitiator;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import quickfix.Application;
-import quickfix.DefaultMessageFactory;
-import quickfix.DefaultSessionFactory;
-import quickfix.LogFactory;
-import quickfix.MemoryStoreFactory;
-import quickfix.MessageFactory;
-import quickfix.MessageStoreFactory;
-import quickfix.SLF4JLogFactory;
-import quickfix.SessionFactory;
-import quickfix.SessionID;
-import quickfix.SessionSettings;
 import com.github.lburgazzoli.quickfixj.core.FIXContext;
 import com.github.lburgazzoli.quickfixj.core.IFIXContext;
 import com.github.lburgazzoli.quickfixj.core.util.TracingApplication;
 import com.github.lburgazzoli.quickfixj.transport.FIXSessionHelper;
+import com.github.lburgazzoli.quickfixj.transport.ITransport;
 import com.github.lburgazzoli.quickfixj.transport.netty.NettySocketInitiator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import quickfix.*;
 
 /**
  *
@@ -75,36 +63,23 @@ public class InitiatorMain {
      */
     public static void main(String[] args) {
         try {
-            IFIXContext           ctx  = new FIXContext("qfj-ctx-id");
             SessionID             sid  = new SessionID("FIX.4.2","TEST","EXEC");
             SessionSettings       cfg  = getSettingsFor(sid);
+            IFIXContext           ctx  = new FIXContext("qfj-ctx-id",cfg);
             Application           app  = new TracingApplication();
             MessageStoreFactory   msf  = new MemoryStoreFactory(ctx);
-            LogFactory            logf = new SLF4JLogFactory(cfg);
-            MessageFactory        msgf = new DefaultMessageFactory();
-            SessionFactory        sf   = new DefaultSessionFactory(ctx,app,msf,logf,msgf);
+            SessionFactory        sf   = new DefaultSessionFactory(ctx,app,msf);
             FIXSessionHelper      sx   = new FIXSessionHelper(sf.create(sid,cfg),cfg);
-            ITransport            tx   = null;
+            ITransport            tx   = new NettySocketInitiator(sx);
 
-            if(args.length >= 1) {
+            tx.connect();
 
-                if(StringUtils.equalsIgnoreCase("netty",args[0])) {
-                    tx = new NettySocketInitiator(sx);
-                } else if(StringUtils.equalsIgnoreCase("reactor",args[0])) {
-                    tx = new ReactorSocketInitiator(sx);
+            try {
+                while(true) {
+                    try{ Thread.sleep(5000); } catch(Exception e) {}
                 }
-
-                if(tx != null) {
-                    tx.connect();
-
-                    try {
-                        while(true) {
-                            try{ Thread.sleep(5000); } catch(Exception e) {}
-                        }
-                    } catch(Exception e) {
-                        LOGGER.warn("Exception", e);
-                    }
-                }
+            } catch(Exception e) {
+                LOGGER.warn("Exception", e);
             }
         } catch(Exception e) {
             LOGGER.warn("Exception", e);

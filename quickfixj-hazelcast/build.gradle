@@ -10,11 +10,9 @@ project.ext {
 }
 
 dependencies {
-    compile project(':quickfixj-transport')
-    compile project(':quickfixj-transport-netty')
+    compile project(':quickfixj-core')
 
-    compile "org.projectreactor:reactor-core:$reactorVersion"
-    compile "org.projectreactor:reactor-tcp:$reactorVersion"
+    compile "com.hazelcast:hazelcast:$hazelcastVersion"
 }
 
 jar {
