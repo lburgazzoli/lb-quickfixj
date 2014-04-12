@@ -20,6 +20,7 @@ ext {
     openHftJavaLangVersion      = '6.3.4'
     openHftJavaChronicleVersion = '3.0a'
     hazelcastVersion            = '3.2'
+    groovyVersion               = '2.2.2'
     
     gradleVersion               = '1.11'
     gradleScriptDir             = "${rootProject.projectDir}/gradle"
@@ -87,6 +88,7 @@ subprojects {
         compile "org.logicalcobwebs:com.springsource.org.logicalcobwebs.proxool:0.9.1"
         compile "net.openhft:lang:$openHftJavaLangVersion"
         compile "net.openhft:chronicle:$openHftJavaChronicleVersion"
+        compile "org.codehaus.groovy:groovy:$groovyVersion"
 
         testCompile "junit:junit:$junitVersion"
     }

@@ -25,16 +25,16 @@ import com.github.lburgazzoli.quickfixj.transport.FIXSessionHelper;
 import com.github.lburgazzoli.quickfixj.transport.ITransport;
 import com.github.lburgazzoli.quickfixj.transport.netty.NettySocketInitiator;
 import org.apache.commons.lang3.StringUtils;
-import org.osgi.framework.BundleContext;
-import org.osgi.service.cm.Configuration;
-import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import quickfix.*;
-
-import java.io.IOException;
-import java.util.Dictionary;
-import java.util.Enumeration;
+import quickfix.Application;
+import quickfix.DefaultSessionFactory;
+import quickfix.MemoryStoreFactory;
+import quickfix.MessageStoreFactory;
+import quickfix.SessionFactory;
+import quickfix.SessionID;
+import quickfix.SessionSettings;
+import quickfix.SessionSettingsBuilder;
 
 /**
  *
@@ -42,25 +42,24 @@ import java.util.Enumeration;
 public class FIXConnection implements IFIXConnection {
     private static final Logger LOGGER = LoggerFactory.getLogger(FIXConnection.class);
 
-    private final IFIXContext        m_fixCtx;
-    private final BundleContext      m_bdlCtx;
-    private final ConfigurationAdmin m_cfgAdm;
-    private final String             m_cfgId;
-    private ITransport               m_cnx;
+    private final IFIXContext m_fixCtx;
+    private final SessionSettingsBuilder m_settingsBuilder;
+    private final String m_cfgId;
+    private SessionID m_sessionId;
+    private ITransport m_cnx;
 
     /**
      *
      * @param fixCtx
      * @param cfgId
-     * @param bdlCtx
-     * @param cfgAdm
+     * @param settinBuilder
      */
-    public FIXConnection(IFIXContext fixCtx, String cfgId, BundleContext bdlCtx, ConfigurationAdmin cfgAdm) {
-        m_fixCtx  = fixCtx;
-        m_bdlCtx  = bdlCtx;
-        m_cfgAdm  = cfgAdm;
-        m_cfgId   = cfgId;
-        m_cnx     = null;
+    public FIXConnection(final IFIXContext fixCtx, String cfgId, final SessionSettingsBuilder settinBuilder) {
+        m_fixCtx          = fixCtx;
+        m_settingsBuilder = settinBuilder;
+        m_sessionId       = null;
+        m_cnx             = null;
+        m_cfgId           = cfgId;
     }
 
     // *************************************************************************
@@ -69,33 +68,18 @@ public class FIXConnection implements IFIXConnection {
 
     @Override
     public void init() {
+        SessionSettings cfg = m_settingsBuilder.build();
         try {
-            Configuration             cfg  = m_cfgAdm.getConfiguration(m_cfgId);
-            Dictionary<String,Object> prop = cfg.getProperties();
-            SessionID                 sid  = buildSessionID(prop);
-
-            if(sid != null && m_cnx == null) {
-                SessionSettings     settings = new SessionSettings();
-                Enumeration<String> keys     = prop.keys();
-                String              key      = null;
-
-                while(keys.hasMoreElements()) {
-                    key = keys.nextElement();
-                    settings.setString(sid,key,(String)prop.get(key));
-                }
-
-                try {
-                    if(isInitiator(prop)) {
-                        m_cnx = initInitator(sid,settings);
-                    } else if(isAcceptor(prop)) {
-                        m_cnx = initAcceptor(sid,settings);
-                    }
-                } catch (Exception e) {
-                    LOGGER.warn("Exception",e);
-                }
+            m_sessionId = createSessionID(cfg);
+            if(isInitiator(cfg)) {
+                m_cnx = initInitator(cfg);
+            } else if(isAcceptor(cfg)) {
+                m_cnx = initAcceptor(cfg);
+            } else {
+                //TODO: error
             }
-        } catch (IOException e) {
-            LOGGER.warn("IOException",e);
+        } catch (Exception e) {
+            LOGGER.warn("Exception",e);
         }
     }
 
@@ -145,44 +129,43 @@ public class FIXConnection implements IFIXConnection {
 
     /**
      *
-     * @param prop
+     * @param settings
      * @return
      */
-    private SessionID buildSessionID(Dictionary<String,Object> prop) {
-        return (prop == null)
-            ? null
-            : new SessionID(
-                (String)prop.get(SessionSettings.BEGINSTRING),
-                (String)prop.get(SessionSettings.SENDERCOMPID),
-                (String)prop.get(SessionSettings.SENDERSUBID),
-                (String)prop.get(SessionSettings.SENDERLOCID),
-                (String)prop.get(SessionSettings.TARGETCOMPID),
-                (String)prop.get(SessionSettings.TARGETSUBID),
-                (String)prop.get(SessionSettings.TARGETLOCID),
-                (String)prop.get(SessionSettings.SESSION_QUALIFIER));
-    }
-
-    /**
-     *
-     * @param prop
-     * @return
-     */
-    private boolean isInitiator(Dictionary<String,Object> prop ) {
-        return StringUtils.equalsIgnoreCase(
-            SessionFactory.INITIATOR_CONNECTION_TYPE,
-            (String)prop.get(SessionFactory.SETTING_CONNECTION_TYPE)
+    private SessionID createSessionID(final SessionSettings settings) throws Exception {
+        return new SessionID(
+            settings.getString(SessionSettings.BEGINSTRING),
+            settings.getString(SessionSettings.SENDERCOMPID),
+            settings.getString(SessionSettings.SENDERSUBID),
+            settings.getString(SessionSettings.SENDERLOCID),
+            settings.getString(SessionSettings.TARGETCOMPID),
+            settings.getString(SessionSettings.TARGETSUBID),
+            settings.getString(SessionSettings.TARGETLOCID),
+            settings.getString(SessionSettings.SESSION_QUALIFIER)
         );
     }
 
     /**
      *
-     * @param prop
+     * @param settings
      * @return
      */
-    private boolean isAcceptor(Dictionary<String,Object> prop ) {
+    private boolean isInitiator(final SessionSettings settings) throws Exception {
+        return StringUtils.equalsIgnoreCase(
+            SessionFactory.INITIATOR_CONNECTION_TYPE,
+            settings.getString(SessionFactory.SETTING_CONNECTION_TYPE)
+        );
+    }
+
+    /**
+     *
+     * @param settings
+     * @return
+     */
+    private boolean isAcceptor(final SessionSettings settings) throws Exception {
         return StringUtils.equalsIgnoreCase(
             SessionFactory.ACCEPTOR_CONNECTION_TYPE,
-            (String)prop.get(SessionFactory.SETTING_CONNECTION_TYPE)
+            settings.getString(SessionFactory.SETTING_CONNECTION_TYPE)
         );
     }
 
@@ -194,11 +177,11 @@ public class FIXConnection implements IFIXConnection {
      *
      * @param settings
      */
-    private ITransport initInitator(SessionID sid,SessionSettings settings) throws Exception {
+    private ITransport initInitator(final SessionSettings settings) throws Exception {
         Application         app  = new TracingApplication();
         MessageStoreFactory msf  = new MemoryStoreFactory(m_fixCtx);
         SessionFactory      sf   = new DefaultSessionFactory(m_fixCtx,settings,app,msf);
-        FIXSessionHelper    sx   = new FIXSessionHelper(sf.create(sid,settings),settings);
+        FIXSessionHelper    sx   = new FIXSessionHelper(sf.create(m_sessionId,settings),settings);
 
         return new NettySocketInitiator(sx);
     }
@@ -207,7 +190,7 @@ public class FIXConnection implements IFIXConnection {
      *
      * @param settings
      */
-    private ITransport initAcceptor(SessionID sid,SessionSettings settings) throws Exception {
+    private ITransport initAcceptor(final SessionSettings settings) throws Exception {
         return null;
     }
 }

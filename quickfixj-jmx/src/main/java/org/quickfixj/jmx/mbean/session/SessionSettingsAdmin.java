@@ -50,8 +50,7 @@ public class SessionSettingsAdmin implements DynamicMBean {
     public SessionSettingsAdmin(SessionID sessionID, SessionSettings settings) throws ConfigError {
         this.sessionID = sessionID;
         Properties p = new Properties();
-        p.putAll(settings.getDefaultProperties());
-        p.putAll(settings.getSessionProperties(sessionID));
+        p.putAll(settings.getProperties());
         this.settings = p;
     }
 

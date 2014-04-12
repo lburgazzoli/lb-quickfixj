@@ -45,19 +45,18 @@ class JdbcUtil {
     
     static DataSource getDataSource(SessionSettings settings, SessionID sessionID)
             throws ConfigError, FieldConvertError {
-        if (settings.isSetting(sessionID, JdbcSetting.SETTING_JDBC_DS_NAME)) {
-            String jndiName = settings.getString(sessionID, JdbcSetting.SETTING_JDBC_DS_NAME);
+        if (settings.isSetting(JdbcSetting.SETTING_JDBC_DS_NAME)) {
+            String jndiName = settings.getString(JdbcSetting.SETTING_JDBC_DS_NAME);
             try {
                 return (DataSource) new InitialContext().lookup(jndiName);
             } catch (NamingException e) {
                 throw new ConfigError(e);
             }
         } else {
-            String jdbcDriver = settings.getString(sessionID, JdbcSetting.SETTING_JDBC_DRIVER);
-            String connectionURL = settings.getString(sessionID,
-                    JdbcSetting.SETTING_JDBC_CONNECTION_URL);
-            String user = settings.getString(sessionID, JdbcSetting.SETTING_JDBC_USER);
-            String password = settings.getString(sessionID, JdbcSetting.SETTING_JDBC_PASSWORD);
+            String jdbcDriver    = settings.getString(JdbcSetting.SETTING_JDBC_DRIVER);
+            String connectionURL = settings.getString(JdbcSetting.SETTING_JDBC_CONNECTION_URL);
+            String user          = settings.getString(JdbcSetting.SETTING_JDBC_USER);
+            String password      = settings.getString(JdbcSetting.SETTING_JDBC_PASSWORD);
 
             return getDataSource(jdbcDriver, connectionURL, user, password, true);
         }

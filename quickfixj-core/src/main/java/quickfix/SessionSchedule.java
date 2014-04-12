@@ -42,15 +42,15 @@ class SessionSchedule {
     SessionSchedule(SessionSettings settings, SessionID sessionID) throws ConfigError,
             FieldConvertError {
             
-        if (settings.isSetting(sessionID, SessionConstants.SETTING_NON_STOP_SESSION)) {
+        if (settings.isSetting(SessionConstants.SETTING_NON_STOP_SESSION)) {
             nonStopSession = settings
-                    .getBool(sessionID, SessionConstants.SETTING_NON_STOP_SESSION);
+                    .getBool(SessionConstants.SETTING_NON_STOP_SESSION);
         } else {
             nonStopSession = false;
         }
             
-        boolean startDayPresent = settings.isSetting(sessionID, SessionConstants.SETTING_START_DAY);
-        boolean endDayPresent = settings.isSetting(sessionID, SessionConstants.SETTING_END_DAY);
+        boolean startDayPresent = settings.isSetting(SessionConstants.SETTING_START_DAY);
+        boolean endDayPresent = settings.isSetting(SessionConstants.SETTING_END_DAY);
 
         if (startDayPresent && !endDayPresent) {
             throw new ConfigError("Session " + sessionID + ": StartDay used without EndDay");
@@ -71,10 +71,10 @@ class SessionSchedule {
             TimeZone defaultTimeZone, String timeSetting, String daySetting) throws ConfigError,
             FieldConvertError {
         
-        Matcher matcher = TIME_PATTERN.matcher(settings.getString(sessionID, timeSetting));
+        Matcher matcher = TIME_PATTERN.matcher(settings.getString(timeSetting));
         if (!matcher.find()) {
             throw new ConfigError("Session " + sessionID + ": could not parse time '"
-                    + settings.getString(sessionID, timeSetting) + "'.");
+                    + settings.getString(timeSetting) + "'.");
         }
 
         TimeZone timeZone = getTimeZone(matcher.group(4), defaultTimeZone);
@@ -100,8 +100,8 @@ class SessionSchedule {
     private TimeZone getDefaultTimeZone(SessionSettings settings, SessionID sessionID)
             throws ConfigError, FieldConvertError {
         TimeZone sessionTimeZone;
-        if (settings.isSetting(sessionID, SessionConstants.SETTING_TIMEZONE)) {
-            String sessionTimeZoneID = settings.getString(sessionID, SessionConstants.SETTING_TIMEZONE);
+        if (settings.isSetting(SessionConstants.SETTING_TIMEZONE)) {
+            String sessionTimeZoneID = settings.getString(SessionConstants.SETTING_TIMEZONE);
             sessionTimeZone = TimeZone.getTimeZone(sessionTimeZoneID);
             if ("GMT".equals(sessionTimeZone.getID()) && !"GMT".equals(sessionTimeZoneID)) {
                 throw new ConfigError("Unrecognized time zone '" + sessionTimeZoneID
@@ -354,8 +354,8 @@ class SessionSchedule {
 
     private int getDay(SessionSettings settings, SessionID sessionID, String key, int defaultValue)
             throws ConfigError, FieldConvertError {
-        return settings.isSetting(sessionID, key) ?
-                DayConverter.toInteger(settings.getString(sessionID, key))
+        return settings.isSetting(key) ?
+                DayConverter.toInteger(settings.getString(key))
                 : NOT_SET;
     }
 

@@ -69,21 +69,21 @@ public class FileLogFactory implements LogFactory {
     public Log create(SessionID sessionID) {
         try {
             boolean includeMillis = false;
-            if (settings.isSetting(sessionID, SETTING_INCLUDE_MILLIS_IN_TIMESTAMP)) {
-                includeMillis = settings.getBool(sessionID, SETTING_INCLUDE_MILLIS_IN_TIMESTAMP);
+            if (settings.isSetting(SETTING_INCLUDE_MILLIS_IN_TIMESTAMP)) {
+                includeMillis = settings.getBool(SETTING_INCLUDE_MILLIS_IN_TIMESTAMP);
             }
             
             boolean includeTimestampInMessages = false;
-            if (settings.isSetting(sessionID, SETTING_INCLUDE_TIMESTAMP_FOR_MESSAGES)) {
-                includeTimestampInMessages = settings.getBool(sessionID, SETTING_INCLUDE_TIMESTAMP_FOR_MESSAGES);
+            if (settings.isSetting(SETTING_INCLUDE_TIMESTAMP_FOR_MESSAGES)) {
+                includeTimestampInMessages = settings.getBool(SETTING_INCLUDE_TIMESTAMP_FOR_MESSAGES);
             }
        
             boolean logHeartbeats = true;
-            if (settings.isSetting(sessionID, SETTING_LOG_HEARTBEATS)) {
-                logHeartbeats = settings.getBool(sessionID, SETTING_LOG_HEARTBEATS);
+            if (settings.isSetting(SETTING_LOG_HEARTBEATS)) {
+                logHeartbeats = settings.getBool(SETTING_LOG_HEARTBEATS);
             }
 
-            return new FileLog(settings.getString(sessionID, FileLogFactory.SETTING_FILE_LOG_PATH),
+            return new FileLog(settings.getString(FileLogFactory.SETTING_FILE_LOG_PATH),
                     sessionID, includeMillis, includeTimestampInMessages, logHeartbeats);
         } catch (Exception e) {
             throw new RuntimeError(e);

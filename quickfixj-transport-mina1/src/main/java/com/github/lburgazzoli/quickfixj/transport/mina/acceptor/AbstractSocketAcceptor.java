@@ -134,7 +134,7 @@ public abstract class AbstractSocketAcceptor extends SessionConnector implements
                 ioAcceptor.bind(address, new AcceptorIoHandler(
                         getContext(),
                         sessionProvider,
-                        new NetworkingOptions(settings.getDefaultProperties()),
+                        new NetworkingOptions(settings.getProperties()),
                         getEventHandlingStrategy()));
 
                 log.info("Listening for connections at " + address + " for session(s) "
@@ -171,9 +171,9 @@ public abstract class AbstractSocketAcceptor extends SessionConnector implements
     private AcceptorSocketDescriptor getAcceptorSocketDescriptor(SessionSettings settings,
             SessionID sessionID) throws ConfigError, FieldConvertError {
         TransportType acceptTransportType = TransportType.SOCKET;
-        if (settings.isSetting(sessionID, Acceptor.SETTING_SOCKET_ACCEPT_PROTOCOL)) {
+        if (settings.isSetting(Acceptor.SETTING_SOCKET_ACCEPT_PROTOCOL)) {
             try {
-                acceptTransportType = TransportType.getInstance(settings.getString(sessionID,
+                acceptTransportType = TransportType.getInstance(settings.getString(
                         Acceptor.SETTING_SOCKET_ACCEPT_PROTOCOL));
             } catch (IllegalArgumentException e) {
                 // Unknown transport type
@@ -184,8 +184,8 @@ public abstract class AbstractSocketAcceptor extends SessionConnector implements
         boolean useSSL = false;
         String keyStoreName = null;
         String keyStorePassword = null;
-        if (getSettings().isSetting(sessionID, SSLSupport.SETTING_USE_SSL)
-                && getSettings().getBool(sessionID, SSLSupport.SETTING_USE_SSL)) {
+        if (getSettings().isSetting(SSLSupport.SETTING_USE_SSL)
+                && getSettings().getBool(SSLSupport.SETTING_USE_SSL)) {
             if (acceptTransportType == TransportType.SOCKET) {
                 useSSL = true;
                 keyStoreName = SSLSupport.getKeystoreName(getSettings(), sessionID);
@@ -196,11 +196,11 @@ public abstract class AbstractSocketAcceptor extends SessionConnector implements
             }
         }
 
-        int acceptPort = (int) settings.getLong(sessionID, Acceptor.SETTING_SOCKET_ACCEPT_PORT);
+        int acceptPort = (int) settings.getLong(Acceptor.SETTING_SOCKET_ACCEPT_PORT);
 
         String acceptHost = null;
-        if (settings.isSetting(sessionID, SETTING_SOCKET_ACCEPT_ADDRESS)) {
-            acceptHost = settings.getString(sessionID, SETTING_SOCKET_ACCEPT_ADDRESS);
+        if (settings.isSetting(SETTING_SOCKET_ACCEPT_ADDRESS)) {
+            acceptHost = settings.getString(SETTING_SOCKET_ACCEPT_ADDRESS);
         }
 
         SocketAddress acceptorAddress = ProtocolFactory.createSocketAddress(acceptTransportType,
@@ -230,6 +230,7 @@ public abstract class AbstractSocketAcceptor extends SessionConnector implements
     }
 
     private void createSessions(SessionSettings settings) throws ConfigError, FieldConvertError {
+        /*
         HashMap<SessionID, Session> allSessions = new HashMap<SessionID, Session>();
         for (Iterator<SessionID> i = settings.sectionIterator(); i.hasNext();) {
             SessionID sessionID = (SessionID) i.next();
@@ -255,6 +256,7 @@ public abstract class AbstractSocketAcceptor extends SessionConnector implements
         if (socketDescriptorForAddress.size() == 0) {
             throw new ConfigError("No acceptor sessions found in settings.");
         }
+        */
     }
 
     protected void stopAcceptingConnections() {

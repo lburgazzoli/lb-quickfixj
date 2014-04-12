@@ -72,8 +72,8 @@ public class NettySocketInitiator extends AbstractTransport implements INettySta
             m_boot.handler(new NettyChannelInitializer(this,getHelper(), FIXSessionType.INITIATOR));
 
             SessionID sid  = getHelper().getSession().getSessionID();
-            String    host = getHelper().getSettings().getString(sid, "SocketConnectHost");
-            int       port = getHelper().getSettings().getInt(sid, "SocketConnectPort");
+            String    host = getHelper().getSettings().getString("SocketConnectHost");
+            int       port = getHelper().getSettings().getInt("SocketConnectPort");
 
             m_boot.remoteAddress(new InetSocketAddress(host,port));
 

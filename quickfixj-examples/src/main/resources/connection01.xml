@@ -32,6 +32,9 @@
         Bundle-Version: 1.0.0
     </manifest>
 
+    <cm:property-placeholder persistent-id="qfj.connection.01" update-strategy="reload">
+    </cm:property-placeholder>
+
     <!-- ******************************************************************* -->
     <!--                                                                     -->
     <!-- Lookup some services/objects                                        -->
@@ -53,14 +56,19 @@
     <!--                                                                     -->
     <!-- ******************************************************************* -->
 
+    <bean id             = "QFJ_SETTINGS_BUILDER"
+          class          = "com.github.lburgazzoli.quickfixj.osgi.ConfigAdminSessionSettingsBuilder">
+        <argument ref   = "OSGI_CFG_ADMIN"/>
+        <argument value = "${service.pid}"/>
+    </bean>
+
     <bean id             = "QFJ_CONNECTION_01"
           class          = "com.github.lburgazzoli.quickfixj.osgi.FIXConnection"
           init-method    = "init"
           destroy-method = "destroy">
         <argument ref   = "QFJ_COTEXT_DEFAULT"/>
-        <argument value = "qfj.connection.01"/>
-        <argument ref   = "blueprintBundleContext"/>
-        <argument ref   = "OSGI_CFG_ADMIN"/>
+        <argument value = "${service.pid}"/>
+        <argument ref   = "QFJ_SETTINGS_BUILDER"/>
     </bean>
 
     <service id="qfj.connection.01" ref="QFJ_CONNECTION_01">
@@ -68,7 +76,7 @@
             <value>com.github.lburgazzoli.quickfixj.osgi.IFIXConnection</value>
         </interfaces>
         <service-properties>
-            <entry key="osgi.jndi.service.name" value="qfj.connection.01"/>
+            <entry key="osgi.jndi.service.name" value="${service.pid}"/>
         </service-properties>
     </service>
 

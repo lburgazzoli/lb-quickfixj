@@ -93,9 +93,8 @@ public class DefaultSessionFactory implements SessionFactory {
             final boolean requiresOrigSendingTime = getSetting(settings, sessionID,
                     SessionConstants.SETTING_REQUIRES_ORIG_SENDING_TIME, true);
             
-            if (settings.isSetting(sessionID, SessionFactory.SETTING_CONNECTION_TYPE)) {
-                connectionType = settings.getString(sessionID,
-                        SessionFactory.SETTING_CONNECTION_TYPE);
+            if (settings.isSetting(SessionFactory.SETTING_CONNECTION_TYPE)) {
+                connectionType = settings.getString(SessionFactory.SETTING_CONNECTION_TYPE);
             }
 
             if (connectionType == null) {
@@ -108,48 +107,47 @@ public class DefaultSessionFactory implements SessionFactory {
             }
 
             if (connectionType.equals(SessionFactory.ACCEPTOR_CONNECTION_TYPE)
-                    && settings.isSetting(sessionID, SessionSettings.SESSION_QUALIFIER)) {
+                    && settings.isSetting(SessionSettings.SESSION_QUALIFIER)) {
                 throw new ConfigError("SessionQualifier cannot be used with acceptor.");
             }
 
             if (connectionType.equals(SessionFactory.INITIATOR_CONNECTION_TYPE)
-                    && settings.isSetting(sessionID, SessionConstants.SETTING_ALLOWED_REMOTE_ADDRESSES)) {
+                    && settings.isSetting(SessionConstants.SETTING_ALLOWED_REMOTE_ADDRESSES)) {
                 throw new ConfigError("AllowedRemoteAddresses cannot be used with initiator");
             }
 
             DefaultApplVerID senderDefaultApplVerID = null;
 
             if (sessionID.isFIXT()) {
-                if (!settings.isSetting(sessionID, SessionConstants.SETTING_DEFAULT_APPL_VER_ID)) {
+                if (!settings.isSetting(SessionConstants.SETTING_DEFAULT_APPL_VER_ID)) {
                     throw new ConfigError(SessionConstants.SETTING_DEFAULT_APPL_VER_ID
                             + " is required for FIXT transport");
                 }
                 senderDefaultApplVerID = new DefaultApplVerID(toApplVerID(
-                        settings.getString(sessionID, SessionConstants.SETTING_DEFAULT_APPL_VER_ID))
+                        settings.getString(SessionConstants.SETTING_DEFAULT_APPL_VER_ID))
                         .getValue());
 
             }
 
             boolean useDataDictionary = true;
-            if (settings.isSetting(sessionID, SessionConstants.SETTING_USE_DATA_DICTIONARY)) {
-                useDataDictionary = settings
-                        .getBool(sessionID, SessionConstants.SETTING_USE_DATA_DICTIONARY);
+            if (settings.isSetting(SessionConstants.SETTING_USE_DATA_DICTIONARY)) {
+                useDataDictionary = settings.getBool(SessionConstants.SETTING_USE_DATA_DICTIONARY);
             }
 
             DefaultDataDictionaryProvider dataDictionaryProvider = null;
             if (useDataDictionary) {
                 dataDictionaryProvider = new DefaultDataDictionaryProvider();
                 if (sessionID.isFIXT()) {
-                    processFixtDataDictionaries(sessionID, settings, dataDictionaryProvider);
+                    processFixtDataDictionaries(sessionID,settings, dataDictionaryProvider);
                 } else {
-                    processPreFixtDataDictionary(sessionID, settings, dataDictionaryProvider);
+                    processPreFixtDataDictionary(sessionID,settings, dataDictionaryProvider);
                 }
             }
 
 
             int heartbeatInterval = 0;
             if (connectionType.equals(SessionFactory.INITIATOR_CONNECTION_TYPE)) {
-                heartbeatInterval = (int) settings.getLong(sessionID, SessionConstants.SETTING_HEARTBTINT);
+                heartbeatInterval = (int) settings.getLong(SessionConstants.SETTING_HEARTBTINT);
                 if (heartbeatInterval <= 0) {
                     throw new ConfigError("Heartbeat must be greater than zero");
                 }
@@ -237,45 +235,45 @@ public class DefaultSessionFactory implements SessionFactory {
     private void processPreFixtDataDictionary(SessionID sessionID, SessionSettings settings,
             DefaultDataDictionaryProvider dataDictionaryProvider) throws ConfigError,
             FieldConvertError {
-        final DataDictionary dataDictionary = createDataDictionary(sessionID, settings,
+        final DataDictionary dataDictionary = createDataDictionary(settings,
                 SessionConstants.SETTING_DATA_DICTIONARY, sessionID.getBeginString());
         dataDictionaryProvider.addTransportDictionary(sessionID.getBeginString(), dataDictionary);
         dataDictionaryProvider.addApplicationDictionary(
                 MessageUtils.toApplVerID(sessionID.getBeginString()), dataDictionary);
     }
 
-    private DataDictionary createDataDictionary(SessionID sessionID, SessionSettings settings,
+    private DataDictionary createDataDictionary(SessionSettings settings,
             String settingsKey, String beginString) throws ConfigError, FieldConvertError {
-        final String path = getDictionaryPath(sessionID, settings, settingsKey, beginString);
+        final String path = getDictionaryPath(settings, settingsKey, beginString);
         final DataDictionary dataDictionary = getDataDictionary(path);
 
-        if (settings.isSetting(sessionID, SessionConstants.SETTING_VALIDATE_FIELDS_OUT_OF_ORDER)) {
-            dataDictionary.setCheckFieldsOutOfOrder(settings.getBool(sessionID,
+        if (settings.isSetting(SessionConstants.SETTING_VALIDATE_FIELDS_OUT_OF_ORDER)) {
+            dataDictionary.setCheckFieldsOutOfOrder(settings.getBool(
                     SessionConstants.SETTING_VALIDATE_FIELDS_OUT_OF_ORDER));
         }
 
-        if (settings.isSetting(sessionID, SessionConstants.SETTING_VALIDATE_FIELDS_HAVE_VALUES)) {
-            dataDictionary.setCheckFieldsHaveValues(settings.getBool(sessionID,
+        if (settings.isSetting(SessionConstants.SETTING_VALIDATE_FIELDS_HAVE_VALUES)) {
+            dataDictionary.setCheckFieldsHaveValues(settings.getBool(
                     SessionConstants.SETTING_VALIDATE_FIELDS_HAVE_VALUES));
         }
 
-        if (settings.isSetting(sessionID, SessionConstants.SETTING_VALIDATE_UNORDERED_GROUP_FIELDS)) {
-            dataDictionary.setCheckUnorderedGroupFields(settings.getBool(sessionID,
+        if (settings.isSetting(SessionConstants.SETTING_VALIDATE_UNORDERED_GROUP_FIELDS)) {
+            dataDictionary.setCheckUnorderedGroupFields(settings.getBool(
                     SessionConstants.SETTING_VALIDATE_UNORDERED_GROUP_FIELDS));
         }
 
-        if (settings.isSetting(sessionID, SessionConstants.SETTING_VALIDATE_UNORDERED_GROUP_FIELDS)) {
-            dataDictionary.setCheckUnorderedGroupFields(settings.getBool(sessionID,
+        if (settings.isSetting(SessionConstants.SETTING_VALIDATE_UNORDERED_GROUP_FIELDS)) {
+            dataDictionary.setCheckUnorderedGroupFields(settings.getBool(
                     SessionConstants.SETTING_VALIDATE_UNORDERED_GROUP_FIELDS));
         }
 
-        if (settings.isSetting(sessionID, SessionConstants.SETTING_VALIDATE_USER_DEFINED_FIELDS)) {
-            dataDictionary.setCheckUserDefinedFields(settings.getBool(sessionID,
+        if (settings.isSetting(SessionConstants.SETTING_VALIDATE_USER_DEFINED_FIELDS)) {
+            dataDictionary.setCheckUserDefinedFields(settings.getBool(
                     SessionConstants.SETTING_VALIDATE_USER_DEFINED_FIELDS));
         }
 
-        if (settings.isSetting(sessionID, SessionConstants.SETTING_ALLOW_UNKNOWN_MSG_FIELDS)) {
-            dataDictionary.setAllowUnknownMessageFields(settings.getBool(sessionID,
+        if (settings.isSetting(SessionConstants.SETTING_ALLOW_UNKNOWN_MSG_FIELDS)) {
+            dataDictionary.setAllowUnknownMessageFields(settings.getBool(
                     SessionConstants.SETTING_ALLOW_UNKNOWN_MSG_FIELDS));
         }
 
@@ -288,18 +286,18 @@ public class DefaultSessionFactory implements SessionFactory {
     {
         dataDictionaryProvider.addTransportDictionary(
                 sessionID.getBeginString(),
-                createDataDictionary(sessionID, settings, SessionConstants.SETTING_TRANSPORT_DATA_DICTIONARY,
+                createDataDictionary(settings, SessionConstants.SETTING_TRANSPORT_DATA_DICTIONARY,
                         sessionID.getBeginString()));
 
-        final Properties sessionProperties = settings.getSessionProperties(sessionID);
+        final Properties sessionProperties = settings.getProperties();
         final Enumeration<?> keys = sessionProperties.propertyNames();
         while (keys.hasMoreElements()) {
             final String key = (String) keys.nextElement();
             if (key.startsWith(SessionConstants.SETTING_APP_DATA_DICTIONARY)) {
                 if (key.equals(SessionConstants.SETTING_APP_DATA_DICTIONARY)) {
-                    final ApplVerID applVerID = toApplVerID(settings.getString(sessionID,
+                    final ApplVerID applVerID = toApplVerID(settings.getString(
                             SessionConstants.SETTING_DEFAULT_APPL_VER_ID));
-                    final DataDictionary dd = createDataDictionary(sessionID, settings,
+                    final DataDictionary dd = createDataDictionary(settings,
                             SessionConstants.SETTING_APP_DATA_DICTIONARY, sessionID.getBeginString());
                     dataDictionaryProvider.addApplicationDictionary(applVerID, dd);
                 } else {
@@ -311,7 +309,7 @@ public class DefaultSessionFactory implements SessionFactory {
                     }
 
                     final String beginStringQualifier = key.substring(offset + 1);
-                    final DataDictionary dd = createDataDictionary(sessionID, settings, key,
+                    final DataDictionary dd = createDataDictionary(settings, key,
                             beginStringQualifier);
                     dataDictionaryProvider.addApplicationDictionary(
                             MessageUtils.toApplVerID(beginStringQualifier), dd);
@@ -334,11 +332,11 @@ public class DefaultSessionFactory implements SessionFactory {
         return value.matches("[0-9]+");
     }
 
-    private String getDictionaryPath(SessionID sessionID, SessionSettings settings,
+    private String getDictionaryPath(SessionSettings settings,
             String settingsKey, String beginString) throws ConfigError, FieldConvertError {
         String path;
-        if (settings.isSetting(sessionID, settingsKey)) {
-            path = settings.getString(sessionID, settingsKey);
+        if (settings.isSetting(settingsKey)) {
+            path = settings.getString(settingsKey);
         } else {
             path = toDictionaryPath(beginString);
         }
@@ -361,9 +359,9 @@ public class DefaultSessionFactory implements SessionFactory {
     }
 
     private int[] getLogonIntervalsInSeconds(SessionSettings settings, SessionID sessionID) throws ConfigError {
-        if (settings.isSetting(sessionID, SessionSettings.SETTING_RECONNECT_INTERVAL)) {
+        if (settings.isSetting(SessionSettings.SETTING_RECONNECT_INTERVAL)) {
             try {
-                final String raw = settings.getString(sessionID, SessionSettings.SETTING_RECONNECT_INTERVAL);
+                final String raw = settings.getString(SessionSettings.SETTING_RECONNECT_INTERVAL);
                 final int[] ret = SessionSettings.parseSettingReconnectInterval(raw);
                 if (ret != null) return ret;
             } catch (final Throwable e) {
@@ -376,11 +374,11 @@ public class DefaultSessionFactory implements SessionFactory {
 
     private Set<InetAddress> getInetAddresses(SessionSettings settings, SessionID sessionID)
             throws ConfigError {
-        if (settings.isSetting(sessionID, SessionConstants.SETTING_ALLOWED_REMOTE_ADDRESSES)) {
+        if (settings.isSetting(SessionConstants.SETTING_ALLOWED_REMOTE_ADDRESSES)) {
             try {
-                final String raw = settings.getString(sessionID,
-                        SessionConstants.SETTING_ALLOWED_REMOTE_ADDRESSES);
-                return SessionSettings.parseRemoteAddresses(raw);
+                return SessionSettings.parseRemoteAddresses(
+                    settings.getString(SessionConstants.SETTING_ALLOWED_REMOTE_ADDRESSES)
+                );
             } catch (final Throwable e) {
                 throw new ConfigError(e);
             }
@@ -390,20 +388,20 @@ public class DefaultSessionFactory implements SessionFactory {
 
     private boolean getSetting(SessionSettings settings, SessionID sessionID, String key,
             boolean defaultValue) throws ConfigError, FieldConvertError {
-        return settings.isSetting(sessionID, key) ? settings.getBool(sessionID, key) : defaultValue;
+        return settings.isSetting(key) ? settings.getBool(key) : defaultValue;
     }
 
     private int getSetting(SessionSettings settings, SessionID sessionID, String key,
             int defaultValue) throws ConfigError, FieldConvertError {
-        return settings.isSetting(sessionID, key)
-                ? (int) settings.getLong(sessionID, key)
+        return settings.isSetting(key)
+                ? (int) settings.getLong(key)
                 : defaultValue;
     }
 
     private double getSetting(SessionSettings settings, SessionID sessionID, String key,
             double defaultValue) throws ConfigError, FieldConvertError {
-        return settings.isSetting(sessionID, key)
-                ? Double.parseDouble(settings.getString(sessionID, key))
+        return settings.isSetting(key)
+                ? Double.parseDouble(settings.getString(key))
                 : defaultValue;
     }
 

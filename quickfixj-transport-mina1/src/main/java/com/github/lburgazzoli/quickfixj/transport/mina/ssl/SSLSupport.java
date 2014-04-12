@@ -38,9 +38,9 @@ public class SSLSupport {
 
     public static String getKeystoreName(SessionSettings settings, SessionID sessionID) {
         String keyStoreName = QUICKFIXJ_CERT;
-        if (settings.isSetting(sessionID, SSLSupport.SETTING_KEY_STORE_NAME)) {
+        if (settings.isSetting(SSLSupport.SETTING_KEY_STORE_NAME)) {
             try {
-                keyStoreName = settings.getString(sessionID, SSLSupport.SETTING_KEY_STORE_NAME);
+                keyStoreName = settings.getString(SSLSupport.SETTING_KEY_STORE_NAME);
             } catch (ConfigError ignored) {
             } catch (FieldConvertError ignored) {
             }
@@ -50,9 +50,9 @@ public class SSLSupport {
 
     public static String getKeystorePasswd(SessionSettings settings, SessionID sessionID) {
         String keyStorePassword = QUICKFIXJ_PW;
-        if (settings.isSetting(sessionID, SSLSupport.SETTING_KEY_STORE_PWD)) {
+        if (settings.isSetting(SSLSupport.SETTING_KEY_STORE_PWD)) {
             try {
-                keyStorePassword = settings.getString(sessionID, SSLSupport.SETTING_KEY_STORE_PWD);
+                keyStorePassword = settings.getString(SSLSupport.SETTING_KEY_STORE_PWD);
             } catch (ConfigError ignored) {
             } catch (FieldConvertError ignored) {
             }
@@ -61,9 +61,9 @@ public class SSLSupport {
     }
     public static String getEnableProtocole(SessionSettings settings, SessionID sessionID) {
         String strEnableProtocole = null;
-        if (settings.isSetting(sessionID, SSLSupport.SETTING_ENABLE_PROTOCOLE)) {
+        if (settings.isSetting(SSLSupport.SETTING_ENABLE_PROTOCOLE)) {
             try {
-                strEnableProtocole = settings.getString(sessionID, SSLSupport.SETTING_ENABLE_PROTOCOLE);
+                strEnableProtocole = settings.getString(SSLSupport.SETTING_ENABLE_PROTOCOLE);
             } catch (ConfigError ignored) {
             } catch (FieldConvertError ignored) {
             }
@@ -72,9 +72,9 @@ public class SSLSupport {
     }
     public static String getCipherSuite(SessionSettings settings, SessionID sessionID) {
         String strCipherSuite = null;
-        if (settings.isSetting(sessionID, SSLSupport.SETTING_CIPHER_SUITES)) {
+        if (settings.isSetting(SSLSupport.SETTING_CIPHER_SUITES)) {
             try {
-                strCipherSuite = settings.getString(sessionID, SSLSupport.SETTING_CIPHER_SUITES);
+                strCipherSuite = settings.getString(SSLSupport.SETTING_CIPHER_SUITES);
             } catch (ConfigError ignored) {
             } catch (FieldConvertError ignored) {
             }

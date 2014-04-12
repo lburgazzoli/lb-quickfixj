@@ -146,8 +146,8 @@ public class ScreenLogFactory implements LogFactory {
 
     private boolean getBooleanSetting(SessionID sessionID, String key, boolean incoming)
             throws ConfigError, FieldConvertError {
-        if (settings != null && settings.isSetting(sessionID, key)) {
-            incoming = settings.getBool(sessionID, key);
+        if (settings != null && settings.isSetting(key)) {
+            incoming = settings.getBool(key);
         }
         return incoming;
     }

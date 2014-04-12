@@ -75,23 +75,23 @@ public class SLF4JLogFactory implements LocationAwareLogFactory {
         boolean prependSessionID = true;
         boolean logHeartbeats = true;
         try {
-            if (settings.isSetting(sessionID, SETTING_EVENT_CATEGORY)) {
-                eventCategory = settings.getString(sessionID, SETTING_EVENT_CATEGORY);
+            if (settings.isSetting(SETTING_EVENT_CATEGORY)) {
+                eventCategory = settings.getString(SETTING_EVENT_CATEGORY);
             }
-            if (settings.isSetting(sessionID, SETTING_ERROR_EVENT_CATEGORY)) {
-                errorEventCategory = settings.getString(sessionID, SETTING_ERROR_EVENT_CATEGORY);
+            if (settings.isSetting(SETTING_ERROR_EVENT_CATEGORY)) {
+                errorEventCategory = settings.getString(SETTING_ERROR_EVENT_CATEGORY);
             }
-            if (settings.isSetting(sessionID, SETTING_INMSG_CATEGORY)) {
-                incomingMsgCategory = settings.getString(sessionID, SETTING_INMSG_CATEGORY);
+            if (settings.isSetting(SETTING_INMSG_CATEGORY)) {
+                incomingMsgCategory = settings.getString(SETTING_INMSG_CATEGORY);
             }
-            if (settings.isSetting(sessionID, SETTING_OUTMSG_CATEGORY)) {
-                outgoingMsgCategory = settings.getString(sessionID, SETTING_OUTMSG_CATEGORY);
+            if (settings.isSetting(SETTING_OUTMSG_CATEGORY)) {
+                outgoingMsgCategory = settings.getString(SETTING_OUTMSG_CATEGORY);
             }
-            if (settings.isSetting(sessionID, SETTING_PREPEND_SESSION_ID)) {
-                prependSessionID = settings.getBool(sessionID, SETTING_PREPEND_SESSION_ID);
+            if (settings.isSetting(SETTING_PREPEND_SESSION_ID)) {
+                prependSessionID = settings.getBool(SETTING_PREPEND_SESSION_ID);
             }
-            if ( settings.isSetting(sessionID, SETTING_LOG_HEARTBEATS)) {
-                logHeartbeats = settings.getBool(sessionID, SETTING_LOG_HEARTBEATS);
+            if ( settings.isSetting(SETTING_LOG_HEARTBEATS)) {
+                logHeartbeats = settings.getBool(SETTING_LOG_HEARTBEATS);
             }
         } catch (RuntimeException e) {
             throw e;

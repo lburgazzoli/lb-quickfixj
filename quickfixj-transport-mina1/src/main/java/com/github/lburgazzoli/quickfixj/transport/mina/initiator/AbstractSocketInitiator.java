@@ -89,13 +89,11 @@ public abstract class AbstractSocketInitiator extends SessionConnector implement
                 
                 SocketAddress localAddress = getLocalAddress(settings, sessionID);
 
-                final NetworkingOptions networkingOptions = new NetworkingOptions(getSettings()
-                        .getSessionProperties(sessionID, true));
+                final NetworkingOptions networkingOptions = new NetworkingOptions(getSettings().getProperties());
 
                 boolean sslEnabled = false;
-                if (getSettings().isSetting(sessionID, SSLSupport.SETTING_USE_SSL)) {
-                    sslEnabled = BooleanConverter.convert(getSettings().getString(sessionID,
-                            SSLSupport.SETTING_USE_SSL));
+                if (getSettings().isSetting(SSLSupport.SETTING_USE_SSL)) {
+                    sslEnabled = BooleanConverter.convert(getSettings().getString(SSLSupport.SETTING_USE_SSL));
                 }
                 final String keyStoreName = SSLSupport.getKeystoreName(getSettings(), sessionID);
                 final String keyStorePassword = SSLSupport.getKeystorePasswd(getSettings(),
@@ -126,14 +124,14 @@ public abstract class AbstractSocketInitiator extends SessionConnector implement
             throws ConfigError, FieldConvertError {
         // Check if use of socket local/bind address
         SocketAddress localAddress = null;
-        if (settings.isSetting(sessionID, Initiator.SETTING_SOCKET_LOCAL_HOST)) {
-            String host = settings.getString(sessionID, Initiator.SETTING_SOCKET_LOCAL_HOST);
+        if (settings.isSetting(Initiator.SETTING_SOCKET_LOCAL_HOST)) {
+            String host = settings.getString(Initiator.SETTING_SOCKET_LOCAL_HOST);
             if ("localhost".equals(host)) {
                 throw new ConfigError(Initiator.SETTING_SOCKET_LOCAL_HOST + " cannot be \"localhost\"!");
             }
             int port = 0;
-            if (settings.isSetting(sessionID, Initiator.SETTING_SOCKET_LOCAL_PORT)) {
-                port = (int) settings.getLong(sessionID, Initiator.SETTING_SOCKET_LOCAL_PORT);
+            if (settings.isSetting(Initiator.SETTING_SOCKET_LOCAL_PORT)) {
+                port = (int) settings.getLong(Initiator.SETTING_SOCKET_LOCAL_PORT);
             }
             localAddress = ProtocolFactory.createSocketAddress(TransportType.SOCKET, host, port);
             if (log.isInfoEnabled()) {
@@ -144,6 +142,7 @@ public abstract class AbstractSocketInitiator extends SessionConnector implement
     }
 
     private void createSessions() throws ConfigError, FieldConvertError {
+        /*
         final SessionSettings settings = getSettings();
         boolean continueInitOnError = false;
         if (settings.isSetting(SessionFactory.SETTING_CONTINUE_INIT_ON_ERROR)) {
@@ -171,14 +170,14 @@ public abstract class AbstractSocketInitiator extends SessionConnector implement
             throw new ConfigError("no initiators in settings");
         }
         setSessions(initiatorSessions);
+        */
     }
 
     private int[] getReconnectIntervalInSeconds(SessionID sessionID) throws ConfigError {
         final SessionSettings settings = getSettings();
-        if (settings.isSetting(sessionID, Initiator.SETTING_RECONNECT_INTERVAL)) {
+        if (settings.isSetting(Initiator.SETTING_RECONNECT_INTERVAL)) {
             try {
-                final String raw = settings.getString(sessionID,
-                        Initiator.SETTING_RECONNECT_INTERVAL);
+                final String raw = settings.getString(Initiator.SETTING_RECONNECT_INTERVAL);
                 final int[] ret = SessionSettings.parseSettingReconnectInterval(raw);
                 if (ret != null) {
                     return ret;
@@ -202,23 +201,22 @@ public abstract class AbstractSocketInitiator extends SessionConnector implement
                 final String portKey = Initiator.SETTING_SOCKET_CONNECT_PORT
                         + (index == 0 ? "" : Integer.toString(index));
                 TransportType transportType = TransportType.SOCKET;
-                if (settings.isSetting(sessionID, protocolKey)) {
+                if (settings.isSetting(protocolKey)) {
                     try {
-                        transportType = TransportType.getInstance(settings.getString(sessionID,
-                                protocolKey));
+                        transportType = TransportType.getInstance(settings.getString(protocolKey));
                     } catch (final IllegalArgumentException e) {
                         // Unknown transport type
                         throw new ConfigError(e);
                     }
                 }
-                if (settings.isSetting(sessionID, portKey)) {
+                if (settings.isSetting(portKey)) {
                     String host;
                     if (!isHostRequired(transportType)) {
                         host = "localhost";
                     } else {
-                        host = settings.getString(sessionID, hostKey);
+                        host = settings.getString(hostKey);
                     }
-                    final int port = (int) settings.getLong(sessionID, portKey);
+                    final int port = (int) settings.getLong(portKey);
                     addresses.add(ProtocolFactory.createSocketAddress(transportType, host, port));
                 } else {
                     break;
@@ -237,9 +235,8 @@ public abstract class AbstractSocketInitiator extends SessionConnector implement
 
     private boolean isInitiatorSession(Object sectionKey) throws ConfigError, FieldConvertError {
         final SessionSettings settings = getSettings();
-        return !settings.isSetting((SessionID) sectionKey, SessionFactory.SETTING_CONNECTION_TYPE)
-                || settings.getString((SessionID) sectionKey,
-                        SessionFactory.SETTING_CONNECTION_TYPE).equals("initiator");
+        return !settings.isSetting(SessionFactory.SETTING_CONNECTION_TYPE)
+            ||  settings.getString(SessionFactory.SETTING_CONNECTION_TYPE).equals("initiator");
     }
 
     protected void startInitiators() {

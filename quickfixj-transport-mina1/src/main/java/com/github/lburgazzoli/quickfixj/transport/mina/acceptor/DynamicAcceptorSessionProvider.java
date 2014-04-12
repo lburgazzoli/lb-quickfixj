@@ -150,8 +150,7 @@ public class DynamicAcceptorSessionProvider implements AcceptorSessionProvider {
                     throw new ConfigError("Unable to find a session template for " + sessionID);
                 }
                 SessionSettings dynamicSettings = new SessionSettings();
-                copySettings(dynamicSettings, settings.getDefaultProperties());
-                copySettings(dynamicSettings, settings.getSessionProperties(templateID));
+                copySettings(dynamicSettings, settings.getProperties());
                 dynamicSettings.setString(BEGINSTRING, sessionID.getBeginString());
                 dynamicSettings.setString(SENDERCOMPID, sessionID.getSenderCompID());
                 optionallySetValue(dynamicSettings, SENDERSUBID, sessionID.getSenderSubID());

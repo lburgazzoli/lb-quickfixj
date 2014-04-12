@@ -45,10 +45,10 @@ public class CachedFileStoreFactory extends FileStoreFactory {
     public MessageStore create(SessionID sessionID) {
         try {
             boolean syncWrites = false;
-            if (settings.isSetting(sessionID, SETTING_FILE_STORE_SYNC)) {
-                syncWrites = settings.getBool(sessionID, SETTING_FILE_STORE_SYNC);
+            if (settings.isSetting(SETTING_FILE_STORE_SYNC)) {
+                syncWrites = settings.getBool(SETTING_FILE_STORE_SYNC);
             }
-            return new CachedFileStore(context,settings.getString(sessionID, SETTING_FILE_STORE_PATH), sessionID, syncWrites);
+            return new CachedFileStore(context,settings.getString(SETTING_FILE_STORE_PATH), sessionID, syncWrites);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

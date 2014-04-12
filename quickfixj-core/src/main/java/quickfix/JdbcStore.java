@@ -64,22 +64,21 @@ class JdbcStore implements MessageStore {
         this.context = context;
         this.cache = new MemoryStore(context);
 
-        if (settings.isSetting(sessionID, SETTING_JDBC_STORE_SESSIONS_TABLE_NAME)) {
+        if (settings.isSetting(SETTING_JDBC_STORE_SESSIONS_TABLE_NAME)) {
             sessionTableName = settings
-                    .getString(sessionID, SETTING_JDBC_STORE_SESSIONS_TABLE_NAME);
+                    .getString(SETTING_JDBC_STORE_SESSIONS_TABLE_NAME);
         } else {
             sessionTableName = DEFAULT_SESSION_TABLE_NAME;
         }
 
-        if (settings.isSetting(sessionID, SETTING_JDBC_STORE_MESSAGES_TABLE_NAME)) {
-            messageTableName = settings
-                    .getString(sessionID, SETTING_JDBC_STORE_MESSAGES_TABLE_NAME);
+        if (settings.isSetting(SETTING_JDBC_STORE_MESSAGES_TABLE_NAME)) {
+            messageTableName = settings.getString(SETTING_JDBC_STORE_MESSAGES_TABLE_NAME);
         } else {
             messageTableName = DEFAULT_MESSAGE_TABLE_NAME;
         }
 
-        if (settings.isSetting(sessionID, SETTING_JDBC_SESSION_ID_DEFAULT_PROPERTY_VALUE)) {
-            defaultSessionIdPropertyValue = settings.getString(sessionID,
+        if (settings.isSetting(SETTING_JDBC_SESSION_ID_DEFAULT_PROPERTY_VALUE)) {
+            defaultSessionIdPropertyValue = settings.getString(
                     SETTING_JDBC_SESSION_ID_DEFAULT_PROPERTY_VALUE);
         } else {
             defaultSessionIdPropertyValue = SessionID.NOT_SET;
