@@ -1,8 +1,10 @@
 language:
-  - java
-
+- java
 script:
-  - ./gradlew clean build test
-
+- "./gradlew clean build test"
 jdk:
-  - oraclejdk7
+- oraclejdk7
+env:
+  global:
+  - secure: jzgWfE1hkAxZONShlC/N6QPRqKjrqDCbD8oTO2lO4Qj5vzuM3kuRnh+2an8f1j9KWRTt+igx3b8mMVEKSdB/vfTPcvpSfvGKgtti43mSCsqSs2VVsSGv0TvjVOoe8fdSuLst9jbWr696maXkb+yqDydwTMZWnJ+XpXJ6LMwO9Ig=
+  - secure: E9jr/IPBFsZx2YLMQ/I1/iN0FQKiy5Miki8kMIS/YgnUMyc4yCKPqTJpBvgcNeqJt7n0MiSVWmdA8s6GZ3a+c6DUpZ5YJdY+oWqCzur6vy/tFJ0sUDRJCRUWxzNzasIPraJJEUMU/ygVblwkCvg0TYycwcxMLsE31Zro5IUnSRw=

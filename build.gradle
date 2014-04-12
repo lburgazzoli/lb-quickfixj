@@ -1,12 +1,12 @@
 
+version = '2.0.0-SNAPSHOT'
+group   = 'com.github.lburgazzoli'
+
 // *****************************************************************************
 //
 // *****************************************************************************
 
 ext {
-    //generatorDecimal            = false
-    //generatorOrderedFields      = false
-
     slf4jVersion                = '1.7.5'
     log4jVersion                = '1.2.17'
     nettyVersion                = '4.0.18.Final'
@@ -24,8 +24,23 @@ ext {
     
     gradleVersion               = '1.11'
     gradleScriptDir             = "${rootProject.projectDir}/gradle"
-    //mainResourcesDir            = "${rootProject.projectDir}/etc/resources"
-    //mainGeneratedDir            = "${rootProject.projectDir}/quickfixj-core/src/main/generated"
+    
+    sourceCompatibility = '1.7'
+    targetCompatibility = '1.7'
+    
+            
+    if(project.hasProperty('sonatypeUsername') && project.hasProperty('sonatypePassword')) {
+        ciUsr = sonatypeUsername
+        ciPwd = sonatypePassword
+    } else {
+        ciUsr = "$System.env.CI_DEPLOY_USERNAME"
+        ciPwd = "$System.env.CI_DEPLOY_PASSWORD"
+    }
+
+    isReleaseVersion    = !version.endsWith("SNAPSHOT")
+    gitRoot             = "https://github.com/lburgazzoli"
+    gitProject          = "https://github.com/lburgazzoli/lb-quickfixj"
+    deploySnapshot      = "https://oss.sonatype.org/content/repositories/snapshots"
 }
 
 // *****************************************************************************
@@ -39,11 +54,6 @@ subprojects {
     apply plugin: "maven"
     apply plugin: "osgi"
 
-    sourceCompatibility = '1.7'
-    targetCompatibility = '1.7'
-
-    version      = '2.0.0-SNAPSHOT'
-    group        = 'com.github.lburgazzoli'
     ext.prefix   = 'lb'
 
     repositories {
@@ -106,6 +116,67 @@ subprojects {
 
         manifest.classesDir = new File("$buildDir/classes/main")
         manifest.classpath  = project.runtimeClasspath
+    }
+    
+    // *************************************************************************
+    //
+    // *************************************************************************
+
+    task javadocJar(type: Jar, dependsOn: javadoc) {
+        classifier = 'javadoc'
+        from 'build/docs/javadoc'
+    }
+ 
+    task sourcesJar(type: Jar) {
+        from sourceSets.main.allSource
+        classifier = 'sources'
+    }
+    
+    // *************************************************************************
+    //
+    // *************************************************************************
+
+    artifacts {
+        archives jar
+        archives javadocJar
+        archives sourcesJar
+    }
+
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+ 
+                repository(url: deploySnapshot) {
+                    authentication(
+                        userName: "${project.ciUsr}",
+                        password: "${project.ciPwd}"
+                    )
+                }
+ 
+                pom {
+                    project {
+                        name          = "${project.prefix}-${project.name}"
+                        description   = "${project.prefix}-${project.name}"
+                        url           = "${project.gitProject}"
+                        packaging     = 'jar'
+        
+                        licenses {
+                            license {
+                        	    name         = "The Apache Software License, Version 2.0"
+                        		url          = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+                        		distribution = "repo"
+                        	}
+                        }
+                    
+                        scm {
+                            url                 = "${project.gitProject}"
+                            connection          = "scm:git:${project.gitProject}.git"
+                            developerConnection = "scm:git:${project.gitProject}.git"
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
