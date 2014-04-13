@@ -66,6 +66,7 @@ public class FileLogFactory implements LogFactory {
      * @param sessionID
      *            session ID for the logger
      */
+    @Override
     public Log create(SessionID sessionID) {
         try {
             boolean includeMillis = false;
@@ -88,9 +89,5 @@ public class FileLogFactory implements LogFactory {
         } catch (Exception e) {
             throw new RuntimeError(e);
         }
-    }
-
-    public Log create() {
-        throw new UnsupportedOperationException();
     }
 }

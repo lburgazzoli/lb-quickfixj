@@ -23,6 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import quickfix.SessionFactory;
+import quickfix.SessionID;
 import quickfix.SessionSettings;
 import quickfix.SessionSettingsBuilder;
 
@@ -40,13 +41,22 @@ public class HzSessionSettingsBuilder implements SessionSettingsBuilder {
      * c-tor
      *
      * @param instance
+     * @param sessionId
+     */
+    public HzSessionSettingsBuilder(final HazelcastInstance instance, SessionID sessionId) {
+        this(instance,sessionId.toString());
+    }
+
+    /**
+     * c-tor
+     *
+     * @param instance
      * @param key
      */
     public HzSessionSettingsBuilder(final HazelcastInstance instance, String key) {
         m_data = instance.getMap(key);
 
     }
-
 
     @Override
     public SessionSettings build() {

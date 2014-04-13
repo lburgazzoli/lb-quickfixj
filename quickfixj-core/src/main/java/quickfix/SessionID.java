@@ -19,6 +19,7 @@
 
 package quickfix;
 
+import org.apache.commons.lang.StringUtils;
 import quickfix.field.BeginString;
 import quickfix.field.SenderCompID;
 import quickfix.field.SenderLocationID;
@@ -207,16 +208,25 @@ public class SessionID implements Serializable {
 
     private String createID() {
         return beginString
-                + ":"
-                + senderCompID
-                + (isSet(senderSubID) ? "/" + senderSubID : "")
-                + (isSet(senderLocationID) ? "/" + senderLocationID : "")
-                + "->"
-                + targetCompID
-                + (isSet(targetSubID) ? "/" + targetSubID : "")
-                + (isSet(targetLocationID) ? "/" + targetLocationID : "")
-                + (sessionQualifier != null && !sessionQualifier.equals(NOT_SET) ? ":"
-                        + sessionQualifier : NOT_SET);
+             + ":"
+             + senderCompID
+             + (isSet(senderSubID)
+                 ? "/" + senderSubID
+                 : StringUtils.EMPTY)
+             + (isSet(senderLocationID)
+                 ? "/" + senderLocationID
+                 : StringUtils.EMPTY)
+             + "->"
+             + targetCompID
+             + (isSet(targetSubID)
+                 ? "/" + targetSubID
+                 : StringUtils.EMPTY)
+             + (isSet(targetLocationID)
+                 ? "/" + targetLocationID
+                 : StringUtils.EMPTY)
+             + (sessionQualifier != null && !sessionQualifier.equals(NOT_SET)
+                 ? ":" + sessionQualifier
+                 : NOT_SET);
     }
 
     private boolean isSet(String value) {

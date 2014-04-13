@@ -33,6 +33,19 @@
     </manifest>
 
     <cm:property-placeholder persistent-id="qfj.connection.01" update-strategy="reload">
+        <cm:property name="ConnectionType"         value="initiator"/>
+        <cm:property name="BeginString"             value="FIX.4.2"/>
+        <cm:property name="SenderCompID"            value="FIX.4.2"/>
+        <cm:property name="TargetCompID"            value="FIX.4.2"/>
+        <cm:property name="ReconnectInterval"       value="30"/>
+        <cm:property name="HeartBtInt"              value="30"/>
+        <cm:property name="SocketConnectPort"       value="7001"/>
+        <cm:property name="SocketConnectHost"       value="exchange.marketcetera.com"/>
+        <cm:property name="StartTime"               value="00:00:00"/>
+        <cm:property name="EndTime"                 value="23:59:00"/>
+        <cm:property name="MillisecondsInTimeStamp" value="Y"/>
+        <cm:property name="UseDataDictionary"       value="N"/>
+        <cm:property name="ResetOnLogon"            value="Y"/>
     </cm:property-placeholder>
 
     <!-- ******************************************************************* -->
@@ -56,19 +69,18 @@
     <!--                                                                     -->
     <!-- ******************************************************************* -->
 
-    <bean id             = "QFJ_SETTINGS_BUILDER"
-          class          = "com.github.lburgazzoli.quickfixj.osgi.ConfigAdminSessionSettingsBuilder">
-        <argument ref   = "OSGI_CFG_ADMIN"/>
-        <argument value = "${service.pid}"/>
-    </bean>
-
     <bean id             = "QFJ_CONNECTION_01"
           class          = "com.github.lburgazzoli.quickfixj.osgi.FIXConnection"
           init-method    = "init"
           destroy-method = "destroy">
         <argument ref   = "QFJ_COTEXT_DEFAULT"/>
         <argument value = "${service.pid}"/>
-        <argument ref   = "QFJ_SETTINGS_BUILDER"/>
+        <argument>
+            <bean class = "com.github.lburgazzoli.quickfixj.osgi.ConfigAdminSessionSettingsBuilder">
+                <argument ref   = "OSGI_CFG_ADMIN"/>
+                <argument value = "${service.pid}"/>
+            </bean>
+        </argument>
     </bean>
 
     <service id="qfj.connection.01" ref="QFJ_CONNECTION_01">

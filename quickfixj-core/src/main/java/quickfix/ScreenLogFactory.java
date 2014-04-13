@@ -127,6 +127,7 @@ public class ScreenLogFactory implements LogFactory {
         this.heartBeats = logHeartBeats;
     }
 
+    @Override
     public Log create(SessionID sessionID) {
         try {
             incoming = getBooleanSetting(sessionID, ScreenLogFactory.SETTING_LOG_INCOMING, incoming);
@@ -151,9 +152,4 @@ public class ScreenLogFactory implements LogFactory {
         }
         return incoming;
     }
-
-    public Log create() {
-        throw new UnsupportedOperationException();
-    }
-
 }

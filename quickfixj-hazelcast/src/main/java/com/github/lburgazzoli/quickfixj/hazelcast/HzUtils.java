@@ -29,6 +29,6 @@ public class HzUtils {
      * @return
      */
     public static String hzName(final SessionID sessionId, String name) {
-        return "qfj:" + sessionId.getSessionQualifier() + ":" + name;
+        return "qfj:" + sessionId.toString() + ":" + name;
     }
 }

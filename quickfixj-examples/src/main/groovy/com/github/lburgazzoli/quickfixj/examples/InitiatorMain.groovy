@@ -45,7 +45,6 @@ class InitiatorMain {
         cfg.setString("BeginString",sid.beginString);
         cfg.setString("SenderCompID",sid.senderCompID);
         cfg.setString("TargetCompID",sid.targetCompID);
-        cfg.setString("SessionQualifier",sid.sessionQualifier);
         cfg.setString("ReconnectInterval","30");
         cfg.setString("HeartBtInt","30");
         cfg.setString("SocketConnectPort","7001");
@@ -64,7 +63,7 @@ class InitiatorMain {
      */
     static def main(String[] args) {
         try {
-            SessionID           sid  = new SessionID("FIX.4.2","TEST","EXEC","FIX.4.2:TEST->EXEC");
+            SessionID           sid  = new SessionID("FIX.4.2","TEST","EXEC");
             SessionSettings     cfg  = getSettingsFor(sid);
             IFIXContext         ctx  = new FIXContext("qfj-ctx");
             Application         app  = new TracingApplication();
