@@ -1,60 +1,53 @@
 
-version = '2.0.0-SNAPSHOT'
-group   = 'com.github.lburgazzoli'
-
-// *****************************************************************************
-//
-// *****************************************************************************
-
-ext {
-    slf4jVersion                = '1.7.5'
-    log4jVersion                = '1.2.17'
-    nettyVersion                = '4.0.18.Final'
-    javassistVersion            = '3.18.0-GA';
-    mina1Version                = '1.1.7'
-    osgiVersion                 = '5.0.0'
-    reactorVersion              = '1.0.1.RELEASE'
-    lbKarafCommonVersion        = '3.0.0.SNAPSHOT'
-    karafVersion                = '3.0.0'
-    junitVersion                = '4.11'
-    openHftJavaLangVersion      = '6.3.4'
-    openHftJavaChronicleVersion = '3.0a'
-    hazelcastVersion            = '3.2'
-    groovyVersion               = '2.2.2'
-    
-    gradleVersion               = '1.11'
-    gradleScriptDir             = "${rootProject.projectDir}/gradle"
-    
-    sourceCompatibility = '1.7'
-    targetCompatibility = '1.7'
-    
-            
-    if(project.hasProperty('sonatypeUsername') && project.hasProperty('sonatypePassword')) {
-        ciUsr = sonatypeUsername
-        ciPwd = sonatypePassword
-    } else {
-        ciUsr = "$System.env.CI_DEPLOY_USERNAME"
-        ciPwd = "$System.env.CI_DEPLOY_PASSWORD"
-    }
-
-    isReleaseVersion    = !version.endsWith("SNAPSHOT")
-    gitRoot             = "https://github.com/lburgazzoli"
-    gitProject          = "https://github.com/lburgazzoli/lb-quickfixj"
-    deploySnapshot      = "https://oss.sonatype.org/content/repositories/snapshots"
-}
-
 // *****************************************************************************
 //
 // *****************************************************************************
 
 subprojects {
 
+    ext {
+        slf4jVersion                = '1.7.5'
+        log4jVersion                = '1.2.17'
+        nettyVersion                = '4.0.18.Final'
+        javassistVersion            = '3.18.0-GA';
+        mina1Version                = '1.1.7'
+        osgiVersion                 = '5.0.0'
+        reactorVersion              = '1.0.1.RELEASE'
+        lbKarafCommonVersion        = '3.0.0.SNAPSHOT'
+        karafVersion                = '3.0.0'
+        junitVersion                = '4.11'
+        openHftJavaLangVersion      = '6.3.4'
+        openHftJavaChronicleVersion = '3.0a'
+        hazelcastVersion            = '3.2'
+        groovyVersion               = '2.2.2'
+    
+        gradleVersion               = '1.11'
+        gradleScriptDir             = "${rootProject.projectDir}/gradle"
+            
+        if(project.hasProperty('sonatypeUsername') && project.hasProperty('sonatypePassword')) {
+            ciUsr = sonatypeUsername
+            ciPwd = sonatypePassword
+        } else {
+            ciUsr = "$System.env.CI_DEPLOY_USERNAME"
+            ciPwd = "$System.env.CI_DEPLOY_PASSWORD"
+        }
+        
+        prefix              = 'lb'
+        isReleaseVersion    = !version.endsWith("SNAPSHOT")
+        gitRoot             = "https://github.com/lburgazzoli"
+        gitProject          = "https://github.com/lburgazzoli/lb-quickfixj"
+        deploySnapshot      = "https://oss.sonatype.org/content/repositories/snapshots"
+    }
+        
     apply plugin: "java"
     apply plugin: "groovy"
     apply plugin: "maven"
     apply plugin: "osgi"
 
-    ext.prefix   = 'lb'
+    version             = '2.0.0-SNAPSHOT'
+    group               = 'com.github.lburgazzoli'
+    sourceCompatibility = '1.7'
+    targetCompatibility = '1.7'
 
     repositories {
         maven { url "http://repo2.maven.org/maven2" }
