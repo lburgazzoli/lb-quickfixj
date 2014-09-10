@@ -12,8 +12,8 @@ project.ext {
 dependencies {
     compile project(':quickfixj-transport')
 
-    compile "org.apache.mina:mina-core:$mina1Version"
-    compile "org.apache.mina:mina-filter-ssl:$mina1Version"
+    compile "org.apache.mina:mina-core:$versions.mina1"
+    compile "org.apache.mina:mina-filter-ssl:$versions.mina1"
 }
 
 jar {

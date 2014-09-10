@@ -3,7 +3,7 @@ language:
 script:
 - "./gradlew clean build test uploadArchives"
 jdk:
-- oraclejdk7
+- oraclejdk8
 env:
   global:
   - secure: jzgWfE1hkAxZONShlC/N6QPRqKjrqDCbD8oTO2lO4Qj5vzuM3kuRnh+2an8f1j9KWRTt+igx3b8mMVEKSdB/vfTPcvpSfvGKgtti43mSCsqSs2VVsSGv0TvjVOoe8fdSuLst9jbWr696maXkb+yqDydwTMZWnJ+XpXJ6LMwO9Ig=

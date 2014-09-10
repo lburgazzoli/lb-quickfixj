@@ -1,3 +1,16 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        jcenter()
+
+        maven { url "http://repo.spring.io/snapshot" }
+        maven { url "http://repo.spring.io/milestone" }
+    }
+    dependencies {
+        classpath 'com.github.ben-manes:gradle-versions-plugin:0.5-beta-6'
+        classpath 'org.gradle.api.plugins:gradle-nexus-plugin:0.7.1'
+    }
+}
 
 // *****************************************************************************
 //
@@ -6,30 +19,35 @@
 subprojects {
 
     ext {
-        slf4jVersion                = '1.7.5'
-        log4jVersion                = '1.2.17'
-        nettyVersion                = '4.0.19.Final'
-        javassistVersion            = '3.18.0-GA';
-        mina1Version                = '1.1.7'
-        osgiVersion                 = '5.0.0'
-        reactorVersion              = '1.1.0.RELEASE'
-        lbKarafCommonVersion        = '3.0.1.SNAPSHOT'
-        karafVersion                = '3.0.0'
-        junitVersion                = '4.11'
-        openHftJavaLangVersion      = '6.3.4'
-        openHftJavaChronicleVersion = '3.0a'
-        hazelcastVersion            = '3.2.1'
-        groovyVersion               = '2.2.2'
-    
-        gradleVersion               = '1.11'
+        versions = [
+            slf4j                : '1.7.7',
+            log4j                : '1.2.17',
+            netty                : '4.0.21.Final',
+            javassist            : '3.18.2-GA',
+            mina1                : '1.1.7',
+            osgi                 : '5.0.0',
+            reactor              : '1.1.4.RELEASE',
+            karaf                : '3.0.1',
+            junit                : '4.11',
+            disruptor            : '3.3.0',
+            guava                : '18.0',
+            openHftJavaLang      : '6.4.6',
+            openHftJavaChronicle : '3.2.1',
+            hazelcast            : '3.3',
+            groovy               : '2.3.6',
+            lbHazlecast          : '3.3.0.SNAPSHOT',
+            lbKarafCommon        : '3.0.1.SNAPSHOT'
+        ]
+        
+        gradleVersion               = '2.1'
         gradleScriptDir             = "${rootProject.projectDir}/gradle"
             
         if(project.hasProperty('sonatypeUsername') && project.hasProperty('sonatypePassword')) {
-            ciUsr = sonatypeUsername
-            ciPwd = sonatypePassword
+            nexusUsername = sonatypeUsername
+            nexusPassword = sonatypePassword
         } else {
-            ciUsr = "$System.env.CI_DEPLOY_USERNAME"
-            ciPwd = "$System.env.CI_DEPLOY_PASSWORD"
+            nexusUsername = "$System.env.CI_DEPLOY_USERNAME"
+            nexusUsername = "$System.env.CI_DEPLOY_PASSWORD"
         }
         
         prefix              = 'lb'
@@ -43,23 +61,21 @@ subprojects {
     apply plugin: "groovy"
     apply plugin: "maven"
     apply plugin: "osgi"
+    apply plugin: 'nexus'
+    apply plugin: 'com.github.ben-manes.versions'
 
     version             = '2.0.0-SNAPSHOT'
     group               = 'com.github.lburgazzoli'
-    sourceCompatibility = '1.7'
-    targetCompatibility = '1.7'
+    sourceCompatibility = '1.8'
+    targetCompatibility = '1.8'
 
     repositories {
-        maven { url "http://repo2.maven.org/maven2" }
-        maven { url "http://repo1.maven.org/maven2" }
+        mavenLocal()
+        mavenCentral()
+
         maven { url "http://repo.springsource.org/release" }
-        //maven { url "http://repo.springsource.org/libs-milestone" }
         maven { url "http://repository.springsource.com/maven/bundles/release" }
         maven { url "http://repository.springsource.com/maven/bundles/external" }
-        maven { url "http://oss.sonatype.org/content/groups/public" }
-
-        mavenLocal()
-
         maven { url "http://oss.sonatype.org/content/repositories/snapshots" }
     }
 
@@ -78,22 +94,22 @@ subprojects {
         compile "commons-net:commons-net:3.3"
         compile "commons-cli:commons-cli:1.2"
         compile "commons-configuration:commons-configuration:1.9"
-        compile "log4j:log4j:$log4jVersion"
-        compile "org.slf4j:slf4j-api:$slf4jVersion"
-        compile "org.slf4j:slf4j-ext:$slf4jVersion"
-        compile "org.slf4j:slf4j-log4j12:$slf4jVersion"
-        compile "org.slf4j:jcl-over-slf4j:$slf4jVersion"
-        compile "org.slf4j:jul-to-slf4j:$slf4jVersion"
-        compile "com.google.guava:guava:16.0.1"
-        compile "com.lmax:disruptor:3.2.1"
+        compile "log4j:log4j:$versions.log4j"
+        compile "org.slf4j:slf4j-api:$versions.slf4j"
+        compile "org.slf4j:slf4j-ext:$versions.slf4j"
+        compile "org.slf4j:slf4j-log4j12:$versions.slf4j"
+        compile "org.slf4j:jcl-over-slf4j:$versions.slf4j"
+        compile "org.slf4j:jul-to-slf4j:$versions.slf4j"
+        compile "com.google.guava:guava:$versions.guava"
+        compile "com.lmax:disruptor:$versions.disruptor"
         compile "org.javolution:javolution-core-java:6.0.0"
         compile "org.dom4j:com.springsource.org.dom4j:1.6.1"
         compile "org.logicalcobwebs:com.springsource.org.logicalcobwebs.proxool:0.9.1"
-        compile "net.openhft:lang:$openHftJavaLangVersion"
-        compile "net.openhft:chronicle:$openHftJavaChronicleVersion"
-        compile "org.codehaus.groovy:groovy:$groovyVersion"
+        compile "net.openhft:lang:$versions.openHftJavaLang"
+        compile "net.openhft:chronicle:$versions.openHftJavaChronicle"
+        compile "org.codehaus.groovy:groovy:$versions.groovy"
 
-        testCompile "junit:junit:$junitVersion"
+        testCompile "junit:junit:$versions.junit"
     }
 
     jar {
@@ -115,59 +131,32 @@ subprojects {
     //
     // *************************************************************************
 
-    task javadocJar(type: Jar, dependsOn: javadoc) {
-        classifier = 'javadoc'
-        from 'build/docs/javadoc'
-    }
- 
-    task sourcesJar(type: Jar) {
-        from sourceSets.main.allSource
-        classifier = 'sources'
-    }
-    
-    // *************************************************************************
-    //
-    // *************************************************************************
-
-    artifacts {
-        archives jar
-        archives javadocJar
-        archives sourcesJar
+    nexus {
+        attachJavadoc         = true
+        attachSources         = true
+        attachTests           = false
+        sign                  = false
     }
 
-    uploadArchives {
-        repositories {
-            mavenDeployer {
- 
-                repository(url: deploySnapshot) {
-                    authentication(
-                        userName: "${project.ciUsr}",
-                        password: "${project.ciPwd}"
-                    )
+    modifyPom {
+        project {
+            name          = "${project.prefix}-${project.name}"
+            description   = "${project.prefix}-${project.name}"
+            url           = "${project.gitProject}"
+            packaging     = 'jar'
+
+            licenses {
+                license {
+                    name         = "The Apache Software License, Version 2.0"
+                    url          = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+                    distribution = "repo"
                 }
- 
-                pom {
-                    project {
-                        name          = "${project.prefix}-${project.name}"
-                        description   = "${project.prefix}-${project.name}"
-                        url           = "${project.gitProject}"
-                        packaging     = 'jar'
-        
-                        licenses {
-                            license {
-                        	    name         = "The Apache Software License, Version 2.0"
-                        		url          = "http://www.apache.org/licenses/LICENSE-2.0.txt"
-                        		distribution = "repo"
-                        	}
-                        }
-                    
-                        scm {
-                            url                 = "${project.gitProject}"
-                            connection          = "scm:git:${project.gitProject}.git"
-                            developerConnection = "scm:git:${project.gitProject}.git"
-                        }
-                    }
-                }
+            }
+
+            scm {
+                url                 = "${project.gitProject}"
+                connection          = "scm:git:${project.gitProject}.git"
+                developerConnection = "scm:git:${project.gitProject}.git"
             }
         }
     }

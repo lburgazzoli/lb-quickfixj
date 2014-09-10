@@ -17,12 +17,12 @@ dependencies {
     compile project(':quickfixj-transport')
     compile project(':quickfixj-transport-netty')
 
-    compile "com.github.lburgazzoli:lb-karaf-common:$lbKarafCommonVersion"
-    compile "org.osgi:org.osgi.core:$osgiVersion"
-    compile "org.osgi:org.osgi.compendium:$osgiVersion"
+    compile "com.github.lburgazzoli:lb-karaf-common:$versions.lbKarafCommon"
+    compile "org.osgi:org.osgi.core:$versions.osgi"
+    compile "org.osgi:org.osgi.compendium:$versions.osgi"
     compile "org.apache.felix:org.apache.felix.configadmin:1.6.0"
-    compile "org.apache.karaf.shell:org.apache.karaf.shell.console:$karafVersion"
-    compile "org.apache.karaf.shell:org.apache.karaf.shell.table:$karafVersion"
+    compile "org.apache.karaf.shell:org.apache.karaf.shell.console:$versions.karaf"
+    compile "org.apache.karaf.shell:org.apache.karaf.shell.table:$versions.karaf"
 }
 
 jar {

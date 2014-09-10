@@ -12,14 +12,14 @@ project.ext {
 dependencies {
     compile project(':quickfixj-transport')
 
-    compile "io.netty:netty-common:$nettyVersion"
-    compile "io.netty:netty-buffer:$nettyVersion"
-    compile "io.netty:netty-transport:$nettyVersion"
-    compile "io.netty:netty-codec:$nettyVersion"
-    compile "io.netty:netty-codec-http:$nettyVersion"
-    compile "io.netty:netty-codec-socks:$nettyVersion"
-    compile "io.netty:netty-handler:$nettyVersion"
-    compile "org.javassist:javassist:$javassistVersion";
+    compile "io.netty:netty-common:$versions.netty"
+    compile "io.netty:netty-buffer:$versions.netty"
+    compile "io.netty:netty-transport:$versions.netty"
+    compile "io.netty:netty-codec:$versions.netty"
+    compile "io.netty:netty-codec-http:$versions.netty"
+    compile "io.netty:netty-codec-socks:$versions.netty"
+    compile "io.netty:netty-handler:$versions.netty"
+    compile "org.javassist:javassist:$versions.javassist";
 }
 
 jar {
