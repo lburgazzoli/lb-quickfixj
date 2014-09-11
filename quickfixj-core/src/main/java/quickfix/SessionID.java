@@ -19,7 +19,7 @@
 
 package quickfix;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import quickfix.field.BeginString;
 import quickfix.field.SenderCompID;
 import quickfix.field.SenderLocationID;

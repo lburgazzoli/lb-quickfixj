@@ -17,7 +17,6 @@ buildscript {
 // *****************************************************************************
 
 subprojects {
-
     ext {
         versions = [
             slf4j                : '1.7.7',
@@ -36,7 +35,14 @@ subprojects {
             hazelcast            : '3.3',
             groovy               : '2.3.6',
             lbHazlecast          : '3.3.0.SNAPSHOT',
-            lbKarafCommon        : '3.0.1.SNAPSHOT'
+            lbKarafCommon        : '3.0.1.SNAPSHOT',
+            commonsLang          : '3.3.2',
+            commonsCollections   : '4.0',
+            commonsPool          : '2.2',
+            commonsIO            : '2.4',
+            javolution           : '6.0.0',
+            dom4j                : '1.6.1',
+            proxool              : '0.9.1'
         ]
         
         gradleVersion               = '2.1'
@@ -47,7 +53,7 @@ subprojects {
             nexusPassword = sonatypePassword
         } else {
             nexusUsername = "$System.env.CI_DEPLOY_USERNAME"
-            nexusUsername = "$System.env.CI_DEPLOY_PASSWORD"
+            nexusPassword = "$System.env.CI_DEPLOY_PASSWORD"
         }
         
         prefix              = 'lb'
@@ -80,20 +86,9 @@ subprojects {
     }
 
     dependencies {
-        compile "org.apache.commons:commons-math3:3.2"
-        compile "org.apache.commons:commons-lang3:3.3.2"
-        compile "org.apache.commons:commons-compress:1.5"
-        compile "commons-io:commons-io:2.4"
-        compile "commons-codec:commons-codec:1.9"
-        compile "commons-collections:commons-collections:3.2.1"
-        compile "commons-dbcp:commons-dbcp:1.4"
-        compile "commons-dbutils:commons-dbutils:1.5"
-        compile "commons-lang:commons-lang:2.6"
-        compile "commons-logging:commons-logging:1.1.2"
-        compile "commons-pool:commons-pool:1.6"
-        compile "commons-net:commons-net:3.3"
-        compile "commons-cli:commons-cli:1.2"
-        compile "commons-configuration:commons-configuration:1.9"
+        compile "org.apache.commons:commons-lang3:$versions.commonsLang"
+        compile "commons-io:commons-io:$versions.commonsIO"
+        compile "org.apache.commons:commons-collections4:$versions.commonsCollections"
         compile "log4j:log4j:$versions.log4j"
         compile "org.slf4j:slf4j-api:$versions.slf4j"
         compile "org.slf4j:slf4j-ext:$versions.slf4j"
@@ -102,9 +97,9 @@ subprojects {
         compile "org.slf4j:jul-to-slf4j:$versions.slf4j"
         compile "com.google.guava:guava:$versions.guava"
         compile "com.lmax:disruptor:$versions.disruptor"
-        compile "org.javolution:javolution-core-java:6.0.0"
-        compile "org.dom4j:com.springsource.org.dom4j:1.6.1"
-        compile "org.logicalcobwebs:com.springsource.org.logicalcobwebs.proxool:0.9.1"
+        compile "org.javolution:javolution-core-java:$versions.javolution"
+        compile "org.dom4j:com.springsource.org.dom4j:$versions.dom4j"
+        compile "org.logicalcobwebs:com.springsource.org.logicalcobwebs.proxool:$versions.proxool"
         compile "net.openhft:lang:$versions.openHftJavaLang"
         compile "net.openhft:chronicle:$versions.openHftJavaChronicle"
         compile "org.codehaus.groovy:groovy:$versions.groovy"
