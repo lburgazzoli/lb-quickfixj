@@ -6,5 +6,5 @@ jdk:
 - oraclejdk8
 env:
   global:
-  - secure: clcPRFwNTKcv6Vi2eJPwBdlJjgNYMjUJlWmN1n7DbBKuJfWT58KFhgS1Rm9KeUIBCqxXnm85K139oUgD4gZ/bPtjoNoLpfFYFhvsNbEgw/xov6CdUiKaf8C69rFoSgLT9tUL1wA7v+Hg0VkNg2rTHravoB5CRdUO0Z8oBKLY3Aw=
-  - secure: nnNR7a1iWMMHoe4lCStAqajwInV859wvCqKX0BTS0dokHcpEdUFa6MYtU6lMGWM7EhdQrkok7XlLcNEg6I14jn3NqmF7qPvo+4EmWeA29bsvCXIZOmTHzXTYwlQ0DI/qJyMlnqPwvFjFxV7TupjBQTPVaJ/1YUKToB0KuOC9pUs=
+  - secure: NOrZnbyYgMsML1H+ntC9zWSt/CcnXI54+4g0dF4fCrwkr7t2Ogm8I5DqFluRuwX7rr8qQyEum8wwW7Ew+gYCvFLqnkSFeSahGGWrh/JX/aBXfWD7iKbwv/YMAmzAbTS7CceZZ4rHMMHHSZTM9EWlz+4Zl+wFeOEWl5Vw5lB8JbY=
+  - secure: SE9DOh04ItNt1nZyzsatCOw/h7sqgw2ZiNjJVp6P5lt/GFirFnjBG3iskPi1E8oQ1ELQzbW6ayzJmfPUxcFIqNK3rQInVRj+v/oOkT1qQ4CqNWd9hxN1SY8em0OthDDccB4bSI3inmYjFeFTs5/SyB9+U9Ok6ZiLGfuVltYwZqg=
