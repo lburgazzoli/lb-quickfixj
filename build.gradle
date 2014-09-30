@@ -7,7 +7,7 @@ buildscript {
         maven { url "http://repo.spring.io/milestone" }
     }
     dependencies {
-        classpath 'com.github.ben-manes:gradle-versions-plugin:0.5-beta-6'
+        classpath 'com.github.ben-manes:gradle-versions-plugin:0.5'
         classpath 'org.gradle.api.plugins:gradle-nexus-plugin:0.7.1'
     }
 }
@@ -20,7 +20,7 @@ subprojects {
     ext {
         versions = [
             slf4j                : '1.7.7',
-            log4j                : '1.2.17',
+            log4j2               : '2.0.2',
             netty                : '4.0.21.Final',
             javassist            : '3.18.2-GA',
             mina1                : '1.1.7',
@@ -32,9 +32,9 @@ subprojects {
             guava                : '18.0',
             openHftJavaLang      : '6.4.6',
             openHftJavaChronicle : '3.2.1',
-            hazelcast            : '3.3',
+            hazelcast            : '3.3.1',
             groovy               : '2.3.6',
-            lbHazlecast          : '3.3.0.SNAPSHOT',
+            lbHazlecast          : '3.3.1.SNAPSHOT',
             lbKarafCommon        : '3.0.1.SNAPSHOT',
             commonsLang          : '3.3.2',
             commonsCollections   : '4.0',
@@ -86,15 +86,19 @@ subprojects {
     }
 
     dependencies {
+        compile "org.slf4j:slf4j-api:$versions.slf4j"
+        compile "org.slf4j:slf4j-ext:$versions.slf4j"
+        compile "org.slf4j:jul-to-slf4j:$versions.slf4j"
+
+        compile "org.apache.logging.log4j:log4j-api:$versions.log4j2"
+        compile "org.apache.logging.log4j:log4j-core:$versions.log4j2"
+        compile "org.apache.logging.log4j:log4j-jcl:$versions.log4j2"
+        compile "org.apache.logging.log4j:log4j-slf4j-impl:$versions.log4j2"
+
         compile "org.apache.commons:commons-lang3:$versions.commonsLang"
         compile "commons-io:commons-io:$versions.commonsIO"
         compile "org.apache.commons:commons-collections4:$versions.commonsCollections"
-        compile "log4j:log4j:$versions.log4j"
-        compile "org.slf4j:slf4j-api:$versions.slf4j"
-        compile "org.slf4j:slf4j-ext:$versions.slf4j"
-        compile "org.slf4j:slf4j-log4j12:$versions.slf4j"
-        compile "org.slf4j:jcl-over-slf4j:$versions.slf4j"
-        compile "org.slf4j:jul-to-slf4j:$versions.slf4j"
+        
         compile "com.google.guava:guava:$versions.guava"
         compile "com.lmax:disruptor:$versions.disruptor"
         compile "org.javolution:javolution-core-java:$versions.javolution"
