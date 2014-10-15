@@ -23,7 +23,7 @@ subprojects {
             mina1                : '1.1.7',
             osgi                 : '5.0.0',
             reactor              : '1.1.4.RELEASE',
-            karaf                : '3.0.1',
+            karaf                : '3.0.2',
             junit                : '4.11',
             disruptor            : '3.3.0',
             guava                : '18.0',
