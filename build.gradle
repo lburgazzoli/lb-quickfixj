@@ -2,13 +2,10 @@ buildscript {
     repositories {
         mavenCentral()
         jcenter()
-
-        maven { url "http://repo.spring.io/snapshot" }
-        maven { url "http://repo.spring.io/milestone" }
     }
     dependencies {
         classpath 'com.github.ben-manes:gradle-versions-plugin:0.5'
-        classpath 'org.gradle.api.plugins:gradle-nexus-plugin:0.7.1'
+        classpath 'com.bmuschko:gradle-nexus-plugin:2.0'
     }
 }
 
@@ -34,8 +31,8 @@ subprojects {
             openHftJavaChronicle : '3.2.1',
             hazelcast            : '3.3.1',
             groovy               : '2.3.6',
-            lbHazlecast          : '3.3.1.SNAPSHOT',
-            lbKarafCommon        : '3.0.1.SNAPSHOT',
+            lbHazlecast          : '3.3.1-SNAPSHOT',
+            lbKarafCommon        : '3.0.2-SNAPSHOT',
             commonsLang          : '3.3.2',
             commonsCollections   : '4.0',
             commonsPool          : '2.2',
@@ -61,13 +58,14 @@ subprojects {
         gitRoot             = "https://github.com/lburgazzoli"
         gitProject          = "https://github.com/lburgazzoli/lb-quickfixj"
         deploySnapshot      = "https://oss.sonatype.org/content/repositories/snapshots"
+        osgiVersion         = project.version.replaceAll('-','.')
     }
         
     apply plugin: "java"
     apply plugin: "groovy"
     apply plugin: "maven"
     apply plugin: "osgi"
-    apply plugin: 'nexus'
+    apply plugin: 'com.bmuschko.nexus'
     apply plugin: 'com.github.ben-manes.versions'
 
     version             = '2.0.0-SNAPSHOT'
@@ -117,9 +115,9 @@ subprojects {
         manifest.attributes['Bundle-Description'     ] = "${project.prefix} :: ${project.name}"
         manifest.attributes['Bundle-Name'            ] = "${project.prefix} :: ${project.name}"
         manifest.attributes['Bundle-SymbolicName'    ] = "${project.group}-${project.prefix}-${project.name}"
-        manifest.attributes['Bundle-Version'         ] = project.version
-        manifest.attributes['Implementation-Title'   ] = "${project.group}-${project.prefix}-${project.name}-${project.version}"
-        manifest.attributes['Implementation-Version' ] = project.version
+        manifest.attributes['Bundle-Version'         ] = osgiVersion
+        manifest.attributes['Implementation-Title'   ] = "${project.group}-${project.prefix}-${project.name}-${osgiVersion}"
+        manifest.attributes['Implementation-Version' ] = osgiVersion
         manifest.attributes['Implementation-Vendor'  ] = 'lb'
 
         manifest.classesDir = new File("$buildDir/classes/main")
