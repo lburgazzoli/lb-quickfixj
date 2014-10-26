@@ -8,6 +8,7 @@ task generate(dependsOn: 'classes', type: JavaExec) {
             "-Xmx256m",
             "-Dgenerator.decimal=$generatorDecimal",
             "-Dgenerator.orderedFields=$generatorOrderedFields"
+            "-Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager"
     ]
 
     args       = [
