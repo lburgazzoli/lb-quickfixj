@@ -20,7 +20,7 @@ dependencies {
     compile "com.github.lburgazzoli:lb-karaf-common:$versions.lbKarafCommon"
     compile "org.osgi:org.osgi.core:$versions.osgi"
     compile "org.osgi:org.osgi.compendium:$versions.osgi"
-    compile "org.apache.felix:org.apache.felix.configadmin:1.6.0"
+    compile "org.apache.felix:org.apache.felix.configadmin:$versions.felixConfigAdmin"
     compile "org.apache.karaf.shell:org.apache.karaf.shell.console:$versions.karaf"
     compile "org.apache.karaf.shell:org.apache.karaf.shell.table:$versions.karaf"
 }
