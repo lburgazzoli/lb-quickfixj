@@ -8,8 +8,8 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.github.ben-manes:gradle-versions-plugin:0.6'
-        classpath 'com.bmuschko:gradle-nexus-plugin:2.2'
+        classpath 'com.github.ben-manes:gradle-versions-plugin:0.8'
+        classpath 'com.bmuschko:gradle-nexus-plugin:2.3.1'
     }
 }
 
@@ -20,25 +20,25 @@ buildscript {
 subprojects {
     ext {
         versions = [
-            slf4j                : '1.7.9',
-            log4j2               : '2.1',
-            netty                : '4.0.24.Final',
+            slf4j                : '1.7.12',
+            log4j2               : '2.2',
+            netty                : '4.0.27.Final',
             javassist            : '3.18.2-GA',
             mina1                : '1.1.7',
             osgi                 : '5.0.0',
             reactor              : '1.1.5.RELEASE',
-            karaf                : '3.0.2',
+            karaf                : '3.0.3',
             felixConfigAdmin     : '1.8.0',
             junit                : '4.12',
             disruptor            : '3.3.0',
             guava                : '18.0',
             openHftJavaLang      : '6.4.18',
-            openHftJavaChronicle : '3.3.3',
+            openHftJavaChronicle : '3.4.2',
             hazelcast            : '3.4',
-            groovy               : '2.3.9',
-            lbHazlecast          : '3.4.0-SNAPSHOT',
-            lbKarafCommon        : '3.0.2-SNAPSHOT',
-            commonsLang          : '3.3.2',
+            groovy               : '2.4.3',
+            lbHazlecast          : '3.4.2-SNAPSHOT',
+            lbKarafCommon        : '3.0.3-SNAPSHOT',
+            commonsLang          : '3.4',
             commonsCollections   : '4.0',
             commonsPool          : '2.2',
             commonsIO            : '2.4',
@@ -47,7 +47,7 @@ subprojects {
             proxool              : '0.9.1'
         ]
         
-        gradleVersion               = '2.2.1'
+        gradleVersion               = '2.3'
         gradleScriptDir             = "${rootProject.projectDir}/gradle"
             
         if(project.hasProperty('sonatypeUsername') && project.hasProperty('sonatypePassword')) {
@@ -124,9 +124,6 @@ subprojects {
         manifest.attributes['Implementation-Title'   ] = "${project.group}-${project.prefix}-${project.name}-${osgiVersion}"
         manifest.attributes['Implementation-Version' ] = osgiVersion
         manifest.attributes['Implementation-Vendor'  ] = 'lb'
-
-        manifest.classesDir = new File("$buildDir/classes/main")
-        manifest.classpath  = project.runtimeClasspath
     }
     
     // *************************************************************************
