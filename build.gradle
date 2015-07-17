@@ -8,8 +8,31 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.github.ben-manes:gradle-versions-plugin:0.8'
+        classpath 'com.github.ben-manes:gradle-versions-plugin:0.11.3'
         classpath 'com.bmuschko:gradle-nexus-plugin:2.3.1'
+    }
+}
+
+// *****************************************************************************
+//
+// *****************************************************************************
+
+allprojects {
+    configurations {
+        all {
+            resolutionStrategy {
+                componentSelection {
+                    all { ComponentSelection selection ->
+                        boolean rejected = [ 'M1', 'M2' ,'rc', 'Alpha' , 'Beta', "EA"].any { qualifier ->
+                            return selection.candidate.version ==~ /(?i).*[.-]${qualifier}[.\d-]*/
+                        }
+                        if (rejected) {
+                            selection.reject('Release candidate')
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -21,23 +44,24 @@ subprojects {
     ext {
         versions = [
             slf4j                : '1.7.12',
-            log4j2               : '2.2',
-            netty                : '4.0.27.Final',
-            javassist            : '3.18.2-GA',
+            log4j2               : '2.3',
+            netty                : '4.0.29.Final',
+            javassist            : '3.20.0-GA',
             mina1                : '1.1.7',
-            osgi                 : '5.0.0',
+            osgi                 : '6.0.0',
+            osgiCompendium       : '5.0.0',
             reactor              : '1.1.5.RELEASE',
-            karaf                : '3.0.3',
-            felixConfigAdmin     : '1.8.0',
+            karaf                : '4.0.0',
+            felixConfigAdmin     : '1.8.6',
             junit                : '4.12',
-            disruptor            : '3.3.0',
+            disruptor            : '3.3.2',
             guava                : '18.0',
-            openHftJavaLang      : '6.4.18',
-            openHftJavaChronicle : '3.4.2',
-            hazelcast            : '3.4',
-            groovy               : '2.4.3',
-            lbHazlecast          : '3.4.2-SNAPSHOT',
-            lbKarafCommon        : '3.0.3-SNAPSHOT',
+            openHftJavaLang      : '6.6.11',
+            openHftChronicle     : '3.4.4',
+            hazelcast            : '3.5',
+            groovy               : '2.4.4',
+            lbHazlecast          : '3.5.0-SNAPSHOT',
+            lbKarafCommon        : '4.0.0-SNAPSHOT',
             commonsLang          : '3.4',
             commonsCollections   : '4.0',
             commonsPool          : '2.2',
@@ -47,7 +71,7 @@ subprojects {
             proxool              : '0.9.1'
         ]
         
-        gradleVersion               = '2.3'
+        gradleVersion               = '2.5'
         gradleScriptDir             = "${rootProject.projectDir}/gradle"
             
         if(project.hasProperty('sonatypeUsername') && project.hasProperty('sonatypePassword')) {
@@ -108,7 +132,7 @@ subprojects {
         compile "org.dom4j:com.springsource.org.dom4j:$versions.dom4j"
         compile "org.logicalcobwebs:com.springsource.org.logicalcobwebs.proxool:$versions.proxool"
         compile "net.openhft:lang:$versions.openHftJavaLang"
-        compile "net.openhft:chronicle:$versions.openHftJavaChronicle"
+        compile "net.openhft:chronicle:$versions.openHftChronicle"
         compile "org.codehaus.groovy:groovy:$versions.groovy"
 
         testCompile "junit:junit:$versions.junit"
@@ -161,6 +185,10 @@ subprojects {
                 developerConnection = "scm:git:${project.gitProject}.git"
             }
         }
+    }
+
+    dependencyUpdates {
+        revision = 'release'
     }
 }
 
